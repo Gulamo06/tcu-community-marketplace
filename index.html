@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCU Community — Marketplace & Lost/Found</title>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Playfair Display + Inter + DM Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Inter', 'DM Sans', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            jade:  { 50:'#f0fdf4',100:'#dcfce7',200:'#bbf7d0',300:'#86efac',400:'#4ade80',500:'#22c55e',600:'#16a34a',700:'#15803d',800:'#166534',900:'#14532d',950:'#052e16' },
+            stone: { 50:'#fafaf9',100:'#f5f5f4',200:'#e7e5e4',300:'#d6d3d1',400:'#a8a29e',500:'#78716c',600:'#57534e',700:'#44403c',800:'#292524',900:'#1c1917',950:'#0c0a09' },
+            cream: '#fdfcf8',
+            parchment: '#f7f4ee',
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --jade:    #16a34a;
+      --jade-lt: #dcfce7;
+      --ink:     #1c1917;
+      --muted:   #78716c;
+      --cream:   #fdfcf8;
+      --border:  #e7e5e4;
+    }
+
+    * { box-sizing: border-box; }
+    body { background: var(--cream); font-family: 'Inter', 'DM Sans', sans-serif; color: var(--ink); }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 3px; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+    @keyframes scaleIn  { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
+    @keyframes shimmer  { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
+    @keyframes aiDot    { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-5px);opacity:1} }
+
+    /* ── Upload button ── */
+    .btn-upload {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 18px; background: var(--jade); color: #fff;
+      border-radius: 10px; font-size: .875rem; font-weight: 600;
+      cursor: pointer; transition: background .15s, box-shadow .15s;
+      border: none; user-select: none;
+    }
+    .btn-upload:hover { background: #15803d; box-shadow: 0 2px 8px rgba(22,163,74,.25); }
+
+    .fade-up   { animation: fadeUp  .45s ease both; }
+    .fade-in   { animation: fadeIn  .3s  ease both; }
+    .scale-in  { animation: scaleIn .35s ease both; }
+
+    .stagger-1 { animation-delay: .05s; }
+    .stagger-2 { animation-delay: .10s; }
+    .stagger-3 { animation-delay: .15s; }
+    .stagger-4 { animation-delay: .20s; }
+    .stagger-5 { animation-delay: .25s; }
+    .stagger-6 { animation-delay: .30s; }
+
+    /* ── Card ── */
+    .card {
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(231,229,228,.7);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow:
+        0 1px 2px  rgba(0,0,0,.03),
+        0 4px 14px rgba(0,0,0,.06),
+        0 16px 40px rgba(0,0,0,.05);
+      transition: box-shadow .25s, transform .25s;
+    }
+    .card:hover {
+      box-shadow:
+        0 2px 6px  rgba(0,0,0,.05),
+        0 8px 24px rgba(0,0,0,.09),
+        0 28px 60px rgba(0,0,0,.09);
+      transform: translateY(-3px);
+    }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: 20px;
+      font-size: .68rem; font-weight: 500; letter-spacing: .05em; text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+    .badge-exchange { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+    .badge-lost     { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+    .badge-found    { background: var(--jade-lt); color: #15803d; border-color: #bbf7d0; }
+    .badge-available{ background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+    .badge-sold     { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
+    .badge-returned { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
+
+    /* ── Filter tabs ── */
+    .filter-tab {
+      padding: 7px 20px; border-radius: 30px; font-size: .875rem; font-weight: 500;
+      cursor: pointer; transition: all .2s; border: 1.5px solid transparent;
+    }
+    .filter-tab.active  { background: linear-gradient(135deg,#22c55e 0%,#16a34a 100%); color: #fff; box-shadow: 0 2px 8px rgba(22,163,74,.25); }
+    .filter-tab:not(.active) { color: var(--muted); border-color: var(--border); }
+    .filter-tab:not(.active):hover { border-color: var(--jade); color: var(--jade); }
+
+    /* ── Form input ── */
+    .field {
+      width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+      border-radius: 9px; font-size: .9rem; font-family: 'DM Sans', sans-serif;
+      outline: none; transition: border-color .2s, box-shadow .2s; background: #fff;
+    }
+    .field:focus { border-color: var(--jade); box-shadow: 0 0 0 3px rgba(22,163,74,.12); }
+    .field.error  { border-color: #ef4444; }
+    label.form-label { font-size: .8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ── Button ── */
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: #fff; border: none; border-radius: 9px;
+      padding: 11px 24px; font-size: .9rem; font-weight: 600; cursor: pointer;
+      letter-spacing: .025em;
+      box-shadow: 0 2px 8px rgba(22,163,74,.25);
+      transition: filter .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { filter: brightness(92%); box-shadow: 0 6px 20px rgba(22,163,74,.38); }
+    .btn-primary:disabled { background: #a8a29e; cursor: not-allowed; box-shadow: none; filter: none; }
+
+    .btn-ghost {
+      background: transparent; color: var(--muted); border: 1.5px solid var(--border);
+      border-radius: 9px; padding: 10px 20px; font-size: .875rem; font-weight: 500; cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-ghost:hover { border-color: #a8a29e; color: var(--ink); }
+
+    /* ── Step indicator ── */
+    .step-dot {
+      width: 28px; height: 28px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
+      font-size: .78rem; font-weight: 700; transition: all .3s;
+    }
+    .step-dot.done   { background: var(--jade); color: #fff; }
+    .step-dot.active { background: var(--ink);  color: #fff; }
+    .step-dot.todo   { background: var(--border); color: var(--muted); }
+
+    /* ── Skeleton loader ── */
+    .skeleton {
+      background: linear-gradient(90deg, #f5f5f4 25%, #e7e5e4 50%, #f5f5f4 75%);
+      background-size: 400px 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+
+    /* ── Social link buttons ── */
+    .social-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 11px; border-radius: 6px; font-size: .78rem; font-weight: 600;
+      text-decoration: none; transition: opacity .2s;
+    }
+    .social-btn:hover { opacity: .8; }
+    .social-line  { background: #06c755; color: #fff; }
+    .social-ig    { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
+    .social-phone { background: #1d4ed8; color: #fff; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+      z-index: 50; padding: 16px;
+    }
+    .modal-box {
+      background: #fff; border-radius: 20px; width: 100%; max-width: 560px;
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,.18);
+    }
+
+    /* ── Sidebar nav ── */
+    .nav-item {
+      display: flex; align-items: center; gap: 11px; padding: 11px 16px;
+      border-radius: 9px; font-size: .875rem; font-weight: 500; cursor: pointer;
+      color: var(--muted); transition: all .2s;
+      letter-spacing: .015em;
+      border-left: 3px solid transparent;
+    }
+    .nav-item:hover  { background: #f5f5f4; color: var(--ink); }
+    .nav-item.active {
+      background: var(--jade-lt); color: var(--jade); font-weight: 600;
+      border-left-color: var(--jade);
+    }
+
+    /* ── Stat number ── */
+    .stat-num {
+      font-size: 2rem; font-weight: 800; letter-spacing: -.03em; line-height: 1;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Stat label ── */
+    .stat-label {
+      font-size: .7rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase;
+      color: var(--muted); margin-top: 8px;
+    }
+
+    /* ── Image placeholder ── */
+    .img-placeholder {
+      width: 100%; aspect-ratio: 16/9; background: #f5f5f4;
+      display: flex; align-items: center; justify-content: center;
+      color: #d6d3d1; font-size: 2rem;
+    }
+
+    /* Image ─ actual */
+    .item-img {
+      width: 100%; aspect-ratio: 16/9; object-fit: cover;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 100;
+      background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 10px;
+      font-size: .875rem; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,.2);
+      transform: translateY(80px); opacity: 0; transition: all .35s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success { background: #15803d; }
+    #toast.error   { background: #dc2626; }
+
+    /* ── Auth screen ── */
+    .auth-card {
+      background: rgba(255,255,255,.92); border: 1px solid var(--border);
+      border-radius: 20px; padding: 48px 40px;
+      box-shadow: 0 20px 64px rgba(0,0,0,.10), 0 2px 12px rgba(0,0,0,.05);
+      backdrop-filter: blur(12px);
+    }
+
+    /* ── Password reveal toggle ── */
+    .password-wrap { position: relative; }
+    .password-wrap .field { padding-right: 44px; }
+    .password-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted);
+      padding: 4px; display: flex; align-items: center; transition: color .2s;
+    }
+    .password-toggle:hover { color: var(--ink); }
+
+    /* ── OR divider ── */
+    .auth-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0; color: #a8a29e; font-size: .8rem; font-weight: 500;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── Google button ── */
+    .btn-google {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: #fff; border: 1px solid #dadce0; border-radius: 9px;
+      padding: 11px 24px; font-size: .9rem; font-weight: 500; cursor: pointer; color: #3c4043;
+      font-family: 'Inter', sans-serif; transition: background .15s, box-shadow .15s;
+    }
+    .btn-google:hover { background: #f8f9fa; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+
+    /* ── Sidebar collapse ── */
+    #sidebar {
+      width: 240px;
+      transition: width .3s ease;
+      overflow: hidden;
+      z-index: 100;
+    }
+    #sidebar.collapsed { width: 80px; }
+
+    #sidebar .nav-label,
+    #sidebar .brand-text,
+    #sidebar .user-text {
+      transition: opacity .2s ease, transform .2s ease;
+      white-space: nowrap; overflow: hidden;
+    }
+    #sidebar.collapsed .nav-label,
+    #sidebar.collapsed .brand-text,
+    #sidebar.collapsed .user-text {
+      opacity: 0; transform: translateX(-6px); width: 0; pointer-events: none;
+    }
+    #sidebar.collapsed .nav-item { justify-content: center; padding: 11px 0; border-left-color: transparent !important; }
+    #sidebar.collapsed .nav-item.active { border-left-color: var(--jade) !important; }
+    #sidebar.collapsed .user-avatar-row { justify-content: center; }
+    /* Collapsed header: only the shield remains, centred */
+    #sidebar.collapsed .sidebar-header {
+      justify-content: center;
+    }
+    #sidebar.collapsed #sidebar-hamburger { display: none; }
+
+    #main-content { margin-left: 240px; transition: margin-left .3s ease; }
+    #main-content.expanded { margin-left: 80px; }
+
+    /* Sidebar toggle button */
+    .sidebar-toggle {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border);
+      background: transparent; cursor: pointer; color: var(--muted);
+      transition: all .2s; flex-shrink: 0;
+    }
+    .sidebar-toggle:hover { background: #f5f5f4; border-color: var(--jade); color: var(--jade); }
+
+    /* Shield icon is a clickable toggle button */
+    .sidebar-logo-btn {
+      width: 32px; height: 32px; background: var(--jade); border-radius: 9px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      border: none; cursor: pointer; transition: opacity .2s;
+    }
+    .sidebar-logo-btn:hover { opacity: .85; }
+
+    /* ── Stats card filter state ── */
+    .stat-card {
+      cursor: pointer;
+      transition: box-shadow .2s, transform .2s, border-color .2s;
+    }
+    .stat-card:hover {
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1), 0 16px 40px rgba(0,0,0,.07) !important;
+      transform: translateY(-2px);
+    }
+    .stat-card.stat-active {
+      box-shadow: 0 0 0 2px var(--jade), 0 8px 24px rgba(22,163,74,.18) !important;
+      transform: translateY(-2px);
+    }
+
+    /* ── Language switcher ── */
+    .lang-switcher {
+      display: flex; gap: 4px; align-items: center;
+      background: rgba(255,255,255,.85); border: 1px solid var(--border);
+      border-radius: 10px; padding: 3px; backdrop-filter: blur(10px);
+      box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
+    }
+    .lang-btn {
+      padding: 4px 10px; border-radius: 6px; border: none; cursor: pointer;
+      font-size: .75rem; font-weight: 600; letter-spacing: .04em;
+      background: transparent; color: var(--muted); transition: all .2s;
+    }
+    .lang-btn.active {
+      background: linear-gradient(135deg,#22c55e,#16a34a); color: #fff;
+      box-shadow: 0 2px 6px rgba(22,163,74,.3);
+    }
+    .lang-btn:not(.active):hover { background: #f5f5f4; color: var(--ink); }
+
+    /* ── Chinese font override ── */
+    body.lang-zh {
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<!-- ══════════════════════════════════════════════════
+     TOAST
+══════════════════════════════════════════════════ -->
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════
+     AUTH SCREEN
+══════════════════════════════════════════════════ -->
+<div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-4"
+     style="background: linear-gradient(135deg, #f0fdf4 0%, #fdfcf8 50%, #f0f9ff 100%);">
+  <div style="width:100%;max-width:440px;">
+    <!-- Logo -->
+    <div class="text-center mb-8 fade-in">
+      <div class="inline-flex items-center gap-3 mb-3">
+        <div style="width:44px;height:44px;background:var(--jade);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+          <svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <span class="font-sans text-2xl font-bold text-stone-900" style="letter-spacing:-.025em;">TCU Community</span>
+      </div>
+      <p class="text-sm text-stone-500">Tzu Chi University · 慈濟大學</p>
+    </div>
+
+    <!-- Card -->
+    <div class="auth-card scale-in">
+      <!-- Tabs -->
+      <div class="flex border-b border-stone-100 mb-7">
+        <button onclick="switchAuthTab('login')" id="tab-login"
+          class="flex-1 pb-3 text-sm font-600 border-b-2 border-jade-600 text-jade-700 transition-all">
+          <span data-i18n="auth.signin">Sign In</span>
+        </button>
+        <button onclick="switchAuthTab('signup')" id="tab-signup"
+          class="flex-1 pb-3 text-sm font-500 border-b-2 border-transparent text-stone-400 transition-all">
+          <span data-i18n="auth.signup">Create Account</span>
+        </button>
+      </div>
+
+      <!-- Login form -->
+      <div id="login-form">
+        <div class="mb-4">
+          <label class="form-label block mb-1.5">University Email</label>
+          <input id="login-email" type="email" class="field" placeholder="s123456@gms.tcu.edu.tw" tabindex="1" />
+        </div>
+        <div class="mb-6">
+          <label class="form-label block mb-1.5">Password</label>
+          <div class="password-wrap">
+            <input id="login-password" type="password" class="field" placeholder="••••••••" tabindex="2" />
+            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('login-password', this)" aria-label="Show/hide password" tabindex="-1">
+              <!-- eye icon -->
+              <svg id="eye-login-password" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button type="button" onclick="handleLogin()" class="btn-primary w-full" tabindex="3">Sign In →</button>
+
+        <div class="auth-divider">or</div>
+
+        <button type="button" onclick="handleGoogleSignIn()" class="btn-google" tabindex="4">
+          <!-- Google "G" SVG logo -->
+          <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+            <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+          </svg>
+          <span data-i18n="auth.google">Sign in with Google</span>
+        </button>
+
+        <p class="text-center text-xs text-stone-400 mt-4">
+          Demo: use any email &amp; password to explore the UI
+        </p>
+      </div>
+
+      <!-- Signup form -->
+      <div id="signup-form" class="hidden">
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="form-label block mb-1.5">Full Name</label>
+            <input id="signup-name" type="text" class="field" placeholder="Chen Yu-Ling" />
+          </div>
+          <div>
+            <label class="form-label block mb-1.5">Student ID</label>
+            <input id="signup-student-id" type="text" class="field" placeholder="B10901001" />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label block mb-1.5">University Email</label>
+          <input id="signup-email" type="email" class="field" placeholder="s123456@gms.tcu.edu.tw" />
+        </div>
+        <div class="mb-4">
+          <label class="form-label block mb-1.5">Password</label>
+          <input id="signup-password" type="password" class="field" placeholder="Min. 8 characters" />
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-6">
+          <div>
+            <label class="form-label block mb-1.5">LINE ID</label>
+            <input id="signup-line" type="text" class="field" placeholder="my_line_id" />
+          </div>
+          <div>
+            <label class="form-label block mb-1.5">Instagram</label>
+            <input id="signup-ig" type="text" class="field" placeholder="username (no @)" />
+          </div>
+        </div>
+        <button onclick="handleSignup()" class="btn-primary w-full">Create Account →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     MAIN APP (shown after auth)
+══════════════════════════════════════════════════ -->
+<div id="app-screen" class="hidden flex min-h-screen">
+
+  <!-- ── Sidebar ── -->
+  <aside id="sidebar" style="min-height:100vh;background:rgba(255,255,255,.96);border-right:1px solid var(--border);padding:20px 12px;position:fixed;top:0;left:0;display:flex;flex-direction:column;box-shadow:2px 0 20px rgba(0,0,0,.04);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
+    <!-- Brand + Toggle -->
+    <div class="sidebar-header flex items-center justify-between gap-3 px-1 mb-7">
+      <!-- Shield: clickable toggle in both modes -->
+      <button class="sidebar-logo-btn" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar">
+        <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </button>
+      <!-- Brand text (hides when collapsed) -->
+      <div class="brand-text flex-1 min-w-0">
+        <div class="font-sans font-bold text-sm text-stone-900 leading-tight truncate" style="letter-spacing:-.01em;">TCU Community</div>
+        <div class="text-xs text-stone-400" style="letter-spacing:.04em;">慈濟大學</div>
+      </div>
+      <!-- Hamburger (hides when collapsed — shield takes over) -->
+      <button id="sidebar-hamburger" class="sidebar-toggle" onclick="toggleSidebar()" title="Collapse sidebar" aria-label="Collapse sidebar">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex flex-col gap-1 flex-1">
+      <div class="nav-item active" id="nav-browse" onclick="setView('browse')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><rect x="2" y="3" width="7" height="7" rx="1"/><rect x="15" y="3" width="7" height="7" rx="1"/><rect x="2" y="14" width="7" height="7" rx="1"/><rect x="15" y="14" width="7" height="7" rx="1"/></svg>
+        <span class="nav-label" data-i18n="nav.browse">Browse All</span>
+      </div>
+      <div class="nav-item" id="nav-marketplace" onclick="setView('marketplace')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="nav-label" data-i18n="nav.marketplace">Marketplace</span>
+      </div>
+      <div class="nav-item" id="nav-lostfound" onclick="setView('lostfound')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span class="nav-label" data-i18n="nav.lostfound">Lost &amp; Found</span>
+      </div>
+      <div class="nav-item" id="nav-myitems" onclick="setView('myitems')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="nav-label" data-i18n="nav.myitems">My Items</span>
+      </div>
+      <div class="nav-item" id="nav-ai" onclick="setView('ai')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span class="nav-label" data-i18n="nav.ai">AI Assistant</span>
+      </div>
+      <div class="nav-item" id="nav-profile" onclick="setView('profile')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="9 11 12 14 15 11"/></svg>
+        <span class="nav-label" data-i18n="nav.profile">My Profile</span>
+      </div>
+
+      <div class="mt-auto pt-4 border-t border-stone-100">
+        <div class="nav-item" id="nav-post" onclick="openPostModal()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span class="nav-label" data-i18n="nav.post">Post Item</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- User -->
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+      <div class="user-avatar-row flex items-center gap-2.5 px-1 mb-2">
+        <div id="user-avatar-sidebar" style="width:30px;height:30px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.75rem;flex-shrink:0;">U</div>
+        <div class="user-text min-w-0">
+          <div id="user-name-sidebar" class="text-sm font-500 text-stone-800 truncate">Student</div>
+          <div id="user-dept-sidebar" class="text-xs text-stone-400 truncate">Department</div>
+        </div>
+      </div>
+      <button onclick="handleLogout()" class="w-full text-left nav-item text-xs text-stone-400 hover:text-red-500">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span class="nav-label" data-i18n="nav.signout">Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ── -->
+  <main id="main-content" style="flex:1;padding:36px;min-height:100vh;background:linear-gradient(160deg,#f4fef7 0%,#fdfcf8 40%,#f0f9ff 100%)">
+
+    <!-- Header -->
+    <div id="view-header" class="mb-7 fade-up flex items-start justify-between gap-4">
+      <div>
+        <h1 id="view-title" class="font-sans text-3xl text-stone-900 mb-1" style="font-weight:800;letter-spacing:-.025em;">Browse All</h1>
+        <p id="view-subtitle" class="text-stone-500 text-sm">All active listings from the TCU community</p>
+      </div>
+      <!-- Language switcher -->
+      <div class="lang-switcher flex-shrink-0 mt-1">
+        <button id="lang-en" class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button id="lang-zh" class="lang-btn" onclick="setLang('zh')">繁中</button>
+      </div>
+    </div>
+
+    <!-- Filters + Search (browse & category views) -->
+    <div id="browse-controls" class="flex items-center gap-3 mb-6 flex-wrap fade-up stagger-1">
+      <div class="flex gap-2" id="filter-tabs">
+        <button class="filter-tab active" data-filter="all"       onclick="setFilter('all')"      ><span data-i18n="filter.all">All</span></button>
+        <button class="filter-tab"        data-filter="exchange"  onclick="setFilter('exchange')" ><span data-i18n="filter.marketplace">Marketplace</span></button>
+        <button class="filter-tab"        data-filter="lost"      onclick="setFilter('lost')"     ><span data-i18n="filter.lost">Lost</span></button>
+        <button class="filter-tab"        data-filter="found"     onclick="setFilter('found')"    ><span data-i18n="filter.found">Found</span></button>
+      </div>
+      <div class="ml-auto relative">
+        <svg width="15" height="15" fill="none" stroke="var(--muted)" stroke-width="2" viewBox="0 0 24 24"
+             style="position:absolute;left:11px;top:50%;transform:translateY(-50%);">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="search-input" type="text" class="field" placeholder="Search items…" data-i18n-placeholder="search.placeholder"
+               style="padding-left:35px;width:220px;" oninput="renderItems()" />
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div id="stats-bar" class="grid grid-cols-3 gap-4 mb-7 fade-up stagger-2">
+      <div id="stat-card-total" class="card stat-card p-5" style="border-top:3px solid #1c1917;" onclick="filterByStat('total')" role="button" tabindex="0">
+        <div class="stat-num text-stone-900" id="stat-total">—</div>
+        <div class="stat-label" data-i18n="stat.active">Active Listings</div>
+      </div>
+      <div id="stat-card-exchange" class="card stat-card p-5" style="border-top:3px solid var(--jade);" onclick="filterByStat('exchange')" role="button" tabindex="0">
+        <div class="stat-num text-jade-700" id="stat-exchange">—</div>
+        <div class="stat-label" data-i18n="stat.sale">For Sale</div>
+      </div>
+      <div id="stat-card-lf" class="card stat-card p-5" style="border-top:3px solid #d97706;" onclick="filterByStat('lf')" role="button" tabindex="0">
+        <div class="stat-num text-amber-600" id="stat-lf">—</div>
+        <div class="stat-label" data-i18n="stat.lf">Lost &amp; Found</div>
+      </div>
+    </div>
+
+    <!-- Items Grid -->
+    <div id="items-grid" class="grid grid-cols-1 gap-5" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr));">
+      <!-- populated by JS -->
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden text-center py-20 text-stone-400">
+      <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" class="mx-auto mb-4 opacity-40">
+        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+      </svg>
+      <p class="font-500 text-lg">No items found</p>
+      <p class="text-sm mt-1">Try adjusting your filters or be the first to post!</p>
+    </div>
+
+    <!-- Connection error state -->
+    <div id="error-state" class="hidden text-center py-16">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style="background:#fef2f2;">
+        <svg width="28" height="28" fill="none" stroke="#dc2626" stroke-width="1.8" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <p class="font-bold text-stone-700 text-lg mb-1">Connection Problem</p>
+      <p id="error-msg" class="text-sm text-stone-500 mb-5 max-w-xs mx-auto">Unable to reach the server. Please check your internet connection.</p>
+      <button onclick="retryLoad()" class="btn-primary">Try Again</button>
+    </div>
+
+    <!-- My Items view -->
+    <div id="myitems-view" class="hidden">
+      <div id="myitems-grid" class="grid gap-5" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr));">
+      </div>
+      <div id="myitems-empty" class="hidden text-center py-20 text-stone-400">
+        <p class="font-500 text-lg">You haven't posted anything yet</p>
+        <button type="button" onclick="openPostModal()" class="btn-primary mt-4">Post Your First Item</button>
+      </div>
+    </div>
+
+    <!-- ── AI Assistant view ── -->
+    <div id="ai-view" class="hidden" style="max-width:680px;">
+      <!-- Quick suggestions -->
+      <div class="flex flex-wrap gap-2 mb-5 fade-up">
+        <button type="button" onclick="aiSuggest('How do I post an item?')"
+          class="text-xs px-3 py-1.5 rounded-full border border-jade-200 text-jade-700 bg-jade-50 hover:bg-jade-100 transition-colors">
+          How do I post an item?
+        </button>
+        <button type="button" onclick="aiSuggest('How do I contact a seller?')"
+          class="text-xs px-3 py-1.5 rounded-full border border-jade-200 text-jade-700 bg-jade-50 hover:bg-jade-100 transition-colors">
+          How to contact a seller?
+        </button>
+        <button type="button" onclick="aiSuggest('What is the verification process?')"
+          class="text-xs px-3 py-1.5 rounded-full border border-jade-200 text-jade-700 bg-jade-50 hover:bg-jade-100 transition-colors">
+          What is verification?
+        </button>
+        <button type="button" onclick="aiSuggest('How does the 7-day expiry work?')"
+          class="text-xs px-3 py-1.5 rounded-full border border-jade-200 text-jade-700 bg-jade-50 hover:bg-jade-100 transition-colors">
+          7-day expiry?
+        </button>
+        <button type="button" onclick="aiSuggest('Search: medical textbook')"
+          class="text-xs px-3 py-1.5 rounded-full border border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+          🔍 Search textbooks
+        </button>
+      </div>
+
+      <!-- Chat messages -->
+      <div id="ai-messages" class="card p-4 mb-3 overflow-y-auto flex flex-col gap-3 fade-up stagger-1"
+           style="min-height:240px;max-height:420px;">
+        <div class="flex gap-3 items-start">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
+          <div class="flex-1 rounded-xl rounded-tl-sm p-3 text-sm text-stone-700" style="background:#f5f5f4;">
+            Hello! I'm the TCU Community Assistant. I can help you navigate the platform, answer questions about posting items, or search for specific listings. How can I help you today?
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="flex gap-2 fade-up stagger-2">
+        <input id="ai-input" type="text" class="field flex-1" placeholder="Ask a question or type 'Search: keyword'…"
+               onkeydown="if(event.key==='Enter')sendAiMessage()" />
+        <button type="button" onclick="sendAiMessage()" class="btn-primary" style="padding-left:20px;padding-right:20px;">Send</button>
+      </div>
+    </div>
+
+    <!-- ── My Profile view ── -->
+    <div id="profile-view" class="hidden" style="max-width:680px;">
+      <!-- Verification status banner -->
+      <div id="verification-banner" class="rounded-xl p-4 mb-5 fade-up" style="background:#fef3c7;border:1px solid #fde68a;">
+        <div class="flex items-start gap-3">
+          <svg width="18" height="18" fill="none" stroke="#92400e" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div>
+            <p id="verify-status-text" class="text-sm font-600" style="color:#92400e;">⏳ Verification Pending</p>
+            <p id="verify-status-sub" class="text-xs mt-0.5" style="color:#b45309;">Upload your student ID below to unlock posting privileges.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile details card -->
+      <div class="card p-8 mb-5 fade-up stagger-1">
+        <h3 class="font-sans font-bold text-stone-900 mb-6" style="font-size:1.05rem;letter-spacing:-.01em;">Profile Details</h3>
+        <div class="grid grid-cols-2 gap-4 mb-5">
+          <div>
+            <label class="form-label block mb-1.5">Full Name</label>
+            <input id="profile-name" type="text" class="field" placeholder="Chen Yu-Ling" />
+          </div>
+          <div>
+            <label class="form-label block mb-1.5">Student ID</label>
+            <input id="profile-student-id" type="text" class="field" placeholder="B10901001" readonly
+                   style="background:#f9f9f9;color:var(--muted);cursor:not-allowed;" />
+          </div>
+          <div>
+            <label class="form-label block mb-1.5">Department</label>
+            <input id="profile-dept" type="text" class="field" placeholder="e.g., Medicine" />
+          </div>
+          <div>
+            <label class="form-label block mb-1.5">Phone</label>
+            <input id="profile-phone" type="text" class="field" placeholder="+886912345678" />
+          </div>
+          <div>
+            <label class="form-label block mb-1.5">LINE ID</label>
+            <input id="profile-line" type="text" class="field" placeholder="my_line_id" />
+          </div>
+          <div>
+            <label class="form-label block mb-1.5">Instagram</label>
+            <input id="profile-ig" type="text" class="field" placeholder="username (no @)" />
+          </div>
+        </div>
+        <button type="button" onclick="saveProfile()" class="btn-primary">Save Profile</button>
+      </div>
+
+      <!-- Verification card -->
+      <div class="card p-8 fade-up stagger-2">
+        <h3 class="font-sans font-bold text-stone-900 mb-1" style="font-size:1.05rem;letter-spacing:-.01em;">Student ID Verification</h3>
+        <p class="text-sm text-stone-500 mb-4">Upload a clear photo of your Tzu Chi University student ID card to unlock posting privileges. Admins review within 1–2 business days.</p>
+        <div class="mb-3">
+          <label class="form-label block mb-2">Student ID Photo</label>
+          <input id="profile-id-img" type="hidden" />
+          <label for="profile-id-file" class="btn-upload">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span id="profile-id-label">Upload Photo from Device</span>
+          </label>
+          <input id="profile-id-file" type="file" accept="image/*" class="hidden" onchange="handleStudentIdUpload(event)" />
+          <div id="profile-id-preview" class="hidden mt-3">
+            <img id="profile-id-preview-img" src="" alt="Student ID preview"
+                 class="rounded-xl border border-stone-200 object-cover" style="max-height:180px;max-width:100%;" />
+          </div>
+        </div>
+        <div class="rounded-xl p-3 mb-4 text-xs text-stone-500" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+          🔒 Your image is only visible to platform administrators and is never shown publicly.
+        </div>
+        <button type="button" onclick="submitVerification()" class="btn-primary">Submit for Verification</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     POST ITEM MODAL (multi-step)
+══════════════════════════════════════════════════ -->
+<div id="post-modal" class="modal-overlay hidden">
+  <div class="modal-box p-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="font-sans text-xl font-bold text-stone-900">Post an Item</h2>
+      <button onclick="closePostModal()" style="color:var(--muted);" class="hover:text-stone-800 transition-colors">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="flex items-center gap-2 mb-7">
+      <div class="step-dot active" id="sdot-1">1</div>
+      <div class="flex-1 h-px" style="background:var(--border);"></div>
+      <div class="step-dot todo"  id="sdot-2">2</div>
+      <div class="flex-1 h-px" style="background:var(--border);"></div>
+      <div class="step-dot todo"  id="sdot-3">3</div>
+    </div>
+
+    <!-- Step 1: Category & Title -->
+    <div id="post-step-1">
+      <p class="text-xs font-600 text-stone-400 uppercase tracking-widest mb-4">Step 1 — Category &amp; Basic Info</p>
+
+      <div class="mb-4">
+        <label class="form-label block mb-2">Category <span class="text-red-500">*</span></label>
+        <div class="grid grid-cols-3 gap-2">
+          <label class="cursor-pointer">
+            <input type="radio" name="post-category" value="exchange" class="sr-only" />
+            <div class="border-2 border-stone-200 rounded-xl p-3 text-center transition-all cat-option" data-val="exchange">
+              <div class="text-xl mb-1">🛍️</div>
+              <div class="text-xs font-600">For Sale</div>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="post-category" value="lost" class="sr-only" />
+            <div class="border-2 border-stone-200 rounded-xl p-3 text-center transition-all cat-option" data-val="lost">
+              <div class="text-xl mb-1">🔍</div>
+              <div class="text-xs font-600">Lost</div>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="post-category" value="found" class="sr-only" />
+            <div class="border-2 border-stone-200 rounded-xl p-3 text-center transition-all cat-option" data-val="found">
+              <div class="text-xl mb-1">📦</div>
+              <div class="text-xs font-600">Found</div>
+            </div>
+          </label>
+        </div>
+        <p id="cat-err" class="text-xs text-red-500 mt-1 hidden">Please select a category.</p>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label block mb-1.5">Title <span class="text-red-500">*</span></label>
+        <input id="post-title" type="text" class="field" placeholder="e.g., Gray's Anatomy 42nd Ed." maxlength="120" />
+        <p id="title-err" class="text-xs text-red-500 mt-1 hidden">Title must be at least 3 characters.</p>
+      </div>
+
+      <div class="mb-4" id="price-row">
+        <label class="form-label block mb-1.5">Price (NT$)</label>
+        <input id="post-price" type="number" class="field" placeholder="Leave blank for free / not applicable" min="0" />
+      </div>
+
+      <div class="flex justify-end mt-6">
+        <button onclick="nextStep(1)" class="btn-primary">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Description & Unique Identifier -->
+    <div id="post-step-2" class="hidden">
+      <p class="text-xs font-600 text-stone-400 uppercase tracking-widest mb-4">Step 2 — Description &amp; Verification</p>
+
+      <div class="mb-4">
+        <label class="form-label block mb-1.5">Detailed Description <span class="text-red-500">*</span></label>
+        <textarea id="post-desc" class="field" rows="4" placeholder="Describe the item in detail — condition, usage history, any defects…" maxlength="1000"></textarea>
+        <p id="desc-err" class="text-xs text-red-500 mt-1 hidden">Description must be at least 20 characters.</p>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label block mb-1.5">
+          🔐 Unique Identifier / Verification Detail <span class="text-red-500">*</span>
+        </label>
+        <input id="post-unique" type="text" class="field" placeholder="Serial no., brand inscription, colour of strap, ISBN…" />
+        <p class="text-xs text-stone-400 mt-1.5">
+          This detail helps verify ownership and prevents confusion or fraud. It will be partially hidden on the public listing.
+        </p>
+        <p id="unique-err" class="text-xs text-red-500 mt-1 hidden">Must be at least 5 characters.</p>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label block mb-1.5">Location Hint</label>
+        <input id="post-location" type="text" class="field" placeholder="e.g., Near Library 4F, Dorm B3 lobby" />
+      </div>
+
+      <div class="flex justify-between mt-6">
+        <button onclick="prevStep(2)" class="btn-ghost">← Back</button>
+        <button onclick="nextStep(2)" class="btn-primary">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Images & Review -->
+    <div id="post-step-3" class="hidden">
+      <p class="text-xs font-600 text-stone-400 uppercase tracking-widest mb-4">Step 3 — Images &amp; Submit</p>
+
+      <div class="mb-5">
+        <label class="form-label block mb-2">Photos (up to 4)</label>
+        <label for="post-img-file" class="btn-upload">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+          <span id="post-img-label">Upload Photo from Device</span>
+        </label>
+        <input id="post-img-file" type="file" accept="image/*" multiple class="hidden" onchange="handleItemImagesUpload(event)" />
+        <div id="post-img-previews" class="flex flex-wrap gap-2 mt-3"></div>
+      </div>
+
+      <!-- Review Summary -->
+      <div class="rounded-xl p-4 mb-5" style="background:var(--parchment);border:1px solid var(--border);">
+        <p class="text-xs font-600 text-stone-500 uppercase tracking-widest mb-3">Review</p>
+        <div id="review-summary" class="text-sm text-stone-700 space-y-1.5"></div>
+      </div>
+
+      <div class="flex justify-between">
+        <button onclick="prevStep(3)" class="btn-ghost">← Back</button>
+        <button onclick="submitPost()" id="submit-btn" class="btn-primary">Publish Item ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     ITEM DETAIL MODAL
+══════════════════════════════════════════════════ -->
+<div id="detail-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:620px;">
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════ -->
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+// Replace with your real Supabase project URL and anon key
+const SUPABASE_URL  = 'https://wpficqckzvrpfipbpyer.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_Lc5H-QXMDPBnb25hrjbm6g_uK3oUrTT';
+const GEMINI_API_KEY = 'AIzaSyBdqkpVB5xwuGAuHzVuYeV-Bf-QtKKtg9w';
+
+// ── FILE UPLOAD ──────────────────────────────────────────────
+let postSelectedFiles = [];
+
+async function uploadFile(file, prefix = '') {
+  const cleanFileName = file.name.replace(/\s+/g, '_');
+  const fileName = `${prefix}${Date.now()}_${cleanFileName}`;
+  const { error } = await sb.storage.from('item-images').upload(fileName, file, { upsert: false });
+  if (error) throw error;
+  const { data: urlData } = sb.storage.from('item-images').getPublicUrl(fileName);
+  return urlData.publicUrl;
+}
+
+async function handleStudentIdUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const label = document.getElementById('profile-id-label');
+  label.textContent = 'Uploading…';
+  try {
+    const url = await uploadFile(file, 'student-id/');
+    document.getElementById('profile-id-img').value = url;
+    document.getElementById('profile-id-preview-img').src = url;
+    document.getElementById('profile-id-preview').classList.remove('hidden');
+    label.textContent = '✓ Photo uploaded!';
+    showToast('Student ID uploaded!', 'success');
+  } catch (err) {
+    label.textContent = 'Upload Photo from Device';
+    showToast('Upload failed: ' + err.message, 'error');
+  }
+}
+
+function handleItemImagesUpload(event) {
+  postSelectedFiles = Array.from(event.target.files).slice(0, 4);
+  if (!postSelectedFiles.length) return;
+  const label    = document.getElementById('post-img-label');
+  const previews = document.getElementById('post-img-previews');
+  previews.innerHTML = '';
+  for (const file of postSelectedFiles) {
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    img.alt = 'preview';
+    img.className = 'rounded-lg border border-stone-200 object-cover';
+    img.style.cssText = 'width:80px;height:80px;';
+    previews.appendChild(img);
+  }
+  label.textContent = `✓ ${postSelectedFiles.length} photo(s) selected`;
+}
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── TRANSLATIONS ────────────────────────────────────────────
+const TRANSLATIONS = {
+  en: {
+    'nav.browse':'Browse All','nav.marketplace':'Marketplace','nav.lostfound':'Lost & Found',
+    'nav.myitems':'My Items','nav.ai':'AI Assistant','nav.profile':'My Profile',
+    'nav.post':'Post Item','nav.signout':'Sign Out',
+    'stat.active':'Active Listings','stat.sale':'For Sale','stat.lf':'Lost & Found',
+    'filter.all':'All','filter.marketplace':'Marketplace','filter.lost':'Lost','filter.found':'Found',
+    'search.placeholder':'Search items…',
+    'auth.signin':'Sign In','auth.signup':'Create Account',
+    'auth.google':'Sign in with Google',
+    'view.browse.title':'Browse All','view.browse.sub':'All active listings from the TCU community',
+    'view.marketplace.title':'Marketplace','view.marketplace.sub':'Second-hand items for sale',
+    'view.lostfound.title':'Lost & Found','view.lostfound.sub':'Help your fellow students',
+    'view.myitems.title':'My Items','view.myitems.sub':'Manage your listings',
+    'view.ai.title':'AI Assistant','view.ai.sub':'Ask questions or search for items',
+    'view.profile.title':'My Profile','view.profile.sub':'Edit your details and verify your student status',
+  },
+  zh: {
+    'nav.browse':'全部瀏覽','nav.marketplace':'二手交易','nav.lostfound':'失物招領',
+    'nav.myitems':'我的物品','nav.ai':'AI 助理','nav.profile':'個人資料',
+    'nav.post':'發布物品','nav.signout':'登出',
+    'stat.active':'活躍清單','stat.sale':'出售','stat.lf':'失物招領',
+    'filter.all':'全部','filter.marketplace':'二手交易','filter.lost':'遺失','filter.found':'找到',
+    'search.placeholder':'搜尋物品…',
+    'auth.signin':'登入','auth.signup':'建立帳號',
+    'auth.google':'以 Google 登入',
+    'view.browse.title':'全部瀏覽','view.browse.sub':'慈濟大學社群所有活躍清單',
+    'view.marketplace.title':'二手交易','view.marketplace.sub':'買賣二手物品',
+    'view.lostfound.title':'失物招領','view.lostfound.sub':'協助您的同學找回失物',
+    'view.myitems.title':'我的物品','view.myitems.sub':'管理您的清單',
+    'view.ai.title':'AI 助理','view.ai.sub':'詢問任何關於平台的問題',
+    'view.profile.title':'個人資料','view.profile.sub':'管理您的帳號與驗證',
+  }
+};
+
+// ── STATE ───────────────────────────────────────────────────
+let allItems     = [];
+let myItems      = [];
+let currentView  = 'browse';
+let activeFilter = 'all';
+let currentUser  = null;
+let currentProfile = null;
+let postStep     = 1;
+let selectedCategory = '';
+let currentLang  = 'en';
+let sidebarCollapsed = false;
+let isDemoMode   = false;
+
+function isUsingDemoMode() {
+  return isDemoMode || SUPABASE_URL.includes('YOUR_PROJECT');
+}
+
+function activateDemoMode(message = 'Supabase is unavailable. The site is running in demo mode.') {
+  isDemoMode = true;
+  loadDemoItems();
+  if (!currentUser) showAuth();
+  if (message) showToast(message, 'error');
+}
+
+function syncMyItemsFromAllItems() {
+  myItems = allItems.filter(i => i.owner_id === (currentUser?.id || 'demo-uid'));
+}
+
+// ── INIT ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  setLang(currentLang);
+
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      if (['browse', 'marketplace', 'lostfound'].includes(currentView)) renderItems();
+    });
+  }
+
+  try {
+    // 1. Check immediately for an existing session (handles OAuth redirect code exchange)
+    const { data: { session: initialSession } } = await sb.auth.getSession();
+    if (initialSession) {
+      currentUser = initialSession.user;
+      await loadProfile();
+      showApp();
+      await loadItems();
+    } else {
+      showAuth();
+    }
+
+    // 2. Listen for future auth events (sign-in / sign-out only)
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        currentUser = session.user;
+        await loadProfile();
+        showApp();
+        await loadItems();
+      } else if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        currentProfile = null;
+        allItems = [];
+        myItems = [];
+        showAuth();
+      }
+    });
+  } catch (error) {
+    console.error('Initialization failed:', error);
+    activateDemoMode();
+  }
+
+  // Category radio visual
+  document.querySelectorAll('input[name="post-category"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      selectedCategory = radio.value;
+      document.querySelectorAll('.cat-option').forEach(el => {
+        el.style.borderColor = el.dataset.val === selectedCategory
+          ? 'var(--jade)' : '#e7e5e4';
+        el.style.background = el.dataset.val === selectedCategory
+          ? 'var(--jade-lt)' : '';
+      });
+      const priceRow = document.getElementById('price-row');
+      priceRow.style.display = selectedCategory === 'exchange' ? '' : 'none';
+      if (selectedCategory !== 'exchange') {
+        document.getElementById('post-price').value = '';
+      }
+    });
+  });
+});
+
+// ── AUTH ────────────────────────────────────────────────────
+function showAuth() {
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('app-screen').classList.add('hidden');
+}
+function showApp() {
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.remove('hidden');
+}
+
+function switchAuthTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+  document.getElementById('signup-form').classList.toggle('hidden', isLogin);
+  document.getElementById('tab-login').style.borderColor  = isLogin  ? 'var(--jade)' : 'transparent';
+  document.getElementById('tab-login').style.color        = isLogin  ? 'var(--jade)'  : '#a8a29e';
+  document.getElementById('tab-signup').style.borderColor = !isLogin ? 'var(--jade)' : 'transparent';
+  document.getElementById('tab-signup').style.color       = !isLogin ? 'var(--jade)'  : '#a8a29e';
+}
+
+// ── i18n ────────────────────────────────────────────────────
+function setLang(lang) {
+  currentLang = lang;
+  const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
+  // Update all data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (dict[key]) el.textContent = dict[key];
+  });
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (dict[key]) el.placeholder = dict[key];
+  });
+  // Update language buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.id === 'lang-' + lang);
+  });
+  // Update body font and HTML lang
+  document.body.classList.toggle('lang-zh', lang === 'zh');
+  document.documentElement.lang = lang === 'zh' ? 'zh-TW' : 'en';
+  // Re-render view title/subtitle from current view
+  _updateViewHeader(currentView);
+}
+
+function _updateViewHeader(view) {
+  const lang = currentLang;
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  const titleKey = `view.${view}.title`;
+  const subKey   = `view.${view}.sub`;
+  const titleEl = document.getElementById('view-title');
+  const subEl   = document.getElementById('view-subtitle');
+  if (titleEl && t[titleKey]) titleEl.textContent = t[titleKey];
+  if (subEl   && t[subKey])   subEl.textContent   = t[subKey];
+}
+
+// ── SIDEBAR TOGGLE ──────────────────────────────────────────
+function toggleSidebar() {
+  sidebarCollapsed = !sidebarCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+  document.getElementById('main-content').classList.toggle('expanded', sidebarCollapsed);
+}
+
+// ── STATS FILTER ─────────────────────────────────────────────
+function filterByStat(type) {
+  // Ensure we're in browse view
+  if (currentView !== 'browse') setView('browse');
+
+  const filterMap = { total: 'all', exchange: 'exchange', lf: 'lostfound' };
+  const filter = filterMap[type] || 'all';
+
+  // Toggle off if already active
+  if (activeFilter === filter) {
+    setFilter('all');
+    _updateStatCardHighlight('total');
+    return;
+  }
+
+  _updateStatCardHighlight(type);
+  setFilter(filter);
+}
+
+function _updateStatCardHighlight(activeType) {
+  ['total','exchange','lf'].forEach(t => {
+    const el = document.getElementById('stat-card-' + t);
+    if (el) el.classList.toggle('stat-active', t === activeType);
+  });
+}
+
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  const eyeIcon = btn.querySelector('svg');
+  eyeIcon.innerHTML = isHidden
+    ? '<path d="M17.94 12c-.46 1.38-1.28 2.6-2.35 3.54M12.46 16.9A9.83 9.83 0 0 1 12 17c-7 0-11-5-11-5a19.8 19.8 0 0 1 2.5-3.33M6.57 6.57A9.77 9.77 0 0 1 12 5c7 0 11 7 11 7a19.73 19.73 0 0 1-2.68 3.68M1 1l22 22"/>'
+    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+}
+
+async function handleGoogleSignIn() {
+  if (isUsingDemoMode()) {
+    simulateDemoLogin('demo@gms.tcu.edu.tw');
+    return;
+  }
+  const btn = document.querySelector('.btn-google');
+  if (btn) { btn.disabled = true; btn.style.opacity = '.6'; }
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href.split('#')[0] }
+  });
+  if (error) {
+    showToast(error.message, 'error');
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+  }
+}
+
+async function handleLogin() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!email || !password) { showToast('Please fill in all fields', 'error'); return; }
+
+  if (isUsingDemoMode()) { simulateDemoLogin(email); return; }
+
+  const btn = event?.target || document.querySelector('#login-form .btn-primary');
+  const orig = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (btn) { btn.disabled = false; btn.textContent = orig; }
+  if (error) showToast(error.message, 'error');
+}
+
+async function handleSignup() {
+  const name      = document.getElementById('signup-name').value.trim();
+  const studentId = document.getElementById('signup-student-id').value.trim();
+  const email     = document.getElementById('signup-email').value.trim();
+  const password  = document.getElementById('signup-password').value;
+  const lineId    = document.getElementById('signup-line').value.trim();
+  const igHandle  = document.getElementById('signup-ig').value.trim();
+
+  if (!name || !studentId || !email || !password) {
+    showToast('Please fill in required fields', 'error'); return;
+  }
+
+  if (isUsingDemoMode()) {
+    simulateDemoLogin(email, { full_name: name, student_id: studentId });
+    return;
+  }
+
+  const btn = event?.target || document.querySelector('#signup-form .btn-primary');
+  const orig = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = 'Creating account…'; }
+  const { error } = await sb.auth.signUp({
+    email, password,
+    options: { data: { full_name: name, student_id: studentId, line_id: lineId, instagram_handle: igHandle } }
+  });
+  if (btn) { btn.disabled = false; btn.textContent = orig; }
+  if (error) showToast(error.message, 'error');
+  else showToast('Account created! Check your email to verify.', 'success');
+}
+
+async function handleLogout() {
+  if (!isUsingDemoMode()) await sb.auth.signOut();
+  currentUser = null; currentProfile = null; allItems = [];
+  showAuth();
+}
+
+// ── DEMO MODE ───────────────────────────────────────────────
+function simulateDemoLogin(email, meta = {}) {
+  currentUser = { id: 'demo-uid', email };
+  currentProfile = {
+    id:                  'demo-uid',
+    full_name:           meta.full_name  || email.split('@')[0],
+    student_id:          meta.student_id || 'B10901001',
+    department:          'Department of Medicine',
+    line_id:             'tcu_demo',
+    instagram_handle:    'tcu.demo',
+    phone_number:        '+886912345678',
+    is_verified:         true,
+    verification_status: 'approved',
+    student_id_image_url: '',
+  };
+  loadDemoItems();
+  showApp();
+  updateSidebarUser();
+  showToast('Welcome to TCU Community! (Demo Mode)', 'success');
+}
+
+function loadDemoItems() {
+  allItems = [
+    { id:'1', owner_id:'demo-uid', title:"Gray's Anatomy (42nd Ed.)", description:"Classic anatomical reference in excellent condition. Minimal highlighting in first 3 chapters only. Perfect for 1st and 2nd year medical students.", category:'exchange', unique_identifier:'ISBN 978-0-7020-7705-0, coffee stain on back cover', verification_hint:'Coffee stain on back cover', price:650, image_urls:['https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600'], status:'available', preferred_contact_method:'line', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Medicine Building, Locker B-12', created_at:new Date().toISOString(), profiles:{ full_name:'Chen Yu-Ling', line_id:'yuling_tcm', instagram_handle:'yuling.tzu', phone_number:'+886912345678', department:'Dept. of Medicine' } },
+    { id:'2', owner_id:'user-2',   title:'Nursing Lab Coat — Size M', description:'Standard clinical white lab coat worn only 4 times. No stains, no damage. Has embroidered TCU nursing logo on left chest pocket.', category:'exchange', unique_identifier:'TCU Nursing embroidery, size M/38, slight iron crease on left sleeve', verification_hint:'Embroidered TCU logo on chest', price:200, image_urls:['https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=600'], status:'available', preferred_contact_method:'instagram', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Nursing Dept, 3F Study Room', created_at:new Date().toISOString(), profiles:{ full_name:'Lin Jia-Hao', line_id:'jiahao_lin', instagram_handle:'jiahao_nurse', phone_number:'+886923456789', department:'Dept. of Nursing' } },
+    { id:'3', owner_id:'user-3',   title:'Casio FX-991ES PLUS Calculator', description:'Used for 2 semesters of biostatistics. All functions working perfectly. Original box and manual included.', category:'exchange', unique_identifier:'Serial CY202310-4421, small scratch on battery cover, sticker residue on back', verification_hint:'Scratch on battery cover', price:350, image_urls:['https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600'], status:'available', preferred_contact_method:'line', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Library 4F, Study Pod C', created_at:new Date().toISOString(), profiles:{ full_name:'Wang Mei-Hsuan', line_id:'meihsuan_w', instagram_handle:'meihsuan.tcu', phone_number:'+886934567890', department:'Medical Sociology' } },
+    { id:'4', owner_id:'demo-uid', title:'Lost: TCU Student ID Card', description:'Lost my student ID card near the main cafeteria or library entrance on Tuesday afternoon. Very important for dormitory access and meal card.', category:'lost', unique_identifier:'Student ID: B10901001, name printed on card, wear on top-right laminate', verification_hint:'Wear on top-right laminate', price:null, image_urls:[], status:'available', preferred_contact_method:'phone', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+1*24*60*60*1000).toISOString(), location_hint:'Main Cafeteria / Library Entrance', created_at:new Date().toISOString(), profiles:{ full_name:'Chen Yu-Ling', line_id:'yuling_tcm', instagram_handle:'yuling.tzu', phone_number:'+886912345678', department:'Dept. of Medicine' } },
+    { id:'5', owner_id:'user-2',   title:'Found: Littmann Stethoscope', description:'Found a 3M Littmann Classic III stethoscope in the 2F nursing simulation lab. Left on one of the training beds.', category:'found', unique_identifier:'3M Littmann Classic III, black tubing, silver chest piece — engraved initials on rim', verification_hint:'Engraved initials on diaphragm', price:null, image_urls:['https://images.unsplash.com/photo-1584982751601-97dcc096659c?w=600'], status:'available', preferred_contact_method:'line', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Nursing Simulation Lab, 2F', created_at:new Date().toISOString(), profiles:{ full_name:'Lin Jia-Hao', line_id:'jiahao_lin', instagram_handle:'jiahao_nurse', phone_number:'+886923456789', department:'Dept. of Nursing' } },
+    { id:'6', owner_id:'user-3',   title:'Found: Social Medicine Notebook', description:'Found a spiral notebook with handwritten Social Medicine lecture notes from Prof. Li\'s class. Left in Classroom 301.', category:'found', unique_identifier:'Blue spiral notebook, "Soc Med 301" on cover, Post-it on page 1', verification_hint:'Post-it note on page 1', price:null, image_urls:[], status:'available', preferred_contact_method:'chat', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Classroom Building 301', created_at:new Date().toISOString(), profiles:{ full_name:'Wang Mei-Hsuan', line_id:'meihsuan_w', instagram_handle:'meihsuan.tcu', phone_number:'+886934567890', department:'Medical Sociology' } },
+  ];
+  updateStats();
+  renderItems();
+}
+
+// ── PROFILE ─────────────────────────────────────────────────
+async function loadProfile() {
+  if (isUsingDemoMode()) return;
+  const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (error) {
+    console.error('Failed to load profile:', error);
+    currentProfile = {
+      id: currentUser.id,
+      full_name: currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || 'Student',
+      department: currentUser.email || '',
+      verification_status: 'pending',
+      is_verified: false,
+    };
+    updateSidebarUser();
+    return;
+  }
+  if (data) {
+    // Google OAuth gives `name` / `avatar_url` in user_metadata — backfill if profile is skeletal
+    if (!data.full_name || data.full_name === 'New Student') {
+      const meta = currentUser.user_metadata || {};
+      const patch = {};
+      if (meta.full_name || meta.name) patch.full_name = meta.full_name || meta.name;
+      if (meta.avatar_url || meta.picture) patch.avatar_url = meta.avatar_url || meta.picture;
+      if (Object.keys(patch).length) {
+        await sb.from('profiles').update(patch).eq('id', currentUser.id);
+        Object.assign(data, patch);
+      }
+    }
+    currentProfile = data;
+    updateSidebarUser();
+  }
+}
+
+function updateSidebarUser() {
+  if (!currentProfile) return;
+  const initials = (currentProfile.full_name || 'U').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('user-avatar-sidebar').textContent = initials;
+  document.getElementById('user-name-sidebar').textContent   = currentProfile.full_name || 'Student';
+  document.getElementById('user-dept-sidebar').textContent   = currentProfile.department || currentUser?.email || '';
+}
+
+// ── CONNECTION ERROR HELPERS ─────────────────────────────────
+function showConnectionError(msg) {
+  document.getElementById('items-grid').innerHTML = '';
+  document.getElementById('empty-state').classList.add('hidden');
+  const errEl  = document.getElementById('error-state');
+  const msgEl  = document.getElementById('error-msg');
+  if (errEl)  errEl.classList.remove('hidden');
+  if (msgEl && msg) msgEl.textContent = msg;
+}
+function hideConnectionError() {
+  document.getElementById('error-state')?.classList.add('hidden');
+}
+async function retryLoad() {
+  hideConnectionError();
+  await loadItems();
+}
+
+// ── ITEMS ────────────────────────────────────────────────────
+async function loadItems() {
+  if (isUsingDemoMode()) { loadDemoItems(); return; }
+  showSkeletons();
+  const { data, error } = await sb
+    .from('items')
+    .select('*, profiles(full_name, line_id, instagram_handle, phone_number, department)')
+    .eq('is_active', true)
+    .eq('status', 'available')
+    .order('created_at', { ascending: false });
+  if (error) {
+    console.error('Failed to load items:', error);
+    activateDemoMode();
+    return;
+  }
+  allItems = data || [];
+  updateStats();
+  renderItems();
+}
+
+// Server-side filtered fetch (used by filter tabs + stat cards)
+async function loadItemsFiltered(filter) {
+  activeFilter = filter;
+  _syncFilterTabs(filter);
+  renderItems();
+}
+
+async function loadMyItems() {
+  if (isUsingDemoMode()) {
+    syncMyItemsFromAllItems();
+    renderMyItems(); return;
+  }
+  const { data, error } = await sb
+    .from('items')
+    .select('*, profiles(full_name, line_id, instagram_handle, phone_number, department)')
+    .eq('owner_id', currentUser.id)
+    .order('created_at', { ascending: false });
+  if (error) { showToast('Failed to load your items', 'error'); return; }
+  myItems = data || [];
+  renderMyItems();
+}
+
+function updateStats() {
+  const active   = allItems.filter(i => i.status === 'available');
+  const exchange = active.filter(i => i.category === 'exchange');
+  const lf       = active.filter(i => i.category === 'lost' || i.category === 'found');
+  document.getElementById('stat-total').textContent    = active.length;
+  document.getElementById('stat-exchange').textContent = exchange.length;
+  document.getElementById('stat-lf').textContent       = lf.length;
+}
+
+function renderItems() {
+  const query  = (document.getElementById('search-input')?.value || '').toLowerCase();
+  let items = allItems.filter(i => {
+    if (activeFilter === 'lostfound' && i.category !== 'lost' && i.category !== 'found') return false;
+    if (activeFilter !== 'all' && activeFilter !== 'lostfound' && i.category !== activeFilter) return false;
+    if (query && !i.title.toLowerCase().includes(query) && !i.description.toLowerCase().includes(query)) return false;
+    return true;
+  });
+
+  const grid  = document.getElementById('items-grid');
+  const empty = document.getElementById('empty-state');
+  grid.innerHTML = '';
+
+  if (!items.length) { empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  items.forEach((item, idx) => {
+    const card = buildItemCard(item, false);
+    card.style.animationDelay = (idx * 0.05) + 's';
+    card.classList.add('fade-up');
+    grid.appendChild(card);
+  });
+}
+
+function renderMyItems() {
+  const mine  = myItems.length ? myItems : allItems.filter(i => i.owner_id === (currentUser?.id || 'demo-uid'));
+  const grid  = document.getElementById('myitems-grid');
+  const empty = document.getElementById('myitems-empty');
+  grid.innerHTML = '';
+
+  if (!mine.length) { empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  mine.forEach((item, idx) => {
+    const card = buildItemCard(item, true);
+    card.style.animationDelay = (idx * 0.05) + 's';
+    card.classList.add('fade-up');
+    grid.appendChild(card);
+  });
+}
+
+// ── CARD BUILDER ─────────────────────────────────────────────
+function buildItemCard(item, isOwner) {
+  const p = item.profiles || {};
+  const catBadge = { exchange:'badge-exchange', lost:'badge-lost', found:'badge-found' }[item.category] || '';
+  const catLabel = { exchange:'For Sale', lost:'Lost', found:'Found' }[item.category] || item.category;
+  const statusBadge = { available:'badge-available', sold:'badge-sold', returned:'badge-returned' }[item.status] || '';
+
+  const hasImg = item.image_urls && item.image_urls.length > 0 && item.image_urls[0];
+  const imgEl  = hasImg
+    ? `<img src="${item.image_urls[0]}" class="item-img" loading="lazy" onerror="this.parentElement.innerHTML='<div class=img-placeholder>📦</div>'" />`
+    : `<div class="img-placeholder">📦</div>`;
+
+  const priceEl = item.price != null
+    ? `<span class="font-sans font-bold text-jade-700 text-lg" style="letter-spacing:-.02em;">NT$${Number(item.price).toLocaleString()}</span>`
+    : `<span class="text-xs text-stone-400 font-500">No charge</span>`;
+
+  const socialLinks = [
+    p.line_id           ? `<a href="https://line.me/ti/p/~${p.line_id}" target="_blank" class="social-btn social-line">LINE</a>` : '',
+    p.instagram_handle  ? `<a href="https://instagram.com/${p.instagram_handle}" target="_blank" class="social-btn social-ig">IG</a>` : '',
+    p.phone_number      ? `<a href="tel:${p.phone_number}" class="social-btn social-phone">📞</a>` : '',
+  ].filter(Boolean).join('');
+
+  const expiresAt  = item.expires_at ? new Date(item.expires_at) : new Date(Date.now() + 7*24*60*60*1000);
+  const daysLeft   = Math.ceil((expiresAt - Date.now()) / (1000*60*60*24));
+  const expiryWarn = isOwner && daysLeft <= 2
+    ? `<div class="rounded-lg px-3 py-2 mb-2 text-xs font-500" style="background:#fef3c7;color:#92400e;">
+        ⚠️ ${daysLeft <= 0 ? 'Listing expired — click Confirm to reactivate.' : `Expires in ${daysLeft} day${daysLeft===1?'':'s'} — confirm to keep active.`}
+       </div>` : '';
+
+  const ownerActions = isOwner ? `
+    ${expiryWarn}
+    <div class="flex gap-2 mt-3 pt-3" style="border-top:1px solid var(--border);">
+      <button type="button" onclick="toggleStatus('${item.id}','${item.category === 'exchange' ? 'sold' : 'returned'}')"
+        class="flex-1 text-xs font-600 py-2 px-3 rounded-lg transition-colors"
+        style="background:#f1f5f9;color:#64748b;"
+        ${item.status !== 'available' ? 'disabled' : ''}>
+        ${item.status === 'available' ? (item.category === 'exchange' ? 'Mark as Sold' : 'Mark as Returned') : item.status.charAt(0).toUpperCase()+item.status.slice(1)}
+      </button>
+      <button type="button" onclick="confirmItem('${item.id}')" title="Reset 7-day expiry timer"
+        class="text-xs font-600 py-2 px-3 rounded-lg transition-colors"
+        style="background:#f0fdf4;color:#15803d;">
+        ✓ Confirm
+      </button>
+      <button type="button" onclick="deleteItem('${item.id}')"
+        class="text-xs font-600 py-2 px-3 rounded-lg transition-colors"
+        style="background:#fef2f2;color:#dc2626;">
+        Delete
+      </button>
+    </div>` : '';
+
+  const div = document.createElement('div');
+  div.className = 'card cursor-pointer';
+  div.innerHTML = `
+    <div onclick="openDetail('${item.id}')">${imgEl}</div>
+    <div class="p-5">
+      <div class="flex items-start justify-between gap-2 mb-3">
+        <div class="flex gap-1.5 flex-wrap">
+          <span class="badge ${catBadge}">${catLabel}</span>
+          ${item.status !== 'available' ? `<span class="badge ${statusBadge}">${item.status}</span>` : ''}
+        </div>
+        ${priceEl}
+      </div>
+      <h3 class="font-sans font-bold text-stone-900 text-base leading-snug mb-2 cursor-pointer hover:text-jade-700 transition-colors"
+          style="letter-spacing:-.01em;" onclick="openDetail('${item.id}')">${item.title}</h3>
+      <p class="text-xs text-stone-500 line-clamp-2 mb-3" style="line-height:1.6;">${item.description}</p>
+      ${item.location_hint ? `<p class="text-xs text-stone-400 flex items-center gap-1 mb-3">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        ${item.location_hint}</p>` : ''}
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-1.5">
+          <div style="width:24px;height:24px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:700;flex-shrink:0;">
+            ${(p.full_name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}
+          </div>
+          <span class="text-xs text-stone-500">${p.full_name || 'Anonymous'}</span>
+        </div>
+        <div class="flex gap-1">${socialLinks}</div>
+      </div>
+      ${ownerActions}
+    </div>`;
+  return div;
+}
+
+// ── DETAIL MODAL ─────────────────────────────────────────────
+function openDetail(itemId) {
+  const item = allItems.find(i => i.id === itemId);
+  if (!item) return;
+  const p = item.profiles || {};
+  const catLabel = { exchange:'For Sale', lost:'Lost', found:'Found' }[item.category] || '';
+  const catBadge = { exchange:'badge-exchange', lost:'badge-lost', found:'badge-found' }[item.category] || '';
+
+  const imgsHtml = (item.image_urls || []).filter(Boolean).map(url =>
+    `<img src="${url}" class="item-img rounded-xl mb-2" loading="lazy" onerror="this.remove()" />`
+  ).join('') || `<div class="img-placeholder rounded-xl mb-2" style="aspect-ratio:16/9;">📦</div>`;
+
+  const socialLinks = [
+    p.line_id           ? `<a href="https://line.me/ti/p/~${p.line_id}" target="_blank" class="social-btn social-line"><svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.5h-9v-5h9v5zm-4.5-7c-2.761 0-5-2.239-5-5h2c0 1.654 1.346 3 3 3s3-1.346 3-3h2c0 2.761-2.239 5-5 5z"/></svg> LINE: ${p.line_id}</a>` : '',
+    p.instagram_handle  ? `<a href="https://instagram.com/${p.instagram_handle}" target="_blank" class="social-btn social-ig">📸 @${p.instagram_handle}</a>` : '',
+    p.phone_number      ? `<a href="tel:${p.phone_number}" class="social-btn social-phone">📞 ${p.phone_number}</a>` : '',
+  ].filter(Boolean).join('');
+
+  const maskedUID = item.unique_identifier
+    ? item.unique_identifier.slice(0, 8) + '••••••'
+    : '—';
+
+  document.getElementById('detail-content').innerHTML = `
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <span class="badge ${catBadge}">${catLabel}</span>
+        <button onclick="document.getElementById('detail-modal').classList.add('hidden')"
+          style="color:var(--muted);" class="hover:text-stone-800 transition-colors">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      ${imgsHtml}
+      <h2 class="font-sans text-2xl font-bold text-stone-900 mt-4 mb-2" style="letter-spacing:-.02em;">${item.title}</h2>
+      ${item.price != null ? `<p class="font-sans text-xl font-bold text-jade-700 mb-3" style="letter-spacing:-.02em;">NT$${Number(item.price).toLocaleString()}</p>` : ''}
+      <p class="text-sm text-stone-600 leading-relaxed mb-4">${item.description}</p>
+
+      <div class="rounded-xl p-4 mb-4" style="background:var(--parchment);border:1px solid var(--border);">
+        <p class="text-xs font-600 text-stone-400 uppercase tracking-widest mb-2">🔐 Verification Detail</p>
+        <p class="text-sm text-stone-600 font-mono">${maskedUID}</p>
+        <p class="text-xs text-stone-400 mt-1">Contact the poster to verify the full identifier and claim the item.</p>
+      </div>
+
+      ${item.location_hint ? `
+        <div class="flex items-center gap-2 text-sm text-stone-500 mb-4">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${item.location_hint}
+        </div>` : ''}
+
+      <div style="border-top:1px solid var(--border);padding-top:16px;">
+        <p class="text-xs font-600 text-stone-400 uppercase tracking-widest mb-3">Posted by</p>
+        <div class="flex items-center gap-3 mb-3">
+          <div style="width:38px;height:38px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.85rem;">
+            ${(p.full_name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}
+          </div>
+          <div>
+            <div class="font-600 text-stone-900 text-sm">${p.full_name || 'Anonymous'}</div>
+            <div class="text-xs text-stone-400">${p.department || ''}</div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2">${socialLinks || '<span class="text-xs text-stone-400">No contact info provided</span>'}</div>
+      </div>
+    </div>`;
+
+  document.getElementById('detail-modal').classList.remove('hidden');
+}
+
+document.getElementById('detail-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.add('hidden');
+});
+
+// ── VIEWS ────────────────────────────────────────────────────
+function setView(view) {
+  currentView = view;
+  ['browse','marketplace','lostfound','myitems','ai','profile'].forEach(v => {
+    document.getElementById('nav-'+v)?.classList.toggle('active', v === view);
+  });
+
+  const browseControls = document.getElementById('browse-controls');
+  const statsBar       = document.getElementById('stats-bar');
+  const itemsGrid      = document.getElementById('items-grid');
+  const myitemsView    = document.getElementById('myitems-view');
+  const aiView         = document.getElementById('ai-view');
+  const profileView    = document.getElementById('profile-view');
+  const emptyState     = document.getElementById('empty-state');
+
+  _updateViewHeader(view);
+
+  // Hide all secondary panels first
+  myitemsView.classList.add('hidden');
+  aiView.classList.add('hidden');
+  profileView.classList.add('hidden');
+  emptyState.classList.add('hidden');
+
+  if (view === 'myitems') {
+    browseControls.classList.add('hidden');
+    statsBar.classList.add('hidden');
+    itemsGrid.classList.add('hidden');
+    myitemsView.classList.remove('hidden');
+    loadMyItems();
+    return;
+  }
+
+  if (view === 'ai') {
+    browseControls.classList.add('hidden');
+    statsBar.classList.add('hidden');
+    itemsGrid.classList.add('hidden');
+    aiView.classList.remove('hidden');
+    return;
+  }
+
+  if (view === 'profile') {
+    browseControls.classList.add('hidden');
+    statsBar.classList.add('hidden');
+    itemsGrid.classList.add('hidden');
+    profileView.classList.remove('hidden');
+    populateProfileForm();
+    return;
+  }
+
+  browseControls.classList.remove('hidden');
+  statsBar.classList.remove('hidden');
+  itemsGrid.classList.remove('hidden');
+
+  _updateStatCardHighlight('');
+  if (view === 'marketplace')   setFilter('exchange',  true);
+  else if (view === 'lostfound') setFilter('lostfound', true);
+  else                           setFilter('all',       true);
+}
+
+function setFilter(filter, render = true) {
+  activeFilter = filter;
+  _syncFilterTabs(filter);
+  if (render) loadItemsFiltered(filter);
+}
+
+function _syncFilterTabs(filter) {
+  document.querySelectorAll('.filter-tab').forEach(btn => {
+    const f = btn.dataset.filter;
+    const active = filter === 'lostfound'
+      ? (f === 'lost' || f === 'found')
+      : f === filter;
+    btn.classList.toggle('active', active);
+  });
+}
+
+// ── MY ITEMS ACTIONS ─────────────────────────────────────────
+async function toggleStatus(itemId, newStatus) {
+  if (isUsingDemoMode()) {
+    const item = allItems.find(i => i.id === itemId);
+    if (item) {
+      item.status = newStatus;
+      syncMyItemsFromAllItems();
+      renderItems();
+      renderMyItems();
+      updateStats();
+    }
+    showToast(`Item marked as ${newStatus}!`, 'success');
+    return;
+  }
+  const { error } = await sb.from('items').update({ status: newStatus }).eq('id', itemId).eq('owner_id', currentUser.id);
+  if (error) { showToast(error.message, 'error'); return; }
+  await Promise.all([loadItems(), loadMyItems()]);
+  showToast(`Item marked as ${newStatus}!`, 'success');
+}
+
+async function deleteItem(itemId) {
+  if (!confirm('Are you sure you want to delete this listing?')) return;
+  if (isUsingDemoMode()) {
+    allItems = allItems.filter(i => i.id !== itemId);
+    syncMyItemsFromAllItems();
+    renderItems();
+    renderMyItems();
+    updateStats();
+    showToast('Item deleted', 'success');
+    return;
+  }
+  const { error } = await sb.from('items').delete().eq('id', itemId).eq('owner_id', currentUser.id);
+  if (error) { showToast(error.message, 'error'); return; }
+  await Promise.all([loadItems(), loadMyItems()]);
+  showToast('Item deleted', 'success');
+}
+
+// ── POST MODAL ───────────────────────────────────────────────
+function openPostModal() {
+  resetPostForm();
+  document.getElementById('post-modal').classList.remove('hidden');
+}
+function closePostModal() {
+  document.getElementById('post-modal').classList.add('hidden');
+}
+document.getElementById('post-modal').addEventListener('click', function(e) {
+  if (e.target === this) closePostModal();
+});
+
+function resetPostForm() {
+  postStep = 1; selectedCategory = '';
+  ['post-title','post-price','post-desc','post-unique','post-location'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  postSelectedFiles = [];
+  const previewsEl = document.getElementById('post-img-previews');
+  if (previewsEl) previewsEl.innerHTML = '';
+  const postLabelEl = document.getElementById('post-img-label');
+  if (postLabelEl) postLabelEl.textContent = 'Upload Photo from Device';
+  const postFileEl = document.getElementById('post-img-file');
+  if (postFileEl) postFileEl.value = '';
+  document.querySelectorAll('input[name="post-category"]').forEach(r => r.checked = false);
+  document.querySelectorAll('.cat-option').forEach(el => { el.style.borderColor=''; el.style.background=''; });
+  document.getElementById('price-row').style.display = '';
+  showStep(1);
+}
+
+function showStep(n) {
+  [1,2,3].forEach(i => {
+    document.getElementById(`post-step-${i}`).classList.toggle('hidden', i !== n);
+    const dot = document.getElementById(`sdot-${i}`);
+    if (i < n)  { dot.className = 'step-dot done'; dot.innerHTML = '✓'; }
+    else if (i === n) { dot.className = 'step-dot active'; dot.textContent = i; }
+    else        { dot.className = 'step-dot todo';  dot.textContent = i; }
+  });
+  postStep = n;
+}
+
+function nextStep(from) {
+  if (from === 1) {
+    let ok = true;
+    if (!selectedCategory) { document.getElementById('cat-err').classList.remove('hidden'); ok=false; }
+    else document.getElementById('cat-err').classList.add('hidden');
+    const title = document.getElementById('post-title').value.trim();
+    if (title.length < 3) { document.getElementById('title-err').classList.remove('hidden'); ok=false; }
+    else document.getElementById('title-err').classList.add('hidden');
+    if (!ok) return;
+    showStep(2);
+  } else if (from === 2) {
+    let ok = true;
+    const desc   = document.getElementById('post-desc').value.trim();
+    const unique = document.getElementById('post-unique').value.trim();
+    if (desc.length < 20) { document.getElementById('desc-err').classList.remove('hidden'); ok=false; }
+    else document.getElementById('desc-err').classList.add('hidden');
+    if (unique.length < 5) { document.getElementById('unique-err').classList.remove('hidden'); ok=false; }
+    else document.getElementById('unique-err').classList.add('hidden');
+    if (!ok) return;
+    // Build review
+    const price = document.getElementById('post-price').value;
+    document.getElementById('review-summary').innerHTML = `
+      <div>📦 <strong>Category:</strong> ${{ exchange:'For Sale', lost:'Lost', found:'Found'}[selectedCategory]}</div>
+      <div>📝 <strong>Title:</strong> ${document.getElementById('post-title').value}</div>
+      ${price ? `<div>💰 <strong>Price:</strong> NT$${Number(price).toLocaleString()}</div>` : ''}
+      <div>📍 <strong>Location:</strong> ${document.getElementById('post-location').value || '—'}</div>
+      <div>🔐 <strong>Unique ID:</strong> ${unique.slice(0,8)}••••</div>`;
+    showStep(3);
+  }
+}
+
+function prevStep(from) { showStep(from - 1); }
+
+async function submitPost() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = 'Publishing…';
+
+  try {
+    // Demo mode — skip storage, add locally
+    if (isUsingDemoMode()) {
+      const demoUrls = postSelectedFiles.map(f => URL.createObjectURL(f));
+      const payload = {
+        owner_id: 'demo-uid', id: 'demo-' + Date.now(),
+        title: document.getElementById('post-title').value.trim(),
+        description: document.getElementById('post-desc').value.trim(),
+        category: selectedCategory,
+        unique_identifier: document.getElementById('post-unique').value.trim(),
+        price: document.getElementById('post-price').value || null,
+        image_urls: demoUrls, status: 'available',
+        location_hint: document.getElementById('post-location').value.trim() || null,
+        created_at: new Date().toISOString(),
+        profiles: { full_name: currentProfile?.full_name || 'You', ...currentProfile },
+      };
+      allItems.unshift(payload);
+      syncMyItemsFromAllItems(); updateStats();
+      closePostModal(); setView('myitems');
+      showToast('Item posted! (Demo Mode)', 'success');
+      return;
+    }
+
+    // Step 1 — Upload each selected file to Supabase Storage
+    const imgUrls = [];
+    for (const file of postSelectedFiles) {
+      const cleanFileName = file.name.replace(/\s+/g, '_');
+      const fileName = `items/${Date.now()}_${cleanFileName}`;
+
+      const { error: uploadError } = await sb.storage
+        .from('item-images')
+        .upload(fileName, file, { upsert: false });
+      if (uploadError) throw new Error('Image upload failed: ' + uploadError.message);
+
+      const { data: urlData } = sb.storage
+        .from('item-images')
+        .getPublicUrl(fileName);
+      imgUrls.push(urlData.publicUrl);
+    }
+
+    // Step 3 — Insert item row with the collected URLs
+    const { error: insertError } = await sb.from('items').insert({
+      owner_id:          currentUser.id,
+      title:             document.getElementById('post-title').value.trim(),
+      description:       document.getElementById('post-desc').value.trim(),
+      category:          selectedCategory,
+      unique_identifier: document.getElementById('post-unique').value.trim(),
+      price:             document.getElementById('post-price').value || null,
+      image_urls:        imgUrls,
+      status:            'available',
+      location_hint:     document.getElementById('post-location').value.trim() || null,
+    });
+    if (insertError) throw new Error(insertError.message);
+
+    closePostModal();
+    await loadItems();
+    setView('myitems');
+    showToast('Item posted successfully!', 'success');
+
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Publish Item ✓';
+  }
+}
+
+// ── SKELETON ─────────────────────────────────────────────────
+function showSkeletons() {
+  hideConnectionError();
+  document.getElementById('empty-state').classList.add('hidden');
+  const grid = document.getElementById('items-grid');
+  grid.innerHTML = Array(6).fill(0).map(() => `
+    <div class="card p-0 overflow-hidden">
+      <div class="skeleton" style="aspect-ratio:16/9;"></div>
+      <div class="p-4">
+        <div class="skeleton h-4 w-24 mb-3"></div>
+        <div class="skeleton h-5 w-full mb-2"></div>
+        <div class="skeleton h-3 w-4/5 mb-4"></div>
+        <div class="skeleton h-3 w-1/3"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = 'show' + (type ? ' ' + type : '');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = ''; }, 3200);
+}
+
+// ── CONFIRM ITEM (7-day expiry reset) ────────────────────────
+async function confirmItem(itemId) {
+  if (isUsingDemoMode()) {
+    const item = allItems.find(i => i.id === itemId);
+    if (item) {
+      item.last_confirmed_at = new Date().toISOString();
+      item.expires_at = new Date(Date.now() + 7*24*60*60*1000).toISOString();
+    }
+    syncMyItemsFromAllItems();
+    renderMyItems();
+    showToast('Item confirmed! Active for another 7 days.', 'success');
+    return;
+  }
+  const { error } = await sb.rpc('confirm_item', { item_id: itemId });
+  if (error) { showToast(error.message, 'error'); return; }
+  await loadItems();
+  showToast('Item confirmed! Active for another 7 days.', 'success');
+}
+
+// ── AI ASSISTANT ──────────────────────────────────────────────
+async function fetchItemsForAI() {
+  if (isUsingDemoMode()) {
+    return allItems.map(i => ({ name: i.title, description: i.description, price: i.price, category: i.category }));
+  }
+  const { data, error } = await sb
+    .from('items')
+    .select('title, description, price, category')
+    .eq('is_active', true)
+    .eq('status', 'available');
+  if (error || !data) return allItems.map(i => ({ name: i.title, description: i.description, price: i.price, category: i.category }));
+  return data.map(i => ({ name: i.title, description: i.description, price: i.price, category: i.category }));
+}
+
+async function callGemini(userQuestion) {
+  const items = await fetchItemsForAI();
+  const itemsContext = items.length
+    ? items.map(i => `- ${i.name} (${i.category}${i.price != null ? ', NT$' + i.price : ''}): ${i.description}`).join('\n')
+    : 'No items currently listed.';
+  const prompt = `Você é o assistente da TCU Community (Tzu Chi University). Abaixo estão os itens disponíveis no momento:\n${itemsContext}\n\nResponda à pergunta do usuário: ${userQuestion}`;
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    }
+  );
+  if (!res.ok) throw new Error('Gemini API error ' + res.status);
+  const json = await res.json();
+  return json.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, no response received.';
+}
+
+function aiSuggest(text) {
+  document.getElementById('ai-input').value = text;
+  sendAiMessage();
+}
+
+async function sendAiMessage() {
+  const input   = document.getElementById('ai-input');
+  const sendBtn = document.querySelector('#ai-view .btn-primary');
+  const msg     = input.value.trim();
+  if (!msg) return;
+
+  input.value    = '';
+  input.disabled = true;
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '…'; }
+
+  appendAiMessage(msg, 'user');
+
+  const container = document.getElementById('ai-messages');
+  const typingDiv = document.createElement('div');
+  typingDiv.id        = 'ai-typing-indicator';
+  typingDiv.className = 'flex gap-3 items-start fade-in';
+  typingDiv.innerHTML = `
+    <div style="width:32px;height:32px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
+    <div class="flex-1 rounded-xl rounded-tl-sm p-3 text-sm" style="background:#f5f5f4;">
+      <span style="display:inline-flex;gap:5px;align-items:center;">
+        <span style="width:7px;height:7px;background:#a8a29e;border-radius:50%;animation:aiDot 1.2s ease-in-out infinite;"></span>
+        <span style="width:7px;height:7px;background:#a8a29e;border-radius:50%;animation:aiDot 1.2s ease-in-out .4s infinite;"></span>
+        <span style="width:7px;height:7px;background:#a8a29e;border-radius:50%;animation:aiDot 1.2s ease-in-out .8s infinite;"></span>
+      </span>
+    </div>`;
+  container.appendChild(typingDiv);
+  container.scrollTop = container.scrollHeight;
+
+  try {
+    const reply = await callGemini(msg);
+    typingDiv.remove();
+
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'flex gap-3 items-start fade-in';
+    msgDiv.innerHTML = `
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
+      <div class="flex-1 rounded-xl rounded-tl-sm p-3 text-sm text-stone-700 ai-reply-text" style="background:#f5f5f4;white-space:pre-line;"></div>`;
+    container.appendChild(msgDiv);
+
+    const textEl = msgDiv.querySelector('.ai-reply-text');
+    for (let i = 0; i < reply.length; i++) {
+      textEl.textContent += reply[i];
+      if (i % 4 === 0) container.scrollTop = container.scrollHeight;
+      await new Promise(r => setTimeout(r, 12));
+    }
+    container.scrollTop = container.scrollHeight;
+
+    if (!isUsingDemoMode() && currentUser)
+      await sb.from('ai_logs').insert({ user_id: currentUser.id, message: msg, response: reply }).catch(() => {});
+  } catch (err) {
+    typingDiv.remove();
+    appendAiMessage('Sorry, I encountered an error connecting to the AI. Please try again.', 'ai');
+    console.error('Gemini error:', err);
+  } finally {
+    input.disabled = false;
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
+    input.focus();
+  }
+}
+
+function appendAiMessage(text, role) {
+  const container = document.getElementById('ai-messages');
+  const isAi = role === 'ai';
+  const initials = currentProfile
+    ? (currentProfile.full_name || 'U').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+    : 'U';
+  const div = document.createElement('div');
+  div.className = 'flex gap-3 items-start fade-in';
+  if (isAi) {
+    div.innerHTML = `
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
+      <div class="flex-1 rounded-xl rounded-tl-sm p-3 text-sm text-stone-700" style="background:#f5f5f4;white-space:pre-line;">${text}</div>`;
+  } else {
+    div.innerHTML = `
+      <div class="flex-1"></div>
+      <div class="rounded-xl rounded-tr-sm p-3 text-sm text-stone-800" style="max-width:75%;background:#dcfce7;white-space:pre-line;">${text}</div>
+      <div style="width:32px;height:32px;border-radius:50%;background:#e7e5e4;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.75rem;font-weight:700;flex-shrink:0;">${initials}</div>`;
+  }
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ── PROFILE MANAGEMENT ────────────────────────────────────────
+function populateProfileForm() {
+  if (!currentProfile) return;
+  document.getElementById('profile-name').value       = currentProfile.full_name        || '';
+  document.getElementById('profile-student-id').value = currentProfile.student_id       || '';
+  document.getElementById('profile-dept').value       = currentProfile.department        || '';
+  document.getElementById('profile-phone').value      = currentProfile.phone_number      || '';
+  document.getElementById('profile-line').value       = currentProfile.line_id           || '';
+  document.getElementById('profile-ig').value         = currentProfile.instagram_handle  || '';
+  const existingIdImg = currentProfile.student_id_image_url || '';
+  document.getElementById('profile-id-img').value = existingIdImg;
+  if (existingIdImg) {
+    document.getElementById('profile-id-preview-img').src = existingIdImg;
+    document.getElementById('profile-id-preview').classList.remove('hidden');
+    document.getElementById('profile-id-label').textContent = '✓ Photo uploaded';
+  } else {
+    document.getElementById('profile-id-preview').classList.add('hidden');
+    document.getElementById('profile-id-label').textContent = 'Upload Photo from Device';
+  }
+
+  // Update verification banner
+  const verified = currentProfile.is_verified;
+  const vstatus  = currentProfile.verification_status || 'pending';
+  const banner   = document.getElementById('verification-banner');
+  const stText   = document.getElementById('verify-status-text');
+  const stSub    = document.getElementById('verify-status-sub');
+  if (verified || vstatus === 'approved') {
+    banner.style.background  = '#f0fdf4'; banner.style.borderColor = '#bbf7d0';
+    stText.textContent = '✅ Verified Student'; stText.style.color = '#15803d';
+    stSub.textContent  = 'You can post items on the platform.'; stSub.style.color = '#16a34a';
+  } else if (vstatus === 'rejected') {
+    banner.style.background  = '#fef2f2'; banner.style.borderColor = '#fecaca';
+    stText.textContent = '❌ Verification Rejected'; stText.style.color = '#dc2626';
+    stSub.textContent  = 'Please re-upload a clear photo of your student ID.'; stSub.style.color = '#ef4444';
+  } else {
+    banner.style.background  = '#fef3c7'; banner.style.borderColor = '#fde68a';
+    stText.textContent = '⏳ Verification Pending'; stText.style.color = '#92400e';
+    stSub.textContent  = 'Upload your student ID below to unlock posting privileges.'; stSub.style.color = '#b45309';
+  }
+}
+
+async function saveProfile() {
+  const updates = {
+    full_name:        document.getElementById('profile-name').value.trim(),
+    department:       document.getElementById('profile-dept').value.trim(),
+    phone_number:     document.getElementById('profile-phone').value.trim(),
+    line_id:          document.getElementById('profile-line').value.trim(),
+    instagram_handle: document.getElementById('profile-ig').value.trim(),
+  };
+  if (isUsingDemoMode()) {
+    Object.assign(currentProfile, updates);
+    updateSidebarUser();
+    showToast('Profile saved! (Demo Mode)', 'success');
+    return;
+  }
+  const { error } = await sb.from('profiles').upsert({ id: currentUser.id, ...updates });
+  if (error) { showToast(error.message, 'error'); return; }
+  Object.assign(currentProfile, updates);
+  updateSidebarUser();
+  showToast('Profile saved!', 'success');
+}
+
+async function submitVerification() {
+  const imgUrl = document.getElementById('profile-id-img').value.trim();
+  if (!imgUrl) { showToast('Please upload your student ID photo first', 'error'); return; }
+  if (isUsingDemoMode()) {
+    currentProfile.student_id_image_url = imgUrl;
+    currentProfile.verification_status  = 'approved';
+    currentProfile.is_verified          = true;
+    populateProfileForm();
+    showToast('Verification submitted & auto-approved! (Demo Mode)', 'success');
+    return;
+  }
+  const { error } = await sb.from('profiles')
+    .update({ student_id_image_url: imgUrl, verification_status: 'pending' })
+    .eq('id', currentUser.id);
+  if (error) { showToast(error.message, 'error'); return; }
+  currentProfile.student_id_image_url = imgUrl;
+  currentProfile.verification_status  = 'pending';
+  populateProfileForm();
+  showToast('Verification submitted! An admin will review within 1–2 business days.', 'success');
+}
+
+// Auth screen shown by DOMContentLoaded init above
+</script>
+</body>
+</html>
