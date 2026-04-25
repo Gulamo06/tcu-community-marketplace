@@ -45,6 +45,7 @@
 
     * { box-sizing: border-box; }
     body { background: var(--cream); font-family: 'Inter', 'DM Sans', sans-serif; color: var(--ink); }
+    #nav-admin { display: none !important; }
 
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; }
@@ -94,11 +95,51 @@
       transition: box-shadow .25s, transform .25s;
     }
     .card:hover {
-      box-shadow:
-        0 2px 6px  rgba(0,0,0,.05),
-        0 8px 24px rgba(0,0,0,.09),
-        0 28px 60px rgba(0,0,0,.09);
-      transform: translateY(-3px);
+      transform: translateY(-8px);
+      box-shadow: 0 10px 20px rgba(40, 167, 69, 0.2);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .settings-menu-item {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 600;
+      transition: all .18s ease;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .settings-menu-item.active,
+    .settings-menu-item:hover {
+      border-color: var(--jade);
+      background: rgba(34,197,94,.08);
+      color: var(--jade);
+    }
+    .settings-panel {
+      background: rgba(255,255,255,.98);
+      border: 1px solid rgba(231,229,228,.75);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 8px 32px rgba(15,23,42,.04);
+    }
+    .profile-avatar {
+      width: 112px;
+      height: 112px;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #f8fafc;
+      border: 1px solid rgba(231,229,228,.75);
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      flex-shrink: 0;
+    }
+    .profile-avatar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px rgba(22,163,74,.12);
     }
 
     /* ── Badge ── */
@@ -109,8 +150,8 @@
       border: 1px solid transparent;
     }
     .badge-exchange { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
-    .badge-lost     { background: #fef3c7; color: #92400e; border-color: #fde68a; }
-    .badge-found    { background: var(--jade-lt); color: #15803d; border-color: #bbf7d0; }
+    .badge-lost     { background: #fff1e6; color: #c2410c; border-color: #fed7aa; }
+    .badge-found    { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
     .badge-available{ background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
     .badge-sold     { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
     .badge-returned { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
@@ -152,6 +193,19 @@
       transition: all .2s;
     }
     .btn-ghost:hover { border-color: #a8a29e; color: var(--ink); }
+    .btn-secondary {
+      background: #f8fafc;
+      border: 1px solid #d1d5db;
+      color: #334155;
+      border-radius: 9px;
+      padding: 10px 20px;
+      font-weight: 600;
+      transition: all .2s;
+    }
+    .btn-secondary:hover {
+      background: #eef2ff;
+      border-color: #c7d2fe;
+    }
 
     /* ── Step indicator ── */
     .step-dot {
@@ -183,13 +237,61 @@
 
     /* ── Modal ── */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.45);
-      backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+      position: fixed; inset: 0; background: rgba(0,0,0,.65);
+      display: flex; align-items: center; justify-content: center;
       z-index: 50; padding: 16px;
     }
     .modal-box {
-      background: #fff; border-radius: 20px; width: 100%; max-width: 560px;
-      max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,.18);
+      background: #1a1a1a; border-radius: 20px; width: 100%; max-width: 560px;
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.04);
+    }
+    .modal-box h2 {
+      color: #ffffff;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+    }
+    .modal-box .step-dot.active {
+      background: #28a745;
+      color: #ffffff;
+      border: 1px solid #28a745;
+    }
+    .modal-box .step-dot.todo {
+      background: transparent;
+      color: #b0b0b0;
+      border: 1.5px solid #28a745;
+      box-shadow: none;
+    }
+    .modal-box .step-dot.done {
+      background: #28a745;
+      color: #ffffff;
+      border: 1px solid #28a745;
+    }
+    .modal-box .cat-option {
+      background: #121212;
+      border: 1px solid #222;
+      color: #b0b0b0;
+      box-shadow: none;
+    }
+    .modal-box .cat-option:hover {
+      border-color: #28a745;
+    }
+    .modal-box .field {
+      background: #121212;
+      border-color: #2b2b2b;
+      color: #ffffff;
+    }
+    .modal-box .field::placeholder {
+      color: #7f7f7f;
+    }
+    .modal-box .field:focus {
+      border-color: #28a745;
+      box-shadow: 0 0 10px rgba(40,167,69,.18);
+      background: #121212;
+      color: #ffffff;
+    }
+    .modal-box .form-label {
+      color: #b0b0b0;
     }
 
     /* ── Sidebar nav ── */
@@ -278,39 +380,27 @@
     }
     .btn-google:hover { background: #f8f9fa; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
 
-    /* ── Sidebar collapse ── */
+    /* ── Sidebar overlay ── */
     #sidebar {
-      width: 240px;
-      transition: width .3s ease;
+      width: 260px;
+      transform: translateX(-110%);
+      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
-      z-index: 100;
+      z-index: 200;
     }
-    #sidebar.collapsed { width: 80px; }
+    #sidebar.open { transform: translateX(0); }
+    #main-content { margin-left: 0; }
 
-    #sidebar .nav-label,
-    #sidebar .brand-text,
-    #sidebar .user-text {
-      transition: opacity .2s ease, transform .2s ease;
-      white-space: nowrap; overflow: hidden;
+    /* Sidebar backdrop */
+    #sidebar-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,.4);
+      z-index: 199; opacity: 0; pointer-events: none;
+      transition: opacity .3s ease;
+      backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
     }
-    #sidebar.collapsed .nav-label,
-    #sidebar.collapsed .brand-text,
-    #sidebar.collapsed .user-text {
-      opacity: 0; transform: translateX(-6px); width: 0; pointer-events: none;
-    }
-    #sidebar.collapsed .nav-item { justify-content: center; padding: 11px 0; border-left-color: transparent !important; }
-    #sidebar.collapsed .nav-item.active { border-left-color: var(--jade) !important; }
-    #sidebar.collapsed .user-avatar-row { justify-content: center; }
-    /* Collapsed header: only the shield remains, centred */
-    #sidebar.collapsed .sidebar-header {
-      justify-content: center;
-    }
-    #sidebar.collapsed #sidebar-hamburger { display: none; }
+    #sidebar-backdrop.visible { opacity: 1; pointer-events: auto; }
 
-    #main-content { margin-left: 240px; transition: margin-left .3s ease; }
-    #main-content.expanded { margin-left: 80px; }
-
-    /* Sidebar toggle button */
+    /* Sidebar close button */
     .sidebar-toggle {
       display: flex; align-items: center; justify-content: center;
       width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border);
@@ -319,7 +409,7 @@
     }
     .sidebar-toggle:hover { background: #f5f5f4; border-color: var(--jade); color: var(--jade); }
 
-    /* Shield icon is a clickable toggle button */
+    /* Shield logo button */
     .sidebar-logo-btn {
       width: 32px; height: 32px; background: var(--jade); border-radius: 9px;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -363,6 +453,678 @@
     body.lang-zh {
       font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'Inter', sans-serif;
     }
+
+    /* ── Hamburger Buttons ── */
+    .hamburger-green {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 38px; height: 38px; border-radius: 9px;
+      background: rgba(255,255,255,.18); border: 1.5px solid rgba(255,255,255,.35);
+      cursor: pointer; color: #fff; flex-shrink: 0;
+      transition: background .2s;
+    }
+    .hamburger-green:hover { background: rgba(255,255,255,.3); }
+
+    .hamburger-view {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 38px; height: 38px; border-radius: 9px;
+      background: transparent; border: 1.5px solid var(--border);
+      cursor: pointer; color: var(--muted); flex-shrink: 0;
+      transition: all .2s;
+    }
+    .hamburger-view:hover { border-color: var(--jade); color: var(--jade); background: #f0fdf4; }
+
+    /* Post Item button inside welcome banner */
+    .btn-banner-post {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; background: rgba(255,255,255,.18); color: #fff;
+      border: 1.5px solid rgba(255,255,255,.4); border-radius: 9px;
+      font-size: .875rem; font-weight: 600; cursor: pointer;
+      white-space: nowrap; transition: background .2s;
+    }
+    .btn-banner-post:hover { background: rgba(255,255,255,.3); }
+
+    /* Welcome Banner */
+    .welcome-banner {
+      background: linear-gradient(135deg, var(--jade) 0%, #15803d 100%);
+      border-radius: 24px;
+      padding: 52px 36px 44px;
+      color: #fff;
+      max-width: 860px;
+      margin: 0 auto 32px;
+      box-shadow: 0 8px 40px rgba(22, 163, 74, 0.22), 0 2px 8px rgba(0,0,0,.3);
+      text-align: center;
+      position: relative;
+    }
+    .welcome-banner .hamburger-green {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+    }
+    .welcome-banner h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 5px;
+    }
+    .welcome-banner .banner-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      max-width: 480px;
+      margin: 0 auto 22px;
+      line-height: 1.55;
+    }
+
+    /* Hero Search */
+    .hero-search-wrap {
+      position: relative;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+    .hero-search-input {
+      width: 100%;
+      padding: 14px 20px 14px 52px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-size: 1rem;
+      font-family: 'Inter', 'DM Sans', sans-serif;
+      background: #fff;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      box-shadow: 0 2px 16px rgba(0,0,0,.07);
+    }
+    .hero-search-input:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 4px rgba(22,163,74,.1), 0 4px 16px rgba(0,0,0,.08);
+    }
+    .hero-search-icon {
+      position: absolute;
+      left: 17px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    /* Donation badge */
+    .badge-donation { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; }
+
+    /* Card image category overlay badge */
+    .card-img-wrap { position: relative; display: block; }
+    .card-img-badge {
+      position: absolute; top: 10px; left: 10px;
+      padding: 4px 10px; border-radius: 20px;
+      font-size: .65rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+    .card-img-badge.cat-exchange { background: rgba(2,132,199,.82); color: #fff; }
+    .card-img-badge.cat-lost     { background: rgba(234,88,12,.9);   color: #fff; }
+    .card-img-badge.cat-found    { background: rgba(37,99,235,.9);   color: #fff; }
+    .card-img-badge.cat-donation { background: rgba(59,130,246,.82); color: #fff; }
+
+    /* Hide static header when welcome banner is shown */
+    #view-header.hidden-header { display: none; }
+
+    /* ── Dark sidebar nav overrides ── */
+    #sidebar .nav-item { color: #a1a1aa; border-left-color: transparent; }
+    #sidebar .nav-item:hover { background: rgba(255,255,255,.07); color: #e4e4e7; }
+    #sidebar .nav-item.active {
+      background: rgba(22,163,74,.16);
+      color: #4ade80;
+      border-left-color: #22c55e;
+      box-shadow: inset 0 0 0 1px rgba(74,222,128,.10);
+    }
+    #sidebar .sidebar-toggle { border-color: rgba(255,255,255,.12); color: #52525b; }
+    #sidebar .sidebar-toggle:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.25); color: #d4d4d8; }
+
+    /* Nav section labels */
+    .nav-section-label {
+      font-size: .62rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: #52525b;
+      padding: 18px 16px 4px; pointer-events: none; user-select: none;
+    }
+
+    /* Sort/filter dropdown (base — overridden by dark theme below) */
+    .sort-select {
+      padding: 7px 28px 7px 14px;
+      border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: 30px;
+      font-size: .875rem; font-weight: 500; font-family: inherit;
+      color: #a1a1aa;
+      background: #1c1c1c url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;
+      -webkit-appearance: none; appearance: none;
+      cursor: pointer; outline: none;
+      transition: border-color .2s, color .2s;
+    }
+    .sort-select:focus { border-color: var(--jade); color: #e4e4e7; }
+    .sort-select option { background: #1c1c1c; color: #e4e4e7; }
+
+    /* ══════════════════════════════════════════════════
+       DARK THEME
+    ══════════════════════════════════════════════════ */
+    body { background: #121212; color: #e4e4e7; }
+    #main-content { background: #121212 !important; }
+    /* Settings view — suppress all browse chrome, enforce clean top */
+    #main-content.settings-active { padding-top: 40px !important; }
+    #main-content.settings-active #welcome-banner-container,
+    #main-content.settings-active #hero-search,
+    #main-content.settings-active #view-header,
+    #main-content.settings-active #stats-bar,
+    #main-content.settings-active #browse-controls,
+    #main-content.settings-active #items-grid,
+    #main-content.settings-active #empty-state { display: none !important; }
+
+    /* Cards dark */
+    .card {
+      background: #1c1c1c !important;
+      border: 1px solid rgba(255,255,255,.07) !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,.5), 0 4px 16px rgba(0,0,0,.28) !important;
+    }
+    .card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,.6), 0 8px 32px rgba(0,0,0,.4) !important;
+      transform: translateY(-3px);
+    }
+
+    /* Card text — specificity beats Tailwind */
+    .card .text-stone-900 { color: #f0f0f0 !important; }
+    .card .text-stone-700 { color: #d4d4d8 !important; }
+    .card .text-stone-600 { color: #b8b8bf !important; }
+    .card .text-stone-500 { color: #a1a1aa !important; }
+    .card .text-stone-400 { color: #71717a  !important; }
+    .card .bg-stone-50    { background: #252525 !important; }
+    .card .border-stone-200 { border-color: rgba(255,255,255,.08) !important; }
+    .card .border-stone-100 { border-color: rgba(255,255,255,.06) !important; }
+    .card .text-stone-800 { color: #e4e4e7 !important; }
+
+    /* Badges on dark cards */
+    .card .badge-exchange { background: rgba(3,105,161,.22);  color: #38bdf8; border-color: rgba(56,189,248,.2); }
+    .card .badge-lost     { background: rgba(234,88,12,.22);   color: #fb923c; border-color: rgba(251,146,60,.2); }
+    .card .badge-found    { background: rgba(29,78,216,.22);   color: #60a5fa; border-color: rgba(96,165,250,.2); }
+    .card .badge-donation { background: rgba(29,78,216,.22);   color: #60a5fa; border-color: rgba(96,165,250,.2); }
+    .card .badge-available{ background: rgba(21,128,61,.22);   color: #4ade80; border-color: rgba(74,222,128,.2); }
+    .card .badge-sold, .card .badge-returned { background: rgba(255,255,255,.06); color: #71717a; border-color: rgba(255,255,255,.1); }
+    .card .img-placeholder { background: #252525; color: #3a3a3a; }
+
+    /* Owner action buttons on dark cards */
+    .card [style*="background:#f1f5f9"] { background: #252525 !important; color: #a1a1aa !important; }
+    .card [style*="background:#f0fdf4"] { background: rgba(22,163,74,.12) !important; color: #4ade80 !important; }
+    .card [style*="background:#fef2f2"] { background: rgba(220,38,38,.12) !important; color: #f87171 !important; }
+    .card [style*="background:#fef3c7"] { background: rgba(217,119,6,.12)  !important; color: #fbbf24 !important; }
+    .card [style*="border-top:1px solid var(--border)"] { border-color: rgba(255,255,255,.07) !important; }
+
+    /* Filter pills dark */
+    .filter-tab:not(.active) {
+      background: #1c1c1c;
+      border-color: rgba(255,255,255,.1);
+      color: #a1a1aa;
+    }
+    .filter-tab:not(.active):hover {
+      background: rgba(22,163,74,.06);
+      border-color: rgba(74,222,128,.4);
+      color: #4ade80;
+    }
+
+    /* Hero search dark */
+    .hero-search-input {
+      background: #1a1a1a !important;
+      border-color: rgba(34,197,94,.28) !important;
+      color: #e4e4e7 !important;
+      box-shadow: 0 2px 16px rgba(0,0,0,.3) !important;
+    }
+    .hero-search-input::placeholder { color: #52525b !important; }
+    .hero-search-input:focus {
+      border-color: var(--jade) !important;
+      box-shadow: 0 0 0 4px rgba(22,163,74,.08) !important;
+    }
+    .hero-search-icon { color: #52525b !important; }
+
+    /* Stat cards — remove top border */
+    .stat-card { border-top: none !important; }
+    .stat-card .stat-num.text-stone-900 { color: #f0f0f0 !important; }
+
+    /* View header on dark bg */
+    #view-title    { color: #f4f4f5 !important; }
+    #view-subtitle { color: #71717a  !important; }
+
+    /* Hamburger on dark bg */
+    .hamburger-view { border-color: rgba(255,255,255,.15) !important; color: #71717a !important; }
+    .hamburger-view:hover { border-color: rgba(74,222,128,.4) !important; color: #4ade80 !important; background: rgba(22,163,74,.08) !important; }
+
+    /* Empty & error states */
+    #empty-state { color: #3a3a3a; }
+    #empty-state p { color: #71717a; }
+
+    /* Form fields dark */
+    .field { background: #252525 !important; border-color: rgba(255,255,255,.12) !important; color: #e4e4e7 !important; }
+    .field:focus { border-color: var(--jade) !important; background: #2a2a2a !important; }
+    .field::placeholder { color: #52525b !important; }
+    .form-label { color: #71717a !important; }
+    label.form-label { color: #71717a !important; }
+
+    /* Settings dark */
+    .settings-panel { background: #1a1a1a !important; border: 1px solid #2c2c2c !important; border-radius: 15px !important; padding: 32px !important; }
+    .settings-panel h2.text-stone-900 { color: #f0f0f0 !important; }
+    .settings-panel .text-stone-500 { color: #a1a1aa !important; }
+    .settings-panel .font-semibold.text-stone-900 { color: #d4d4d8 !important; }
+    /* Horizontal settings tabs */
+    .settings-htabs {
+      display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: 24px;
+    }
+    .settings-htab {
+      background: none; border: none; border-bottom: 2px solid transparent;
+      color: #71717a; font-size: .875rem; font-weight: 600; padding: 12px 22px;
+      cursor: pointer; margin-bottom: -1px; font-family: inherit;
+      transition: color .2s, border-color .2s;
+    }
+    .settings-htab.active { color: #4ade80 !important; border-bottom-color: #22c55e !important; }
+    .settings-htab:hover:not(.active) { color: #a1a1aa; }
+    /* Sub-card inside settings panel */
+    .settings-sub-card {
+      background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 12px; padding: 24px; margin-top: 24px;
+    }
+
+    /* ── AI View ── */
+    #main-content.ai-active { padding-top: 40px !important; }
+    #main-content.ai-active #welcome-banner-container,
+    #main-content.ai-active #hero-search,
+    #main-content.ai-active #view-header,
+    #main-content.ai-active #stats-bar,
+    #main-content.ai-active #browse-controls,
+    #main-content.ai-active #items-grid,
+    #main-content.ai-active #empty-state { display: none !important; }
+    .chat-container {
+      max-width: 900px; margin: 0 auto;
+      background: #1a1a1a; border-radius: 15px; border: 1px solid #2c2c2c;
+      display: flex; flex-direction: column; height: 70vh; overflow: hidden;
+    }
+    .suggestion-chip {
+      background: #121212; border: 1px solid #28a745; color: #28a745;
+      padding: 8px 16px; border-radius: 20px; cursor: pointer;
+      font-size: .8rem; font-weight: 500; font-family: inherit;
+      transition: background .25s, color .25s;
+    }
+    .suggestion-chip:hover { background: #28a745; color: #fff; }
+    .ai-message {
+      background: #262626; color: #e0e0e0;
+      border-radius: 12px 12px 12px 2px; padding: 14px 16px;
+      border-left: 4px solid #28a745; font-size: .875rem;
+      white-space: pre-line; line-height: 1.6; flex-shrink: 0;
+    }
+    .user-message {
+      background: rgba(40,167,69,.1); color: #d4d4d8;
+      border-radius: 12px 12px 2px 12px; padding: 12px 16px;
+      font-size: .875rem; white-space: pre-line; max-width: 75%; flex-shrink: 0;
+    }
+    #ai-input { background: #121212 !important; border-color: #2c2c2c !important; }
+    #ai-input:focus { border-color: #28a745 !important; box-shadow: 0 0 8px rgba(40,167,69,.25) !important; background: #0f0f0f !important; }
+    .btn-ai-send {
+      background: #28a745; border: none; border-radius: 10px;
+      width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #fff; transition: background .2s; flex-shrink: 0;
+    }
+    .btn-ai-send:hover { background: #22c55e; }
+    .btn-ai-send:disabled { background: #2d4a36; cursor: not-allowed; }
+    #ai-messages { scrollbar-width: thin; scrollbar-color: #2c2c2c transparent; }
+
+    /* Admin table dark */
+    #admin-view thead { background: #252525 !important; }
+    #admin-view .text-stone-500 { color: #71717a !important; }
+    #admin-view .text-stone-700 { color: #d4d4d8 !important; }
+    #admin-view .border-b { border-color: rgba(255,255,255,.06) !important; }
+
+    /* ── Full-width banner ── */
+    #welcome-banner-container { margin: -36px -36px 32px; }
+    .welcome-banner {
+      border-radius: 0;
+      max-width: none;
+      margin: 0;
+      padding: 30px 0;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Search row ── */
+    .hero-search-row {
+      display: flex; align-items: center; gap: 10px;
+      max-width: 660px; margin: 0 auto;
+    }
+    .hero-search-row .hero-search-wrap { flex: 1; max-width: none; margin: 0; }
+
+    /* ── Filter toggle button ── */
+    .filter-toggle-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 14px 18px;
+      background: #1c1c1c;
+      border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      color: #a1a1aa;
+      font-size: .875rem; font-weight: 500; font-family: inherit;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: all .2s;
+    }
+    .filter-toggle-btn:hover  { border-color: rgba(74,222,128,.4); color: #4ade80; background: rgba(22,163,74,.06); }
+    .filter-toggle-btn.active { border-color: rgba(74,222,128,.5); color: #4ade80; background: rgba(22,163,74,.1); }
+
+    /* ── Collapsible filter panel ── */
+    #browse-controls {
+      max-width: 660px; margin: 0 auto !important;
+      max-height: 0; overflow: hidden; opacity: 0;
+      margin-bottom: 0 !important;
+      transition: max-height .35s cubic-bezier(0.4,0,.2,1), opacity .25s ease;
+    }
+    #browse-controls.open {
+      max-height: 120px; opacity: 1;
+      padding-top: 14px; margin-bottom: 20px !important;
+    }
+
+    /* ── Filter panel — grid layout when open ── */
+    #browse-controls.open {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+      gap: 16px 20px;
+      max-height: 320px;
+      padding: 18px 20px;
+      background: #161616;
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px;
+      margin-bottom: 24px !important;
+    }
+    .filter-group-label {
+      font-size: .62rem; font-weight: 700; letter-spacing: .11em;
+      text-transform: uppercase; color: #52525b; margin-bottom: 9px;
+    }
+    .filter-chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .filter-chip {
+      padding: 5px 11px; border-radius: 20px;
+      font-size: .78rem; font-weight: 500; font-family: inherit;
+      cursor: pointer; background: #252525;
+      border: 1px solid rgba(255,255,255,.1); color: #a1a1aa;
+      transition: all .15s;
+    }
+    .filter-chip:hover  { border-color: rgba(74,222,128,.4); color: #4ade80; }
+    .filter-chip.active { background: rgba(22,163,74,.15); border-color: #22c55e; color: #4ade80; }
+    .filter-num-row { display: flex; align-items: center; gap: 7px; }
+    .filter-num-input {
+      flex: 1; min-width: 0; padding: 7px 10px;
+      border: 1px solid rgba(255,255,255,.1); border-radius: 9px;
+      background: #252525; color: #e4e4e7;
+      font-size: .82rem; font-family: inherit; outline: none;
+      transition: border-color .2s;
+    }
+    .filter-num-input:focus { border-color: var(--jade); }
+    .filter-num-input::placeholder { color: #52525b; }
+    .filter-num-input::-webkit-outer-spin-button,
+    .filter-num-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .filter-num-input[type=number] { -moz-appearance: textfield; }
+    .filter-num-sep { color: #52525b; font-size: .8rem; flex-shrink: 0; }
+    .filter-sort-select {
+      width: 100%; padding: 7px 28px 7px 12px;
+      border: 1px solid rgba(255,255,255,.1); border-radius: 9px;
+      background: #252525 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center;
+      color: #a1a1aa; font-size: .82rem; font-family: inherit;
+      -webkit-appearance: none; appearance: none; outline: none; cursor: pointer;
+    }
+    .filter-sort-select:focus { border-color: var(--jade); color: #e4e4e7; }
+    .filter-sort-select option { background: #252525; }
+
+    /* ── Dark auth screen ── */
+    #auth-screen { background: #0f0f0f !important; }
+    .auth-card {
+      background: #1a1a1a !important;
+      border: 1px solid #2c2c2c !important;
+      border-radius: 15px !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,.5) !important;
+    }
+    #auth-screen .text-stone-900 { color: #f4f4f5 !important; }
+    #auth-screen .text-stone-500 { color: #71717a  !important; }
+    .auth-card .text-stone-400   { color: #52525b  !important; }
+    .auth-card .border-stone-100 { border-color: rgba(255,255,255,.08) !important; }
+    #tab-login  { color: #4ade80 !important; border-color: #22c55e !important; }
+    #tab-signup { color: #52525b !important; }
+    #tab-signup:hover { color: #a1a1aa !important; }
+    .auth-divider { color: #3f3f46 !important; }
+    .auth-divider::before, .auth-divider::after { background: rgba(255,255,255,.07) !important; }
+    .btn-google {
+      background: #252525 !important; border-color: rgba(255,255,255,.1) !important;
+      color: #e4e4e7 !important;
+    }
+    .btn-google:hover { background: #2e2e2e !important; }
+    /* Auth inputs — deep dark with TCU-green focus */
+    #auth-screen .field {
+      background: #121212 !important;
+      border: 1px solid #333 !important;
+      color: #e4e4e7 !important;
+      border-radius: 8px !important;
+      transition: border-color .3s, box-shadow .3s, background .3s;
+    }
+    #auth-screen .field:focus {
+      border-color: #28a745 !important;
+      box-shadow: 0 0 8px rgba(40,167,69,.3) !important;
+      background: #161616 !important;
+      outline: none !important;
+    }
+    #auth-screen .field::placeholder { color: #555 !important; }
+    #auth-screen select.field { cursor: pointer; }
+    #auth-screen select.field option { background: #1a1a1a; color: #e4e4e7; }
+    .helper-text { color: #555; font-size: .75rem; margin-top: 5px; display: block; line-height: 1.4; }
+    #auth-screen .form-label, #auth-screen label.form-label { color: #52525b !important; }
+    .auth-welcome {
+      font-weight: 800; font-size: 1.4rem; letter-spacing: -.03em;
+      color: #f4f4f5; margin-bottom: 6px;
+    }
+    .auth-welcome-sub { font-size: .8rem; color: #52525b; margin-bottom: 22px; }
+    .btn-guest {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: transparent; border: 1px solid rgba(255,255,255,.1); border-radius: 9px;
+      padding: 11px 24px; font-size: .875rem; font-weight: 500; cursor: pointer;
+      color: #71717a; font-family: inherit;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .btn-guest:hover { border-color: rgba(74,222,128,.3); color: #a1a1aa; background: rgba(255,255,255,.03); }
+
+    /* ── Floating Action Button ── */
+    .fab-post {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: #fff; border: none; cursor: pointer; z-index: 150;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(22,163,74,.45), 0 2px 8px rgba(0,0,0,.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .fab-post:hover { transform: scale(1.1); box-shadow: 0 6px 32px rgba(22,163,74,.6); }
+
+    /* ── Admin Dashboard Styles ── */
+    #admin-view {
+      background: #0f0f0f !important;
+      color: #fff !important;
+      min-height: 100vh;
+      padding: 0 !important;
+    }
+
+    .admin-header {
+      background: #1a1a1a;
+      padding: 32px 36px;
+      border-bottom: 1px solid #2c2c2c;
+      margin-bottom: 0;
+    }
+
+    .admin-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+      letter-spacing: -0.025em;
+    }
+
+    .admin-subtitle {
+      color: #a1a1aa;
+      margin: 8px 0 0 0;
+      font-size: 14px;
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 0;
+      background: #1a1a1a;
+      border-bottom: 1px solid #2c2c2c;
+    }
+
+    .admin-tab {
+      padding: 16px 24px;
+      background: transparent;
+      border: none;
+      color: #71717a;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .admin-tab:hover {
+      color: #d4d4d8;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .admin-tab.active {
+      color: #22c55e;
+      border-bottom-color: #22c55e;
+      background: rgba(34, 197, 94, 0.05);
+    }
+
+    .admin-content {
+      padding: 32px 36px;
+    }
+
+    .admin-card {
+      background: #1a1a1a;
+      border: 1px solid #2c2c2c;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .admin-table th {
+      background: #252525;
+      color: #a1a1aa;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 16px 20px;
+      text-align: left;
+      border-bottom: 1px solid #2c2c2c;
+    }
+
+    .admin-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2c2c2c;
+      color: #d4d4d8;
+      font-size: 14px;
+    }
+
+    .admin-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Botões de Ação do Admin */
+    .admin-action-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      margin-right: 8px;
+    }
+
+    .btn-approve {
+      background-color: #28a745; /* Verde TCU */
+      color: white;
+    }
+
+    .btn-approve:hover {
+      background-color: #218838;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-reject, .btn-delete, .btn-ban {
+      background-color: transparent;
+      border: 1px solid #dc3545; /* Vermelho Alerta */
+      color: #dc3545;
+    }
+
+    .btn-reject:hover, .btn-delete:hover, .btn-ban:hover {
+      background-color: #dc3545;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-view {
+      background-color: transparent;
+      border: 1px solid #3b82f6;
+      color: #3b82f6;
+    }
+
+    .btn-view:hover {
+      background-color: #3b82f6;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Badge de Status */
+    .status-pill {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.025em;
+    }
+
+    .status-active {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+
+    .status-pending {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+    }
+
+    .status-banned {
+      background: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+
+    /* Admin tab content */
+    .admin-tab-content {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+    }
+
+    .admin-tab-content.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
   </style>
 </head>
 <body class="min-h-screen">
@@ -371,22 +1133,20 @@
      TOAST
 ══════════════════════════════════════════════════ -->
 <div id="toast"></div>
+<div id="sidebar-backdrop" onclick="closeSidebar()"></div>
 
 <!-- ══════════════════════════════════════════════════
      AUTH SCREEN
 ══════════════════════════════════════════════════ -->
-<div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-4"
-     style="background: linear-gradient(135deg, #f0fdf4 0%, #fdfcf8 50%, #f0f9ff 100%);">
-  <div style="width:100%;max-width:440px;">
+<div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-4" style="background:#0f0f0f;">
+  <div style="width:100%;max-width:420px;">
     <!-- Logo -->
-    <div class="text-center mb-8 fade-in">
-      <div class="inline-flex items-center gap-3 mb-3">
-        <div style="width:44px;height:44px;background:var(--jade);border-radius:12px;display:flex;align-items:center;justify-content:center;">
-          <svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <span class="font-sans text-2xl font-bold text-stone-900" style="letter-spacing:-.025em;">TCU Community</span>
+    <div class="text-center mb-7 fade-in">
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--jade);border-radius:14px;margin-bottom:12px;box-shadow:0 4px 20px rgba(22,163,74,.35);">
+        <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
-      <p class="text-sm text-stone-500">Tzu Chi University · 慈濟大學</p>
+      <div class="font-sans text-xl font-bold" style="color:#f4f4f5;letter-spacing:-.025em;">TCU Community</div>
+      <p class="text-sm" style="color:#52525b;margin-top:3px;">Tzu Chi University · 慈濟大學</p>
     </div>
 
     <!-- Card -->
@@ -434,9 +1194,13 @@
           <span data-i18n="auth.google">Sign in with Google</span>
         </button>
 
-        <p class="text-center text-xs text-stone-400 mt-4">
-          Demo: use any email &amp; password to explore the UI
-        </p>
+        <div class="auth-divider">or</div>
+
+        <button type="button" onclick="enterGuestMode()" class="btn-guest" tabindex="5">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Explore as Guest →
+        </button>
+        <p class="text-center text-xs mt-3" style="color:#3f3f46;">You can browse freely. Sign in to post or contact sellers.</p>
       </div>
 
       <!-- Signup form -->
@@ -453,23 +1217,29 @@
         </div>
         <div class="mb-4">
           <label class="form-label block mb-1.5">University Email</label>
-          <input id="signup-email" type="email" class="field" placeholder="s123456@gms.tcu.edu.tw" />
+          <input id="signup-email" type="email" class="field" placeholder="s123456@gms.tzu.edu.tw" />
+          <small class="helper-text">Academic email only (@gms.tzu.edu.tw)</small>
         </div>
         <div class="mb-4">
+          <label class="form-label block mb-1.5">Department</label>
+          <select id="signup-dept" class="field" style="width:100%;">
+            <option value="" disabled selected>Select your department</option>
+            <option value="College of Medicine">College of Medicine</option>
+            <option value="College of Nursing">College of Nursing</option>
+            <option value="Humanities and Social Sciences">Humanities and Social Sciences</option>
+            <option value="Informatics and Management">Informatics and Management</option>
+          </select>
+        </div>
+        <div class="mb-6">
           <label class="form-label block mb-1.5">Password</label>
           <input id="signup-password" type="password" class="field" placeholder="Min. 8 characters" />
         </div>
-        <div class="grid grid-cols-2 gap-3 mb-6">
-          <div>
-            <label class="form-label block mb-1.5">LINE ID</label>
-            <input id="signup-line" type="text" class="field" placeholder="my_line_id" />
-          </div>
-          <div>
-            <label class="form-label block mb-1.5">Instagram</label>
-            <input id="signup-ig" type="text" class="field" placeholder="username (no @)" />
-          </div>
-        </div>
         <button onclick="handleSignup()" class="btn-primary w-full">Create Account →</button>
+        <div class="auth-divider" style="margin-top:18px;">or</div>
+        <button type="button" onclick="enterGuestMode()" class="btn-guest" style="margin-top:4px;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Explore as Guest
+        </button>
       </div>
     </div>
   </div>
@@ -482,28 +1252,27 @@
 <div id="app-screen" class="hidden flex min-h-screen">
 
   <!-- ── Sidebar ── -->
-  <aside id="sidebar" style="min-height:100vh;background:rgba(255,255,255,.96);border-right:1px solid var(--border);padding:20px 12px;position:fixed;top:0;left:0;display:flex;flex-direction:column;box-shadow:2px 0 20px rgba(0,0,0,.04);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
-    <!-- Brand + Toggle -->
-    <div class="sidebar-header flex items-center justify-between gap-3 px-1 mb-7">
-      <!-- Shield: clickable toggle in both modes -->
-      <button class="sidebar-logo-btn" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar">
+  <aside id="sidebar" style="min-height:100vh;background:#1a1a1a;border-right:1px solid rgba(255,255,255,.07);padding:20px 12px;position:fixed;top:0;left:0;display:flex;flex-direction:column;box-shadow:4px 0 32px rgba(0,0,0,.32);">
+    <!-- Brand + Close -->
+    <div class="sidebar-header flex items-center justify-between gap-3 px-1 mb-6">
+      <button class="sidebar-logo-btn" onclick="closeSidebar()" title="Close sidebar" aria-label="Close sidebar">
         <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </button>
-      <!-- Brand text (hides when collapsed) -->
-      <div class="brand-text flex-1 min-w-0">
-        <div class="font-sans font-bold text-sm text-stone-900 leading-tight truncate" style="letter-spacing:-.01em;">TCU Community</div>
-        <div class="text-xs text-stone-400" style="letter-spacing:.04em;">慈濟大學</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-sans font-bold text-sm leading-tight truncate" style="color:#f4f4f5;letter-spacing:-.01em;">TCU Community</div>
+        <div class="text-xs" style="color:#52525b;letter-spacing:.04em;">慈濟大學</div>
       </div>
-      <!-- Hamburger (hides when collapsed — shield takes over) -->
-      <button id="sidebar-hamburger" class="sidebar-toggle" onclick="toggleSidebar()" title="Collapse sidebar" aria-label="Collapse sidebar">
+      <button class="sidebar-toggle" onclick="closeSidebar()" title="Close sidebar" aria-label="Close sidebar">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
     </div>
 
     <!-- Nav -->
-    <nav class="flex flex-col gap-1 flex-1">
+    <nav class="flex flex-col flex-1" style="overflow-y:auto;">
+      <!-- MAIN section -->
+      <div class="nav-section-label">Main</div>
       <div class="nav-item active" id="nav-browse" onclick="setView('browse')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><rect x="2" y="3" width="7" height="7" rx="1"/><rect x="15" y="3" width="7" height="7" rx="1"/><rect x="2" y="14" width="7" height="7" rx="1"/><rect x="15" y="14" width="7" height="7" rx="1"/></svg>
         <span class="nav-label" data-i18n="nav.browse">Browse All</span>
@@ -516,20 +1285,34 @@
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <span class="nav-label" data-i18n="nav.lostfound">Lost &amp; Found</span>
       </div>
-      <div class="nav-item" id="nav-myitems" onclick="setView('myitems')">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span class="nav-label" data-i18n="nav.myitems">My Items</span>
+      <div class="nav-item" id="nav-donations" onclick="setView('donations')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <span class="nav-label" data-i18n="nav.donations">Donations</span>
+      </div>
+
+      <!-- ACCOUNT section -->
+      <div class="nav-section-label">Account</div>
+      <div class="nav-item" id="nav-mylistings" onclick="setView('myitems')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <span class="nav-label" data-i18n="nav.myitems">My Listings</span>
       </div>
       <div class="nav-item" id="nav-ai" onclick="setView('ai')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         <span class="nav-label" data-i18n="nav.ai">AI Assistant</span>
       </div>
-      <div class="nav-item" id="nav-profile" onclick="setView('profile')">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="9 11 12 14 15 11"/></svg>
-        <span class="nav-label" data-i18n="nav.profile">My Profile</span>
+
+      <!-- SYSTEM section -->
+      <div class="nav-section-label">System</div>
+      <div class="nav-item" id="nav-settings" onclick="setView('settings')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h.09A1.65 1.65 0 0010 3.09V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51h.09a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v.09a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span class="nav-label" data-i18n="nav.settings">Settings</span>
+      </div>
+      <div class="nav-item" id="nav-admin" onclick="setView('admin')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M12 2l7 4.5v11L12 22 5 17.5v-11L12 2z"/><path d="M12 22V12"/><path d="M5 6.5l7 4.5 7-4.5"/></svg>
+        <span class="nav-label">Admin</span>
       </div>
 
-      <div class="mt-auto pt-4 border-t border-stone-100">
+      <div class="mt-auto pt-4" style="border-top:1px solid rgba(255,255,255,.07);">
         <div class="nav-item" id="nav-post" onclick="openPostModal()">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
           <span class="nav-label" data-i18n="nav.post">Post Item</span>
@@ -538,15 +1321,15 @@
     </nav>
 
     <!-- User -->
-    <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+    <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:14px;margin-top:14px;">
       <div class="user-avatar-row flex items-center gap-2.5 px-1 mb-2">
         <div id="user-avatar-sidebar" style="width:30px;height:30px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.75rem;flex-shrink:0;">U</div>
         <div class="user-text min-w-0">
-          <div id="user-name-sidebar" class="text-sm font-500 text-stone-800 truncate">Student</div>
-          <div id="user-dept-sidebar" class="text-xs text-stone-400 truncate">Department</div>
+          <div id="user-name-sidebar" class="text-sm font-500 truncate" style="color:#e4e4e7;">Student</div>
+          <div id="user-dept-sidebar" class="text-xs truncate" style="color:#71717a;">Department</div>
         </div>
       </div>
-      <button onclick="handleLogout()" class="w-full text-left nav-item text-xs text-stone-400 hover:text-red-500">
+      <button onclick="handleLogout()" class="w-full text-left nav-item text-xs" style="color:#71717a;">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span class="nav-label" data-i18n="nav.signout">Sign Out</span>
       </button>
@@ -554,57 +1337,212 @@
   </aside>
 
   <!-- ── Main Content ── -->
-  <main id="main-content" style="flex:1;padding:36px;min-height:100vh;background:linear-gradient(160deg,#f4fef7 0%,#fdfcf8 40%,#f0f9ff 100%)">
+  <main id="main-content" style="flex:1;padding:36px;min-height:100vh;background:#121212;">
 
-    <!-- Header -->
-    <div id="view-header" class="mb-7 fade-up flex items-start justify-between gap-4">
+    <!-- Welcome Banner (Browse view — hero section, centered) -->
+    <div id="welcome-banner-container" class="hidden">
+      <div class="welcome-banner fade-up">
+        <!-- Hamburger: absolute top-left -->
+        <button onclick="openSidebar()" class="hamburger-green" aria-label="Open menu" title="Open menu">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <!-- Centered content -->
+        <h2>Welcome to TCU Marketplace!</h2>
+        <p class="banner-subtitle">Browse items, discover deals, or share something with the Tzu Chi University community.</p>
+      </div>
+    </div>
+
+    <!-- Header (non-browse views — hamburger included) -->
+    <div id="view-header" class="hidden mb-7 fade-up flex items-start gap-4">
+      <button onclick="openSidebar()" class="hamburger-view" aria-label="Open menu" title="Open menu">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
       <div>
         <h1 id="view-title" class="font-sans text-3xl text-stone-900 mb-1" style="font-weight:800;letter-spacing:-.025em;">Browse All</h1>
         <p id="view-subtitle" class="text-stone-500 text-sm">All active listings from the TCU community</p>
       </div>
-      <!-- Language switcher -->
-      <div class="lang-switcher flex-shrink-0 mt-1">
-        <button id="lang-en" class="lang-btn active" onclick="setLang('en')">EN</button>
-        <button id="lang-zh" class="lang-btn" onclick="setLang('zh')">繁中</button>
+    </div>
+
+    <!-- Hero Search + Filter toggle -->
+    <div id="hero-search" class="hidden fade-up stagger-1" style="margin-bottom:12px;">
+      <div class="hero-search-row">
+        <div class="hero-search-wrap">
+          <span class="hero-search-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </span>
+          <input id="search-input" type="text" class="hero-search-input"
+                 placeholder="Search items, textbooks, lost items…"
+                 data-i18n-placeholder="search.placeholder"
+                 oninput="renderItems()" />
+        </div>
+        <button id="filter-toggle-btn" onclick="toggleFilterPanel()" class="filter-toggle-btn" aria-label="Toggle filters">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+            <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+            <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/>
+            <line x1="17" y1="16" x2="23" y2="16"/>
+          </svg>
+          <span id="filter-btn-label">Filters</span>
+        </button>
       </div>
     </div>
 
-    <!-- Filters + Search (browse & category views) -->
-    <div id="browse-controls" class="flex items-center gap-3 mb-6 flex-wrap fade-up stagger-1">
-      <div class="flex gap-2" id="filter-tabs">
-        <button class="filter-tab active" data-filter="all"       onclick="setFilter('all')"      ><span data-i18n="filter.all">All</span></button>
-        <button class="filter-tab"        data-filter="exchange"  onclick="setFilter('exchange')" ><span data-i18n="filter.marketplace">Marketplace</span></button>
-        <button class="filter-tab"        data-filter="lost"      onclick="setFilter('lost')"     ><span data-i18n="filter.lost">Lost</span></button>
-        <button class="filter-tab"        data-filter="found"     onclick="setFilter('found')"    ><span data-i18n="filter.found">Found</span></button>
+    <!-- Filter panel (collapsible grid) -->
+    <div id="browse-controls">
+
+      <!-- Category (browse/all views) -->
+      <div class="filter-group" id="filter-grp-category">
+        <div class="filter-group-label">Category</div>
+        <div class="filter-chip-group">
+          <button class="filter-chip active" data-cat="all"       onclick="setPanelCategory('all',this)">All</button>
+          <button class="filter-chip"        data-cat="exchange"  onclick="setPanelCategory('exchange',this)">Sale</button>
+          <button class="filter-chip"        data-cat="donation"  onclick="setPanelCategory('donation',this)">Donate</button>
+          <button class="filter-chip"        data-cat="lostfound" onclick="setPanelCategory('lostfound',this)">Lost/Found</button>
+        </div>
       </div>
-      <div class="ml-auto relative">
-        <svg width="15" height="15" fill="none" stroke="var(--muted)" stroke-width="2" viewBox="0 0 24 24"
-             style="position:absolute;left:11px;top:50%;transform:translateY(-50%);">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input id="search-input" type="text" class="field" placeholder="Search items…" data-i18n-placeholder="search.placeholder"
-               style="padding-left:35px;width:220px;" oninput="renderItems()" />
+
+      <!-- Condition (marketplace only) -->
+      <div class="filter-group hidden" id="filter-grp-condition">
+        <div class="filter-group-label">Condition</div>
+        <div class="filter-chip-group">
+          <button class="filter-chip active" data-cond=""        onclick="setPanelCondition('',this)">Any</button>
+          <button class="filter-chip"        data-cond="new"     onclick="setPanelCondition('new',this)">New</button>
+          <button class="filter-chip"        data-cond="likenew" onclick="setPanelCondition('likenew',this)">Like New</button>
+          <button class="filter-chip"        data-cond="used"    onclick="setPanelCondition('used',this)">Used</button>
+        </div>
+      </div>
+
+      <!-- Product Category (marketplace only) -->
+      <div class="filter-group hidden" id="filter-grp-product-cat">
+        <div class="filter-group-label">Category</div>
+        <div class="filter-chip-group">
+          <button class="filter-chip active" data-pcat=""            onclick="setPanelProductCat('',this)">All</button>
+          <button class="filter-chip"        data-pcat="books"       onclick="setPanelProductCat('books',this)">Books</button>
+          <button class="filter-chip"        data-pcat="electronics" onclick="setPanelProductCat('electronics',this)">Electronics</button>
+          <button class="filter-chip"        data-pcat="clothing"    onclick="setPanelProductCat('clothing',this)">Clothing</button>
+          <button class="filter-chip"        data-pcat="food"        onclick="setPanelProductCat('food',this)">Food</button>
+          <button class="filter-chip"        data-pcat="other"       onclick="setPanelProductCat('other',this)">Other</button>
+        </div>
+      </div>
+
+      <!-- Donation Condition (donations only) -->
+      <div class="filter-group hidden" id="filter-grp-don-condition">
+        <div class="filter-group-label">Condition</div>
+        <div class="filter-chip-group">
+          <button class="filter-chip active" data-dcon=""       onclick="setPanelDonCondition('',this)">Any</button>
+          <button class="filter-chip"        data-dcon="good"   onclick="setPanelDonCondition('good',this)">Good</button>
+          <button class="filter-chip"        data-dcon="fair"   onclick="setPanelDonCondition('fair',this)">Fair</button>
+          <button class="filter-chip"        data-dcon="repair" onclick="setPanelDonCondition('repair',this)">Needs Repair</button>
+        </div>
+      </div>
+
+      <!-- Urgency (donations only) -->
+      <div class="filter-group hidden" id="filter-grp-urgency">
+        <div class="filter-group-label">Pick-up</div>
+        <div class="filter-chip-group">
+          <button class="filter-chip active" data-urgency=""       onclick="setPanelUrgency('',this)">Any</button>
+          <button class="filter-chip"        data-urgency="urgent" onclick="setPanelUrgency('urgent',this)">Urgent</button>
+        </div>
+      </div>
+
+      <!-- Location (lostfound only) -->
+      <div class="filter-group hidden" id="filter-grp-location">
+        <div class="filter-group-label">Location</div>
+        <div class="filter-chip-group">
+          <button class="filter-chip active" data-loc=""          onclick="setPanelLocation('',this)">Anywhere</button>
+          <button class="filter-chip"        data-loc="cafeteria" onclick="setPanelLocation('cafeteria',this)">Cafeteria</button>
+          <button class="filter-chip"        data-loc="library"   onclick="setPanelLocation('library',this)">Library</button>
+          <button class="filter-chip"        data-loc="dorm"      onclick="setPanelLocation('dorm',this)">Dormitory</button>
+          <button class="filter-chip"        data-loc="lab"       onclick="setPanelLocation('lab',this)">Lab/Class</button>
+        </div>
+      </div>
+
+      <!-- Price Range -->
+      <div class="filter-group">
+        <div class="filter-group-label">Price (NT$)</div>
+        <div class="filter-num-row">
+          <input type="number" id="filter-price-min" class="filter-num-input" placeholder="Min" min="0" oninput="renderItems()" />
+          <span class="filter-num-sep">—</span>
+          <input type="number" id="filter-price-max" class="filter-num-input" placeholder="Max" min="0" oninput="renderItems()" />
+        </div>
+      </div>
+
+      <!-- Date Posted (browse views) -->
+      <div class="filter-group" id="filter-grp-date">
+        <div class="filter-group-label">Date Posted</div>
+        <div class="filter-chip-group">
+          <button class="filter-chip active" data-days="0"  onclick="setPanelDate(0,this)">All time</button>
+          <button class="filter-chip"        data-days="1"  onclick="setPanelDate(1,this)">24 h</button>
+          <button class="filter-chip"        data-days="7"  onclick="setPanelDate(7,this)">Week</button>
+          <button class="filter-chip"        data-days="30" onclick="setPanelDate(30,this)">Month</button>
+        </div>
+      </div>
+
+      <!-- Sort By -->
+      <div class="filter-group">
+        <div class="filter-group-label">Sort By</div>
+        <select id="sort-select" class="filter-sort-select" onchange="renderItems()">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- Donations promo banner (shown only in donations view) -->
+    <div id="donations-promo" class="hidden fade-up">
+      <div style="background:linear-gradient(90deg,#161616,rgba(34,197,94,.08));border:1px solid rgba(34,197,94,.28);padding:16px 22px;border-radius:14px;margin-bottom:22px;display:flex;align-items:center;gap:16px;">
+        <span style="font-size:2rem;flex-shrink:0;">🌍</span>
+        <div>
+          <div style="font-weight:700;font-size:.88rem;color:#4ade80;margin-bottom:4px;">Did you know?</div>
+          <div style="font-size:.82rem;color:#a1a1aa;line-height:1.55;">Donating items reduces waste and helps a classmate save money. Your contribution makes a real difference in the TCU community!</div>
+        </div>
       </div>
     </div>
 
     <!-- Stats Bar -->
-    <div id="stats-bar" class="grid grid-cols-3 gap-4 mb-7 fade-up stagger-2">
-      <div id="stat-card-total" class="card stat-card p-5" style="border-top:3px solid #1c1917;" onclick="filterByStat('total')" role="button" tabindex="0">
+    <div id="stats-bar" class="grid gap-3 mb-7 fade-up stagger-3" style="grid-template-columns:repeat(4,1fr);max-width:620px;margin:0 auto 28px;">
+      <div id="stat-card-total" class="card stat-card p-4" onclick="filterByStat('total')" role="button" tabindex="0">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+          <div class="stat-label" data-i18n="stat.active">Active</div>
+          <svg width="15" height="15" fill="none" stroke="#a1a1aa" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;opacity:.5;"><rect x="2" y="3" width="7" height="7" rx="1"/><rect x="15" y="3" width="7" height="7" rx="1"/><rect x="2" y="14" width="7" height="7" rx="1"/><rect x="15" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
         <div class="stat-num text-stone-900" id="stat-total">—</div>
-        <div class="stat-label" data-i18n="stat.active">Active Listings</div>
       </div>
-      <div id="stat-card-exchange" class="card stat-card p-5" style="border-top:3px solid var(--jade);" onclick="filterByStat('exchange')" role="button" tabindex="0">
+      <div id="stat-card-exchange" class="card stat-card p-4" onclick="filterByStat('exchange')" role="button" tabindex="0">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+          <div class="stat-label" data-i18n="stat.sale">For Sale</div>
+          <svg width="15" height="15" fill="none" stroke="#22c55e" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;opacity:.7;"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        </div>
         <div class="stat-num text-jade-700" id="stat-exchange">—</div>
-        <div class="stat-label" data-i18n="stat.sale">For Sale</div>
       </div>
-      <div id="stat-card-lf" class="card stat-card p-5" style="border-top:3px solid #d97706;" onclick="filterByStat('lf')" role="button" tabindex="0">
+      <div id="stat-card-lf" class="card stat-card p-4" onclick="filterByStat('lf')" role="button" tabindex="0">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+          <div class="stat-label" data-i18n="stat.lf">Lost/Found</div>
+          <svg width="15" height="15" fill="none" stroke="#d97706" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;opacity:.7;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
         <div class="stat-num text-amber-600" id="stat-lf">—</div>
-        <div class="stat-label" data-i18n="stat.lf">Lost &amp; Found</div>
+      </div>
+      <div id="stat-card-donation" class="card stat-card p-4" onclick="filterByStat('donation')" role="button" tabindex="0">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+          <div class="stat-label" data-i18n="stat.donation">Donations</div>
+          <svg width="15" height="15" fill="none" stroke="#3b82f6" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;opacity:.7;"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </div>
+        <div class="stat-num" style="color:#3b82f6;" id="stat-donation">—</div>
       </div>
     </div>
 
     <!-- Items Grid -->
-    <div id="items-grid" class="grid grid-cols-1 gap-5" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr));">
+    <div id="items-grid" class="grid grid-cols-1 gap-5" style="grid-template-columns:repeat(3, 1fr); gap:25px;">
       <!-- populated by JS -->
     </div>
 
@@ -629,132 +1567,324 @@
       <button onclick="retryLoad()" class="btn-primary">Try Again</button>
     </div>
 
-    <!-- My Items view -->
-    <div id="myitems-view" class="hidden">
-      <div id="myitems-grid" class="grid gap-5" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr));">
+    <!-- ── My Listings standalone view ── -->
+    <div id="myitems-standalone-view" class="hidden fade-up">
+
+      <!-- Page header row -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px;">
+        <button onclick="openSidebar()" class="hamburger-view" aria-label="Open menu" title="Open menu">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div>
+          <h1 style="font-weight:800;font-size:1.75rem;letter-spacing:-.025em;color:#f4f4f5;line-height:1.2;">My Listings</h1>
+          <p style="font-size:.875rem;color:#71717a;margin-top:3px;">Manage and track all your posted items.</p>
+        </div>
+        <button type="button" onclick="openPostModal()" class="btn-primary" style="margin-left:auto;flex-shrink:0;padding:9px 20px;font-size:.875rem;">+ Post Item</button>
       </div>
-      <div id="myitems-empty" class="hidden text-center py-20 text-stone-400">
-        <p class="font-500 text-lg">You haven't posted anything yet</p>
-        <button type="button" onclick="openPostModal()" class="btn-primary mt-4">Post Your First Item</button>
+
+      <!-- Mini status bar -->
+      <div style="display:flex;align-items:center;padding:12px 20px;background:#191919;border:1px solid rgba(255,255,255,.07);border-radius:12px;margin-bottom:28px;width:fit-content;">
+        <div style="display:flex;align-items:center;gap:8px;padding-right:20px;">
+          <span style="font-size:.65rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#52525b;">Total</span>
+          <span id="my-stat-total" style="font-weight:800;font-size:1.05rem;color:#e4e4e7;">0</span>
+        </div>
+        <div style="width:1px;height:22px;background:rgba(255,255,255,.08);flex-shrink:0;"></div>
+        <div style="display:flex;align-items:center;gap:8px;padding:0 20px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0;"></span>
+          <span style="font-size:.65rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#52525b;">Active</span>
+          <span id="my-stat-active" style="font-weight:800;font-size:1.05rem;color:#4ade80;">0</span>
+        </div>
+        <div style="width:1px;height:22px;background:rgba(255,255,255,.08);flex-shrink:0;"></div>
+        <div style="display:flex;align-items:center;gap:8px;padding-left:20px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#52525b;flex-shrink:0;"></span>
+          <span style="font-size:.65rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#52525b;">Sold / Closed</span>
+          <span id="my-stat-closed" style="font-weight:800;font-size:1.05rem;color:#71717a;">0</span>
+        </div>
       </div>
+
+      <!-- Items grid -->
+      <div id="myitems-grid" class="grid gap-5" style="grid-template-columns:repeat(3, 1fr); gap:25px;"></div>
+
+      <!-- Empty state -->
+      <div id="myitems-empty" class="hidden">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52vh;padding:60px 24px;background:#1a1a1a;border-radius:18px;border:2px dashed rgba(255,255,255,.1);">
+          <div style="font-size:3rem;margin-bottom:18px;">📭</div>
+          <p style="font-weight:700;font-size:1.1rem;color:#d4d4d8;margin-bottom:8px;">No listings yet</p>
+          <p style="font-size:.875rem;color:#71717a;margin-bottom:28px;text-align:center;max-width:300px;line-height:1.6;">Share textbooks, electronics, or anything a fellow TCU student might need.</p>
+          <button type="button" onclick="openPostModal()" class="btn-primary" style="padding:12px 28px;font-size:.9rem;">Post Your First Item</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- ── AI Assistant view ── -->
-    <div id="ai-view" class="hidden" style="max-width:680px;">
-      <!-- Quick suggestions -->
-      <div class="flex flex-wrap gap-2 mb-5 fade-up">
-        <button type="button" onclick="aiSuggest('How do I post an item?')"
-          class="text-xs px-3 py-1.5 rounded-full border border-jade-200 text-jade-700 bg-jade-50 hover:bg-jade-100 transition-colors">
-          How do I post an item?
+    <div id="ai-view" class="hidden">
+      <!-- Top row: hamburger + title -->
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+        <button onclick="openSidebar()" class="hamburger-view" aria-label="Open menu" title="Open menu">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
         </button>
-        <button type="button" onclick="aiSuggest('How do I contact a seller?')"
-          class="text-xs px-3 py-1.5 rounded-full border border-jade-200 text-jade-700 bg-jade-50 hover:bg-jade-100 transition-colors">
-          How to contact a seller?
-        </button>
-        <button type="button" onclick="aiSuggest('What is the verification process?')"
-          class="text-xs px-3 py-1.5 rounded-full border border-jade-200 text-jade-700 bg-jade-50 hover:bg-jade-100 transition-colors">
-          What is verification?
-        </button>
-        <button type="button" onclick="aiSuggest('How does the 7-day expiry work?')"
-          class="text-xs px-3 py-1.5 rounded-full border border-jade-200 text-jade-700 bg-jade-50 hover:bg-jade-100 transition-colors">
-          7-day expiry?
-        </button>
-        <button type="button" onclick="aiSuggest('Search: medical textbook')"
-          class="text-xs px-3 py-1.5 rounded-full border border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
-          🔍 Search textbooks
-        </button>
+        <h1 style="font-size:2rem;font-weight:700;color:#ffffff;line-height:1.1;letter-spacing:-.02em;margin:0;">TCU Community Assistant</h1>
       </div>
 
-      <!-- Chat messages -->
-      <div id="ai-messages" class="card p-4 mb-3 overflow-y-auto flex flex-col gap-3 fade-up stagger-1"
-           style="min-height:240px;max-height:420px;">
-        <div class="flex gap-3 items-start">
-          <div style="width:32px;height:32px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
-          <div class="flex-1 rounded-xl rounded-tl-sm p-3 text-sm text-stone-700" style="background:#f5f5f4;">
-            Hello! I'm the TCU Community Assistant. I can help you navigate the platform, answer questions about posting items, or search for specific listings. How can I help you today?
+      <!-- Chat container -->
+      <div class="chat-container">
+        <!-- Quick suggestion chips -->
+        <div style="padding:16px 20px;border-bottom:1px solid #2c2c2c;display:flex;flex-wrap:wrap;gap:8px;">
+          <button type="button" onclick="aiSuggest('How do I verify my student ID?')" class="suggestion-chip">Verify Student ID</button>
+          <button type="button" onclick="aiSuggest('How do I find textbooks on the marketplace?')" class="suggestion-chip">Find Textbooks</button>
+          <button type="button" onclick="aiSuggest('What are the campus donation rules?')" class="suggestion-chip">Campus Donation Rules</button>
+          <button type="button" onclick="aiSuggest('How do I report a lost item?')" class="suggestion-chip">Report Lost Item</button>
+        </div>
+
+        <!-- Chat messages -->
+        <div id="ai-messages" class="flex flex-col gap-3 overflow-y-auto" style="flex:1;padding:20px;">
+          <div class="flex gap-3 items-start">
+            <div style="width:32px;height:32px;border-radius:50%;background:#28a745;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
+            <div class="ai-message flex-1">Hello! I'm the TCU Community Assistant. I can help you navigate the platform, answer questions about posting items, or search for specific listings. How can I help you today?</div>
           </div>
         </div>
-      </div>
 
-      <!-- Input -->
-      <div class="flex gap-2 fade-up stagger-2">
-        <input id="ai-input" type="text" class="field flex-1" placeholder="Ask a question or type 'Search: keyword'…"
-               onkeydown="if(event.key==='Enter')sendAiMessage()" />
-        <button type="button" onclick="sendAiMessage()" class="btn-primary" style="padding-left:20px;padding-right:20px;">Send</button>
+        <!-- Input row -->
+        <div style="padding:14px 20px;border-top:1px solid #2c2c2c;display:flex;gap:10px;align-items:center;">
+          <input id="ai-input" type="text" class="field flex-1" placeholder="Ask a question or type 'Search: keyword'…"
+                 onkeydown="if(event.key==='Enter')sendAiMessage()" />
+          <button type="button" onclick="sendAiMessage()" class="btn-ai-send" title="Send">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- ── My Profile view ── -->
-    <div id="profile-view" class="hidden" style="max-width:680px;">
-      <!-- Verification status banner -->
-      <div id="verification-banner" class="rounded-xl p-4 mb-5 fade-up" style="background:#fef3c7;border:1px solid #fde68a;">
-        <div class="flex items-start gap-3">
-          <svg width="18" height="18" fill="none" stroke="#92400e" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <div>
-            <p id="verify-status-text" class="text-sm font-600" style="color:#92400e;">⏳ Verification Pending</p>
-            <p id="verify-status-sub" class="text-xs mt-0.5" style="color:#b45309;">Upload your student ID below to unlock posting privileges.</p>
-          </div>
-        </div>
-      </div>
+    <!-- ── Settings workspace ── -->
+    <div id="profile-view" class="hidden">
+      <div style="max-width:1200px;margin:0 auto;">
 
-      <!-- Profile details card -->
-      <div class="card p-8 mb-5 fade-up stagger-1">
-        <h3 class="font-sans font-bold text-stone-900 mb-6" style="font-size:1.05rem;letter-spacing:-.01em;">Profile Details</h3>
-        <div class="grid grid-cols-2 gap-4 mb-5">
-          <div>
-            <label class="form-label block mb-1.5">Full Name</label>
-            <input id="profile-name" type="text" class="field" placeholder="Chen Yu-Ling" />
-          </div>
-          <div>
-            <label class="form-label block mb-1.5">Student ID</label>
-            <input id="profile-student-id" type="text" class="field" placeholder="B10901001" readonly
-                   style="background:#f9f9f9;color:var(--muted);cursor:not-allowed;" />
-          </div>
-          <div>
-            <label class="form-label block mb-1.5">Department</label>
-            <input id="profile-dept" type="text" class="field" placeholder="e.g., Medicine" />
-          </div>
-          <div>
-            <label class="form-label block mb-1.5">Phone</label>
-            <input id="profile-phone" type="text" class="field" placeholder="+886912345678" />
-          </div>
-          <div>
-            <label class="form-label block mb-1.5">LINE ID</label>
-            <input id="profile-line" type="text" class="field" placeholder="my_line_id" />
-          </div>
-          <div>
-            <label class="form-label block mb-1.5">Instagram</label>
-            <input id="profile-ig" type="text" class="field" placeholder="username (no @)" />
-          </div>
+        <!-- Settings page top row: hamburger + title -->
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+          <button onclick="openSidebar()" class="hamburger-view" aria-label="Open menu" title="Open menu">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <h1 style="font-size:2rem;font-weight:700;color:#ffffff;line-height:1.1;letter-spacing:-.02em;margin:0;">Account Settings</h1>
         </div>
-        <button type="button" onclick="saveProfile()" class="btn-primary">Save Profile</button>
-      </div>
 
-      <!-- Verification card -->
-      <div class="card p-8 fade-up stagger-2">
-        <h3 class="font-sans font-bold text-stone-900 mb-1" style="font-size:1.05rem;letter-spacing:-.01em;">Student ID Verification</h3>
-        <p class="text-sm text-stone-500 mb-4">Upload a clear photo of your Tzu Chi University student ID card to unlock posting privileges. Admins review within 1–2 business days.</p>
-        <div class="mb-3">
-          <label class="form-label block mb-2">Student ID Photo</label>
-          <input id="profile-id-img" type="hidden" />
-          <label for="profile-id-file" class="btn-upload">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <span id="profile-id-label">Upload Photo from Device</span>
-          </label>
-          <input id="profile-id-file" type="file" accept="image/*" class="hidden" onchange="handleStudentIdUpload(event)" />
-          <div id="profile-id-preview" class="hidden mt-3">
-            <img id="profile-id-preview-img" src="" alt="Student ID preview"
-                 class="rounded-xl border border-stone-200 object-cover" style="max-height:180px;max-width:100%;" />
+        <!-- Horizontal tab nav -->
+        <div class="settings-htabs" style="margin-bottom:28px;">
+          <button type="button" class="settings-htab active" data-section="general" id="settings-tab-general" onclick="setSettingsSection('general')">General Settings</button>
+          <button type="button" class="settings-htab" data-section="studentid" id="settings-tab-studentid" onclick="setSettingsSection('studentid')">Student ID</button>
+          <button type="button" class="settings-htab" data-section="security" id="settings-tab-security" onclick="setSettingsSection('security')">Security</button>
+        </div>
+
+        <!-- General Settings Panel -->
+        <section id="settings-general-panel" class="settings-panel">
+          <h2 class="font-sans text-2xl font-bold text-stone-900">General Settings</h2>
+          <p class="text-sm text-stone-500 mt-1">Update your profile information and ID verification.</p>
+
+          <div class="grid gap-6 mt-6">
+            <!-- Avatar -->
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center" style="padding:20px;background:#1e1e1e;border:1px solid #2c2c2c;border-radius:12px;">
+              <div class="profile-avatar" onclick="document.getElementById('profile-picture-file').click()">
+                <img id="profile-avatar-img" src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=200&auto=format&fit=crop&q=80" alt="Profile avatar" style="width:100%;height:100%;object-fit:cover;" />
+              </div>
+              <div class="flex-1">
+                <p class="font-semibold text-stone-900">Profile picture</p>
+                <p class="text-sm text-stone-500 mt-1">Appears across your profile and listings.</p>
+                <div class="flex flex-wrap gap-2 mt-3">
+                  <button type="button" class="btn-primary" onclick="document.getElementById('profile-picture-file').click()">Change Picture</button>
+                  <button type="button" class="btn-ghost" onclick="removeProfilePicture()">Remove</button>
+                </div>
+              </div>
+            </div>
+
+            <input id="profile-picture-file" type="file" accept="image/*" class="hidden" onchange="handleProfilePictureUpload(event)" />
+            <input id="profile-avatar-url" type="hidden" />
+
+            <!-- Fields -->
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label class="form-label block mb-1.5">Full Name</label>
+                <input id="profile-name" type="text" class="field" placeholder="Chen Yu-Ling" />
+              </div>
+              <div>
+                <label class="form-label block mb-1.5">Student ID</label>
+                <input id="profile-student-id" type="text" class="field" placeholder="B10901001" readonly style="background:#121212;color:#555;cursor:not-allowed;" />
+              </div>
+              <div>
+                <label class="form-label block mb-1.5">Department</label>
+                <input id="profile-dept" type="text" class="field" placeholder="e.g., College of Medicine" />
+              </div>
+              <div>
+                <label class="form-label block mb-1.5">University Email</label>
+                <input id="profile-email" type="email" class="field" placeholder="s123456@gms.tzu.edu.tw" readonly style="background:#121212;color:#555;cursor:not-allowed;" />
+              </div>
+              <div>
+                <label class="form-label block mb-1.5">Language</label>
+                <div class="flex gap-2">
+                  <button type="button" class="lang-btn active" id="lang-en" onclick="setLang('en')">EN</button>
+                  <button type="button" class="lang-btn" id="lang-zh" onclick="setLang('zh')">繁中</button>
+                </div>
+              </div>
+              <!-- School ID Verification -->
+              <div class="sm:col-span-2">
+                <label class="form-label block mb-1">School ID Verification</label>
+                <p class="helper-text mb-3">Upload a photo of your student card</p>
+                <input id="profile-id-img" type="hidden" />
+                <label for="profile-id-file" class="btn-upload">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <span id="profile-id-label">Upload Photo from Device</span>
+                </label>
+                <input id="profile-id-file" type="file" accept="image/*" class="hidden" onchange="handleStudentIdUpload(event)" />
+                <div id="profile-id-preview" class="hidden mt-3">
+                  <img id="profile-id-preview-img" src="" alt="Student ID preview" class="rounded-xl object-cover" style="max-height:180px;max-width:100%;border:1px solid rgba(255,255,255,.1);" />
+                </div>
+                <div class="rounded-xl p-3 mt-4 text-xs" style="background:rgba(40,167,69,.06);border:1px solid rgba(40,167,69,.2);color:#a1a1aa;">
+                  🔒 Your image is only visible to administrators and never shown publicly.
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-3 flex-wrap">
+              <button type="button" onclick="saveProfile()" class="btn-primary">Save Profile</button>
+              <button type="button" onclick="submitVerification()" class="btn-ghost">Submit ID for Verification</button>
+            </div>
           </div>
-        </div>
-        <div class="rounded-xl p-3 mb-4 text-xs text-stone-500" style="background:#f0fdf4;border:1px solid #bbf7d0;">
-          🔒 Your image is only visible to platform administrators and is never shown publicly.
-        </div>
-        <button type="button" onclick="submitVerification()" class="btn-primary">Submit for Verification</button>
+        </section>
+
+        <section id="settings-listings-panel" class="hidden"></section>
+
+        <!-- Student ID Panel -->
+        <section id="settings-studentid-panel" class="settings-panel hidden">
+          <h2 class="font-sans text-2xl font-bold text-stone-900">Student ID Verification</h2>
+          <p class="text-sm text-stone-500 mt-1">Submit your university ID and stay approved for posting.</p>
+          <div class="settings-sub-card">
+            <div id="verification-banner" class="rounded-xl p-4 mb-5" style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);">
+              <p id="verify-status-text" class="font-semibold text-sm" style="color:#f59e0b;">⏳ Verification Pending</p>
+              <p id="verify-status-sub" class="text-xs mt-1" style="color:#a1a1aa;">Upload your student ID in General Settings to unlock posting privileges.</p>
+            </div>
+            <p class="text-sm text-stone-500 mb-5">Upload a clear photo of your Tzu Chi University student ID card. Administrators will review within 1–2 business days.</p>
+            <p class="text-sm mb-4" style="color:#71717a;">To upload or replace your ID photo, go to <button type="button" onclick="setSettingsSection('general')" style="background:none;border:none;color:#4ade80;cursor:pointer;font-weight:600;font-family:inherit;font-size:inherit;padding:0;">General Settings →</button></p>
+            <div class="rounded-xl p-3 text-xs" style="background:rgba(40,167,69,.06);border:1px solid rgba(40,167,69,.2);color:#a1a1aa;">
+              🔒 Your image is only visible to administrators and never shown publicly.
+            </div>
+            <button type="button" onclick="submitVerification()" class="btn-primary" style="margin-top:20px;">Submit for Verification</button>
+          </div>
+        </section>
+
+        <!-- Security Panel -->
+        <section id="settings-security-panel" class="settings-panel hidden">
+          <h2 class="font-sans text-2xl font-bold text-stone-900">Security</h2>
+          <p class="text-sm text-stone-500 mt-1">Manage account safety and access.</p>
+          <div class="settings-sub-card space-y-5">
+            <div>
+              <label class="form-label block mb-1.5">New Password</label>
+              <input id="security-password" type="password" class="field" placeholder="Enter new password" />
+            </div>
+            <div>
+              <label class="form-label block mb-1.5">Confirm Password</label>
+              <input id="security-password-confirm" type="password" class="field" placeholder="Confirm new password" />
+            </div>
+            <button type="button" onclick="changePassword()" class="btn-primary">Change Password</button>
+            <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:20px;">
+              <p class="font-semibold text-stone-900">Danger zone</p>
+              <p class="text-sm text-stone-500 mt-1">Deleting your account is irreversible.</p>
+              <button type="button" onclick="deleteAccount()" class="btn-ghost" style="color:#b91c1c;border-color:#fecaca;margin-top:12px;">Delete Account</button>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
+
+    <!-- ── Floating Post Button ── -->
+    <button class="fab-post" onclick="openPostModal()" aria-label="Post an item" title="Post an item">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
+
+    <!-- ── Admin view ── -->
+    <div id="admin-view" class="hidden">
+      <!-- Admin Header -->
+      <div class="admin-header">
+        <h1 class="admin-title">ADMIN PANEL</h1>
+        <p class="admin-subtitle">Manage students, listings, and flagged content</p>
+      </div>
+
+      <!-- Admin Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="setAdminTab('verify')" data-tab="verify">Verify Students</button>
+        <button class="admin-tab" onclick="setAdminTab('listings')" data-tab="listings">Manage Listings</button>
+        <button class="admin-tab" onclick="setAdminTab('flagged')" data-tab="flagged">Flagged Items</button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="admin-content">
+        <!-- Verify Students Tab -->
+        <div id="admin-tab-verify" class="admin-tab-content active">
+          <div class="admin-card">
+            <div class="overflow-x-auto">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Student ID</th>
+                    <th>Email</th>
+                    <th>Document</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="verify-students-body">
+                  <!-- Populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manage Listings Tab -->
+        <div id="admin-tab-listings" class="admin-tab-content">
+          <div class="admin-card">
+            <div class="overflow-x-auto">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Seller Name</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="manage-listings-body">
+                  <!-- Populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flagged Items Tab -->
+        <div id="admin-tab-flagged" class="admin-tab-content">
+          <div class="space-y-4">
+            <!-- Flagged items will be populated here -->
+            <div id="flagged-items-container">
+              <!-- Items will be rendered as cards -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
+
 
 
 <!-- ══════════════════════════════════════════════════
@@ -785,12 +1915,19 @@
 
       <div class="mb-4">
         <label class="form-label block mb-2">Category <span class="text-red-500">*</span></label>
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-2 gap-2">
           <label class="cursor-pointer">
             <input type="radio" name="post-category" value="exchange" class="sr-only" />
             <div class="border-2 border-stone-200 rounded-xl p-3 text-center transition-all cat-option" data-val="exchange">
               <div class="text-xl mb-1">🛍️</div>
               <div class="text-xs font-600">For Sale</div>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="post-category" value="donation" class="sr-only" />
+            <div class="border-2 border-stone-200 rounded-xl p-3 text-center transition-all cat-option" data-val="donation">
+              <div class="text-xl mb-1">🤍</div>
+              <div class="text-xs font-600">Donation</div>
             </div>
           </label>
           <label class="cursor-pointer">
@@ -820,6 +1957,43 @@
       <div class="mb-4" id="price-row">
         <label class="form-label block mb-1.5">Price (NT$)</label>
         <input id="post-price" type="number" class="field" placeholder="Leave blank for free / not applicable" min="0" />
+      </div>
+
+      <!-- Communication Options (Optional) -->
+      <div class="mb-4">
+        <label class="form-label block mb-1.5">Communication Options (Optional)</label>
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 flex-shrink-0" style="width:80px;">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#e4405f;">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="m16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+              <span class="text-xs font-600 text-stone-400">Instagram</span>
+            </div>
+            <input id="post-instagram" type="text" class="field flex-1" placeholder="@username" maxlength="30" />
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 flex-shrink-0" style="width:80px;">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#00c300;">
+                <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+              </svg>
+              <span class="text-xs font-600 text-stone-400">Line ID</span>
+            </div>
+            <input id="post-line-id" type="text" class="field flex-1" placeholder="Your Line ID" maxlength="50" />
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 flex-shrink-0" style="width:80px;">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#28a745;">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+              </svg>
+              <span class="text-xs font-600 text-stone-400">Phone</span>
+            </div>
+            <input id="post-phone" type="tel" class="field flex-1" placeholder="0912345678" maxlength="15" />
+          </div>
+        </div>
+        <p class="text-xs text-stone-400 mt-2">Add at least one contact method so buyers can reach you.</p>
       </div>
 
       <div class="flex justify-end mt-6">
@@ -938,6 +2112,25 @@ async function handleStudentIdUpload(event) {
   }
 }
 
+async function handleProfilePictureUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const url = await uploadFile(file, 'avatar-');
+    document.getElementById('profile-avatar-url').value = url;
+    document.getElementById('profile-avatar-img').src = url;
+    showToast('Profile picture updated. Save profile to keep changes.', 'success');
+  } catch (err) {
+    showToast('Upload failed: ' + err.message, 'error');
+  }
+}
+
+function removeProfilePicture() {
+  document.getElementById('profile-avatar-url').value = '';
+  document.getElementById('profile-avatar-img').src = 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=200&auto=format&fit=crop&q=80';
+  showToast('Profile picture cleared. Save profile to update.', 'success');
+}
+
 function handleItemImagesUpload(event) {
   postSelectedFiles = Array.from(event.target.files).slice(0, 4);
   if (!postSelectedFiles.length) return;
@@ -961,34 +2154,38 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 const TRANSLATIONS = {
   en: {
     'nav.browse':'Browse All','nav.marketplace':'Marketplace','nav.lostfound':'Lost & Found',
-    'nav.myitems':'My Items','nav.ai':'AI Assistant','nav.profile':'My Profile',
+    'nav.donations':'Donations','nav.myitems':'My Listings','nav.ai':'AI Assistant','nav.profile':'My Profile',
     'nav.post':'Post Item','nav.signout':'Sign Out',
-    'stat.active':'Active Listings','stat.sale':'For Sale','stat.lf':'Lost & Found',
-    'filter.all':'All','filter.marketplace':'Marketplace','filter.lost':'Lost','filter.found':'Found',
+    'stat.active':'Active Listings','stat.sale':'For Sale','stat.lf':'Lost & Found','stat.donation':'For Donation',
+    'filter.all':'All','filter.marketplace':'Marketplace','filter.donation':'Donations','filter.lost':'Lost','filter.found':'Found',
     'search.placeholder':'Search items…',
     'auth.signin':'Sign In','auth.signup':'Create Account',
     'auth.google':'Sign in with Google',
     'view.browse.title':'Browse All','view.browse.sub':'All active listings from the TCU community',
-    'view.marketplace.title':'Marketplace','view.marketplace.sub':'Second-hand items for sale',
-    'view.lostfound.title':'Lost & Found','view.lostfound.sub':'Help your fellow students',
+    'view.marketplace.title':'Marketplace','view.marketplace.sub':'Find what you need, sell what you don\'t.',
+    'view.lostfound.title':'Lost & Found Center','view.lostfound.sub':'Helping the TCU community find what\'s missing. Report or browse found items below.',
+    'view.donations.title':'Community Giving','view.donations.sub':'Your unused items could be exactly what a fellow student needs. Give back to TCU.',
     'view.myitems.title':'My Items','view.myitems.sub':'Manage your listings',
     'view.ai.title':'AI Assistant','view.ai.sub':'Ask questions or search for items',
     'view.profile.title':'My Profile','view.profile.sub':'Edit your details and verify your student status',
   },
   zh: {
     'nav.browse':'全部瀏覽','nav.marketplace':'二手交易','nav.lostfound':'失物招領',
-    'nav.myitems':'我的物品','nav.ai':'AI 助理','nav.profile':'個人資料',
+    'nav.donations':'捐贈','nav.myitems':'我的清單','nav.ai':'AI 助理','nav.profile':'個人資料','nav.settings':'設定','nav.admin':'管理',
     'nav.post':'發布物品','nav.signout':'登出',
-    'stat.active':'活躍清單','stat.sale':'出售','stat.lf':'失物招領',
-    'filter.all':'全部','filter.marketplace':'二手交易','filter.lost':'遺失','filter.found':'找到',
+    'stat.active':'活躍清單','stat.sale':'出售','stat.lf':'失物招領','stat.donation':'捐贈物品',
+    'filter.all':'全部','filter.marketplace':'二手交易','filter.donation':'捐贈','filter.lost':'遺失','filter.found':'找到',
     'search.placeholder':'搜尋物品…',
     'auth.signin':'登入','auth.signup':'建立帳號',
     'auth.google':'以 Google 登入',
     'view.browse.title':'全部瀏覽','view.browse.sub':'慈濟大學社群所有活躍清單',
     'view.marketplace.title':'二手交易','view.marketplace.sub':'買賣二手物品',
-    'view.lostfound.title':'失物招領','view.lostfound.sub':'協助您的同學找回失物',
+    'view.lostfound.title':'失物招領中心','view.lostfound.sub':'協助慈濟大學社群找回遺失物品。請在下方回報或瀏覽拾獲物品。',
+    'view.donations.title':'社群捐贈','view.donations.sub':'您不用的物品，或許正是同學最需要的。回饋慈濟社群，從這裡開始。',
     'view.myitems.title':'我的物品','view.myitems.sub':'管理您的清單',
     'view.ai.title':'AI 助理','view.ai.sub':'詢問任何關於平台的問題',
+    'view.settings.title':'設定','view.settings.sub':'管理您的帳號、清單、驗證與安全',
+    'view.admin.title':'管理平台','view.admin.sub':'審核學生並管理存取權限',
     'view.profile.title':'個人資料','view.profile.sub':'管理您的帳號與驗證',
   }
 };
@@ -998,11 +2195,16 @@ let allItems     = [];
 let myItems      = [];
 let currentView  = 'browse';
 let activeFilter = 'all';
+let advancedFilters = { dateMaxDays: 0, condition: '', productCat: '', donCondition: '', urgency: '', location: '' };
+const ADMIN_EMAIL = '114122104@gms.tzu.edu.tw';
 let currentUser  = null;
 let currentProfile = null;
+let isGuest      = false;
 let postStep     = 1;
 let selectedCategory = '';
 let currentLang  = 'en';
+let currentSettingsSection = 'general';
+
 let sidebarCollapsed = false;
 let isDemoMode   = false;
 
@@ -1017,13 +2219,35 @@ function activateDemoMode(message = 'Supabase is unavailable. The site is runnin
   if (message) showToast(message, 'error');
 }
 
+// Demo mode accessible from console or URL parameter
+window.enableDemo = () => {
+  simulateDemoLogin('demo@gms.tcu.edu.tw');
+  showToast('Demo mode activated!', 'success');
+};
+
+function checkDemoParam() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('demo') === 'true') {
+    isDemoMode = true;
+  }
+}
+
 function syncMyItemsFromAllItems() {
   myItems = allItems.filter(i => i.owner_id === (currentUser?.id || 'demo-uid'));
 }
 
 // ── INIT ────────────────────────────────────────────────────
+// Back-button trap: when user navigates back from settings, redirect to browse
+window.addEventListener('popstate', (e) => {
+  if (e.state?.tcu === 'settings' || (currentUser || isGuest)) {
+    history.pushState(null, '', location.href);
+    setView('browse');
+  }
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
   setLang(currentLang);
+  checkDemoParam();
 
   const searchInput = document.getElementById('search-input');
   if (searchInput) {
@@ -1038,6 +2262,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (initialSession) {
       currentUser = initialSession.user;
       await loadProfile();
+      configureAdminAccess();
       showApp();
       await loadItems();
     } else {
@@ -1049,6 +2274,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (event === 'SIGNED_IN' && session) {
         currentUser = session.user;
         await loadProfile();
+        configureAdminAccess();
         showApp();
         await loadItems();
       } else if (event === 'SIGNED_OUT') {
@@ -1056,6 +2282,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentProfile = null;
         allItems = [];
         myItems = [];
+        configureAdminAccess();
         showAuth();
       }
     });
@@ -1069,28 +2296,90 @@ document.addEventListener('DOMContentLoaded', async () => {
     radio.addEventListener('change', () => {
       selectedCategory = radio.value;
       document.querySelectorAll('.cat-option').forEach(el => {
-        el.style.borderColor = el.dataset.val === selectedCategory
-          ? 'var(--jade)' : '#e7e5e4';
-        el.style.background = el.dataset.val === selectedCategory
-          ? 'var(--jade-lt)' : '';
+        if (el.dataset.val === selectedCategory) {
+          el.style.borderColor = '#28a745';
+          el.style.background = 'rgba(40,167,69,.08)';
+          el.style.boxShadow = '0 0 18px rgba(40,167,69,.12)';
+          el.style.color = '#ffffff';
+        } else {
+          el.style.borderColor = '#222';
+          el.style.background = '#121212';
+          el.style.boxShadow = 'none';
+          el.style.color = '#b0b0b0';
+        }
       });
       const priceRow = document.getElementById('price-row');
       priceRow.style.display = selectedCategory === 'exchange' ? '' : 'none';
       if (selectedCategory !== 'exchange') {
         document.getElementById('post-price').value = '';
       }
+      // Donation hint
+      const priceLabel = priceRow.querySelector('label');
+      if (priceLabel) priceLabel.textContent = 'Price (NT$)';
     });
   });
 });
 
 // ── AUTH ────────────────────────────────────────────────────
 function showAuth() {
+  isGuest = false;
   document.getElementById('auth-screen').classList.remove('hidden');
   document.getElementById('app-screen').classList.add('hidden');
 }
 function showApp() {
   document.getElementById('auth-screen').classList.add('hidden');
   document.getElementById('app-screen').classList.remove('hidden');
+  // Initialize browse view state
+  document.getElementById('welcome-banner-container').classList.remove('hidden');
+  document.getElementById('view-header').classList.add('hidden');
+  document.getElementById('hero-search')?.classList.remove('hidden');
+}
+
+function configureAdminAccess() {
+  const adminNav = document.getElementById('nav-admin');
+  if (!adminNav) return;
+  if (currentUser?.email === ADMIN_EMAIL) {
+    adminNav.style.display = 'flex';
+    return;
+  }
+  if (currentUser) {
+    adminNav.remove();
+  }
+}
+
+// ── GUEST MODE ──────────────────────────────────────────────
+function enterGuestMode() {
+  isGuest = true;
+  // Sidebar user area → guest indicator
+  const avatarEl = document.getElementById('user-avatar-sidebar');
+  const nameEl   = document.getElementById('user-name-sidebar');
+  const deptEl   = document.getElementById('user-dept-sidebar');
+  if (avatarEl) { avatarEl.textContent = '?'; avatarEl.style.background = '#52525b'; }
+  if (nameEl)   nameEl.textContent = 'Guest';
+  if (deptEl)   deptEl.textContent  = 'Browsing as guest';
+  // Hide restricted sidebar items
+  ['nav-mylistings','nav-settings','nav-admin','nav-post'].forEach(id =>
+    document.getElementById(id)?.classList.add('hidden'));
+  // Hide FAB
+  document.querySelector('.fab-post')?.classList.add('hidden');
+  // Show app and load content
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.remove('hidden');
+  loadDemoItems();
+  setView('browse');
+}
+
+function requireAuth(message) {
+  if (!isGuest) return true;
+  showToast(message || 'Please sign in to interact with the community.', 'error');
+  setTimeout(showAuth, 1400);
+  return false;
+}
+
+function requireAdminAccess() {
+  if (!requireAuth('Sign in to access admin panel.')) return false;
+  if (currentUser?.email !== ADMIN_EMAIL) return false;
+  return true;
 }
 
 function switchAuthTab(tab) {
@@ -1140,11 +2429,499 @@ function _updateViewHeader(view) {
   if (subEl   && t[subKey])   subEl.textContent   = t[subKey];
 }
 
-// ── SIDEBAR TOGGLE ──────────────────────────────────────────
+function openContactMenu(sellerData) {
+  const p = sellerData;
+  const contactButtons = [];
+
+  // Always show Send Email
+  contactButtons.push({
+    label: 'Send Email',
+    url: `mailto:${p.email || ''}`,
+    icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#28a745;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+    available: true
+  });
+
+  // Chat on Line (if exists)
+  if (p.line_id) {
+    contactButtons.push({
+      label: 'Chat on Line',
+      url: `https://line.me/ti/p/~${p.line_id}`,
+      icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#00c300;"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>',
+      available: true
+    });
+  }
+
+  // DM on Instagram (if exists)
+  if (p.instagram_handle) {
+    contactButtons.push({
+      label: 'DM on Instagram',
+      url: `https://instagram.com/${p.instagram_handle}`,
+      icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#e4405f;"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="m16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>',
+      available: true
+    });
+  }
+
+  // Call/WhatsApp (if exists)
+  if (p.phone_number) {
+    contactButtons.push({
+      label: 'Call/WhatsApp',
+      url: `tel:${p.phone_number}`,
+      icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#28a745;"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>',
+      available: true
+    });
+  }
+
+  // Create contact modal with blur background
+  const modal = document.createElement('div');
+  modal.className = 'contact-modal-overlay';
+  modal.style.cssText = `
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.8);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    z-index:1000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  `;
+  modal.innerHTML = `
+    <div class="contact-modal-box" style="
+      background:#1a1a1a;
+      border:1px solid #333;
+      border-radius:20px;
+      max-width:320px;
+      width:100%;
+      padding:24px;
+      position:relative;
+    ">
+      <button onclick="this.closest('.contact-modal-overlay').remove()" style="
+        position:absolute;
+        top:16px;
+        right:16px;
+        background:none;
+        border:none;
+        color:#71717a;
+        cursor:pointer;
+        padding:4px;
+        border-radius:50%;
+        transition:background 0.2s;
+      " onmouseover="this.style.background='#333'" onmouseout="this.style.background='none'">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <h3 style="
+        color:#fff;
+        font-size:1.25rem;
+        font-weight:700;
+        margin:0 0 20px 0;
+        text-align:center;
+      ">How would you like to connect?</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        ${contactButtons.map(button => `
+          <a href="${button.url}" target="_blank" style="
+            display:flex;
+            align-items:center;
+            gap:16px;
+            padding:16px;
+            border-radius:12px;
+            background:#252525;
+            border:1px solid #333;
+            text-decoration:none;
+            color:#fff;
+            transition:all 0.2s;
+            ${!button.available ? 'opacity:0.5;pointer-events:none;' : ''}
+          " onmouseover="this.style.background='#333';this.style.borderColor='#555';" onmouseout="this.style.background='#252525';this.style.borderColor='#333';">
+            ${button.icon}
+            <span style="font-weight:600;font-size:1rem;">${button.label}</span>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+}
+                <polyline points="15,3 21,3 21,9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+            </a>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+}
+
+function setSettingsSection(section) {
+  currentSettingsSection = section;
+  document.querySelectorAll('.settings-htab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.section === section);
+  });
+  document.getElementById('settings-general-panel').classList.toggle('hidden', section !== 'general');
+  document.getElementById('settings-listings-panel').classList.toggle('hidden', true);
+  document.getElementById('settings-studentid-panel').classList.toggle('hidden', section !== 'studentid');
+  document.getElementById('settings-security-panel').classList.toggle('hidden', section !== 'security');
+}
+
+
+
+
+
+async function performAdminAction(action) {
+  // This function is kept for backward compatibility but is no longer used in the new admin dashboard
+  showToast('Admin actions are now handled directly in the dashboard.', 'info');
+}
+
+// ── ADMIN DASHBOARD FUNCTIONS ────────────────────────────────
+let currentAdminTab = 'verify';
+
+function setAdminTab(tab) {
+  currentAdminTab = tab;
+
+  // Update tab buttons
+  document.querySelectorAll('.admin-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+
+  // Update tab content
+  document.querySelectorAll('.admin-tab-content').forEach(content => {
+    content.classList.toggle('active', content.id === `admin-tab-${tab}`);
+  });
+
+  // Load data for the selected tab
+  switch(tab) {
+    case 'verify':
+      loadVerifyStudents();
+      break;
+    case 'listings':
+      loadManageListings();
+      break;
+    case 'flagged':
+      loadFlaggedItems();
+      break;
+  }
+}
+
+async function loadVerifyStudents() {
+  if (isUsingDemoMode()) {
+    renderVerifyStudents([]);
+    return;
+  }
+  const { data, error } = await sb
+    .from('profiles')
+    .select('id,full_name,student_id,email,status,student_id_image_url,verification_status')
+    .in('verification_status', ['pending', 'approved', 'rejected'])
+    .order('created_at', { ascending: false });
+
+  if (error) { showToast(error.message, 'error'); return; }
+  renderVerifyStudents(data || []);
+}
+
+function renderVerifyStudents(profiles) {
+  const tableBody = document.getElementById('verify-students-body');
+  if (!tableBody) return;
+
+  tableBody.innerHTML = profiles.map(profile => {
+    const safeName = String(profile.full_name || '').replace(/'/g, "\\'");
+    const statusClass = profile.verification_status === 'approved' ? 'status-active' :
+                       profile.verification_status === 'pending' ? 'status-pending' : 'status-banned';
+
+    return `
+      <tr>
+        <td>${profile.full_name || '—'}</td>
+        <td>${profile.student_id || '—'}</td>
+        <td>${profile.email || 'No email'}</td>
+        <td>
+          ${profile.student_id_image_url ?
+            `<button class="admin-action-btn btn-view" onclick="viewStudentDocument('${profile.student_id_image_url}')">View ID Card</button>` :
+            'No document'
+          }
+        </td>
+        <td>
+          <button class="admin-action-btn btn-approve" onclick="approveStudent('${profile.id}')">Approve</button>
+          <button class="admin-action-btn btn-reject" onclick="rejectStudent('${profile.id}')">Reject</button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+async function loadManageListings() {
+  if (isUsingDemoMode()) {
+    renderManageListings([]);
+    return;
+  }
+  const { data, error } = await sb
+    .from('items')
+    .select(`
+      id,title,category,price,
+      owner_id,
+      profiles!items_owner_id_fkey(full_name)
+    `)
+    .order('created_at', { ascending: false });
+
+  if (error) { showToast(error.message, 'error'); return; }
+  renderManageListings(data || []);
+}
+
+function renderManageListings(items) {
+  const tableBody = document.getElementById('manage-listings-body');
+  if (!tableBody) return;
+
+  tableBody.innerHTML = items.map(item => `
+    <tr>
+      <td>${item.title || '—'}</td>
+      <td>${item.category || '—'}</td>
+      <td>${item.price ? `$${item.price}` : 'Free'}</td>
+      <td>${item.profiles?.full_name || 'Unknown'}</td>
+      <td>
+        <button class="admin-action-btn btn-delete" onclick="deleteListing('${item.id}')">Delete Product</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function loadFlaggedItems() {
+  if (isUsingDemoMode()) {
+    renderFlaggedItems([]);
+    return;
+  }
+  // For now, we'll show items that might be flagged (this would need a reports table in a real implementation)
+  const { data, error } = await sb
+    .from('items')
+    .select(`
+      id,title,
+      owner_id,
+      profiles!items_owner_id_fkey(full_name)
+    `)
+    .limit(10); // Just show first 10 for demo
+
+  if (error) { showToast(error.message, 'error'); return; }
+  renderFlaggedItems(data || []);
+}
+
+function renderFlaggedItems(items) {
+  const container = document.getElementById('flagged-items-container');
+  if (!container) return;
+
+  if (items.length === 0) {
+    container.innerHTML = `
+      <div class="admin-card p-8 text-center">
+        <div class="text-4xl mb-4">✅</div>
+        <h3 class="text-xl font-semibold text-white mb-2">No Flagged Items</h3>
+        <p class="text-gray-400">All items are currently clean and compliant.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Mock some flagged reasons for demo
+  const reasons = [
+    { type: 'spam', label: 'Spam Content', description: 'Item appears to be promotional spam', color: '#dc3545' },
+    { type: 'fake', label: 'Fake Product', description: 'Item may be counterfeit or misrepresented', color: '#dc3545' },
+    { type: 'inappropriate', label: 'Inappropriate Content', description: 'Contains offensive or inappropriate material', color: '#dc3545' },
+    { type: 'duplicate', label: 'Duplicate Listing', description: 'Same item listed multiple times', color: '#f59e0b' }
+  ];
+
+  container.innerHTML = items.map((item, index) => {
+    const reason = reasons[index % reasons.length];
+    return `
+      <div class="admin-card p-6">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h4 class="text-lg font-semibold text-white">${item.title || '—'}</h4>
+              <span class="status-pill" style="background: rgba(${reason.color === '#dc3545' ? '220,53,69' : '245,158,11'}, 0.1); color: ${reason.color}; border: 1px solid ${reason.color}20;">
+                ${reason.label}
+              </span>
+            </div>
+            <p class="text-gray-400 mb-3">${reason.description}</p>
+            <div class="text-sm text-gray-500">
+              <span>Seller: ${item.profiles?.full_name || 'Unknown'}</span>
+              <span class="mx-2">•</span>
+              <span>Reported by: Anonymous User</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <button class="admin-action-btn btn-ban" onclick="banFlaggedItem('${item.id}')">
+              Ban Item & Notify Seller
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Admin action functions
+async function approveStudent(profileId) {
+  if (isUsingDemoMode()) {
+    showToast('Student approved (Demo Mode).', 'success');
+    loadVerifyStudents();
+    return;
+  }
+  const { error } = await sb
+    .from('profiles')
+    .update({
+      verification_status: 'approved',
+      is_verified: true,
+      status: 'active'
+    })
+    .eq('id', profileId);
+
+  if (error) { showToast(error.message, 'error'); return; }
+  showToast('Student approved successfully.', 'success');
+  loadVerifyStudents();
+}
+
+async function rejectStudent(profileId) {
+  if (isUsingDemoMode()) {
+    showToast('Student rejected (Demo Mode).', 'success');
+    loadVerifyStudents();
+    return;
+  }
+  const { error } = await sb
+    .from('profiles')
+    .update({
+      verification_status: 'rejected',
+      is_verified: false
+    })
+    .eq('id', profileId);
+
+  if (error) { showToast(error.message, 'error'); return; }
+  showToast('Student verification rejected.', 'success');
+  loadVerifyStudents();
+}
+
+async function deleteListing(itemId) {
+  if (isUsingDemoMode()) {
+    showToast('Listing deleted (Demo Mode).', 'success');
+    loadManageListings();
+    return;
+  }
+  const { error } = await sb.from('items').delete().eq('id', itemId);
+  if (error) { showToast(error.message, 'error'); return; }
+  showToast('Listing deleted successfully.', 'success');
+  loadManageListings();
+}
+
+async function banFlaggedItem(itemId) {
+  if (isUsingDemoMode()) {
+    showToast('Item banned and seller notified (Demo Mode).', 'success');
+    loadFlaggedItems();
+    return;
+  }
+  // In a real implementation, this would also notify the seller
+  const { error } = await sb.from('items').delete().eq('id', itemId);
+  if (error) { showToast(error.message, 'error'); return; }
+  showToast('Item banned and seller notified.', 'success');
+  loadFlaggedItems();
+}
+
+function viewStudentDocument(imageUrl) {
+  // Open document in new tab
+  window.open(imageUrl, '_blank');
+}
+
+// ── FILTER PANEL ─────────────────────────────────────────────
+function toggleFilterPanel() {
+  const panel  = document.getElementById('browse-controls');
+  const btn    = document.getElementById('filter-toggle-btn');
+  const label  = document.getElementById('filter-btn-label');
+  const isOpen = panel.classList.toggle('open');
+  btn?.classList.toggle('active', isOpen);
+  if (label) label.textContent = isOpen ? '✕ Close' : 'Filters';
+}
+
+function setPanelCategory(cat, el) {
+  document.querySelectorAll('#browse-controls .filter-chip[data-cat]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  setFilter(cat, true);
+}
+
+function setPanelDate(days, el) {
+  document.querySelectorAll('#browse-controls .filter-chip[data-days]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  advancedFilters.dateMaxDays = days;
+  renderItems();
+}
+
+function setPanelCondition(cond, el) {
+  document.querySelectorAll('#browse-controls .filter-chip[data-cond]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  advancedFilters.condition = cond;
+  renderItems();
+}
+
+function setPanelProductCat(pcat, el) {
+  document.querySelectorAll('#browse-controls .filter-chip[data-pcat]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  advancedFilters.productCat = pcat;
+  renderItems();
+}
+
+function setPanelDonCondition(cond, el) {
+  document.querySelectorAll('#browse-controls .filter-chip[data-dcon]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  advancedFilters.donCondition = cond;
+  renderItems();
+}
+
+function setPanelUrgency(val, el) {
+  document.querySelectorAll('#browse-controls .filter-chip[data-urgency]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  advancedFilters.urgency = val;
+  renderItems();
+}
+
+function setPanelLocation(loc, el) {
+  document.querySelectorAll('#browse-controls .filter-chip[data-loc]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  advancedFilters.location = loc;
+  renderItems();
+}
+
+function resetAdvancedFilters() {
+  advancedFilters.dateMaxDays = 0;
+  advancedFilters.condition   = '';
+  advancedFilters.productCat  = '';
+  advancedFilters.donCondition = '';
+  advancedFilters.urgency     = '';
+  advancedFilters.location    = '';
+  const pMin = document.getElementById('filter-price-min');
+  const pMax = document.getElementById('filter-price-max');
+  if (pMin) pMin.value = '';
+  if (pMax) pMax.value = '';
+  document.querySelectorAll('#browse-controls .filter-chip[data-days]').forEach(c => c.classList.toggle('active', c.dataset.days === '0'));
+  document.querySelectorAll('#browse-controls .filter-chip[data-cat]').forEach(c => c.classList.toggle('active', c.dataset.cat === 'all'));
+  document.querySelectorAll('#browse-controls .filter-chip[data-cond]').forEach(c => c.classList.toggle('active', c.dataset.cond === ''));
+  document.querySelectorAll('#browse-controls .filter-chip[data-pcat]').forEach(c => c.classList.toggle('active', c.dataset.pcat === ''));
+  document.querySelectorAll('#browse-controls .filter-chip[data-dcon]').forEach(c => c.classList.toggle('active', c.dataset.dcon === ''));
+  document.querySelectorAll('#browse-controls .filter-chip[data-urgency]').forEach(c => c.classList.toggle('active', c.dataset.urgency === ''));
+  document.querySelectorAll('#browse-controls .filter-chip[data-loc]').forEach(c => c.classList.toggle('active', c.dataset.loc === ''));
+}
+
+// ── SIDEBAR ──────────────────────────────────────────────────
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-backdrop').classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-backdrop').classList.remove('visible');
+  document.body.style.overflow = '';
+}
 function toggleSidebar() {
-  sidebarCollapsed = !sidebarCollapsed;
-  document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
-  document.getElementById('main-content').classList.toggle('expanded', sidebarCollapsed);
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
 }
 
 // ── STATS FILTER ─────────────────────────────────────────────
@@ -1152,7 +2929,7 @@ function filterByStat(type) {
   // Ensure we're in browse view
   if (currentView !== 'browse') setView('browse');
 
-  const filterMap = { total: 'all', exchange: 'exchange', lf: 'lostfound' };
+  const filterMap = { total: 'all', exchange: 'exchange', lf: 'lostfound', donation: 'donation' };
   const filter = filterMap[type] || 'all';
 
   // Toggle off if already active
@@ -1167,7 +2944,7 @@ function filterByStat(type) {
 }
 
 function _updateStatCardHighlight(activeType) {
-  ['total','exchange','lf'].forEach(t => {
+  ['total','exchange','lf','donation'].forEach(t => {
     const el = document.getElementById('stat-card-' + t);
     if (el) el.classList.toggle('stat-active', t === activeType);
   });
@@ -1220,15 +2997,14 @@ async function handleSignup() {
   const studentId = document.getElementById('signup-student-id').value.trim();
   const email     = document.getElementById('signup-email').value.trim();
   const password  = document.getElementById('signup-password').value;
-  const lineId    = document.getElementById('signup-line').value.trim();
-  const igHandle  = document.getElementById('signup-ig').value.trim();
+  const dept      = document.getElementById('signup-dept').value.trim();
 
-  if (!name || !studentId || !email || !password) {
-    showToast('Please fill in required fields', 'error'); return;
+  if (!name || !studentId || !email || !password || !dept) {
+    showToast('Please fill in all required fields', 'error'); return;
   }
 
   if (isUsingDemoMode()) {
-    simulateDemoLogin(email, { full_name: name, student_id: studentId });
+    simulateDemoLogin(email, { full_name: name, student_id: studentId, department: dept });
     return;
   }
 
@@ -1237,7 +3013,7 @@ async function handleSignup() {
   if (btn) { btn.disabled = true; btn.textContent = 'Creating account…'; }
   const { error } = await sb.auth.signUp({
     email, password,
-    options: { data: { full_name: name, student_id: studentId, line_id: lineId, instagram_handle: igHandle } }
+    options: { data: { full_name: name, student_id: studentId, department: dept } }
   });
   if (btn) { btn.disabled = false; btn.textContent = orig; }
   if (error) showToast(error.message, 'error');
@@ -1246,6 +3022,35 @@ async function handleSignup() {
 
 async function handleLogout() {
   if (!isUsingDemoMode()) await sb.auth.signOut();
+  currentUser = null; currentProfile = null; allItems = [];
+  showAuth();
+}
+
+async function changePassword() {
+  const password = document.getElementById('security-password').value.trim();
+  const confirm = document.getElementById('security-password-confirm').value.trim();
+  if (!password || !confirm) { showToast('Please enter and confirm your new password.', 'error'); return; }
+  if (password !== confirm) { showToast('Passwords do not match.', 'error'); return; }
+  if (isUsingDemoMode()) { showToast('Password changed in demo mode.', 'success'); return; }
+  const { error } = await sb.auth.updateUser({ password });
+  if (error) { showToast(error.message, 'error'); return; }
+  showToast('Password updated successfully.', 'success');
+  document.getElementById('security-password').value = '';
+  document.getElementById('security-password-confirm').value = '';
+}
+
+async function deleteAccount() {
+  if (!confirm('Delete your account permanently? This cannot be undone.')) return;
+  if (isUsingDemoMode()) {
+    currentUser = null; currentProfile = null; allItems = [];
+    showAuth();
+    showToast('Demo account cleared.', 'success');
+    return;
+  }
+  // Supabase client-side account deletion requires an admin API route.
+  showToast('Account deletion must be completed through backend admin tooling.', 'error');
+  // Fallback sign-out so the UI remains consistent.
+  await sb.auth.signOut();
   currentUser = null; currentProfile = null; allItems = [];
   showAuth();
 }
@@ -1273,12 +3078,14 @@ function simulateDemoLogin(email, meta = {}) {
 
 function loadDemoItems() {
   allItems = [
-    { id:'1', owner_id:'demo-uid', title:"Gray's Anatomy (42nd Ed.)", description:"Classic anatomical reference in excellent condition. Minimal highlighting in first 3 chapters only. Perfect for 1st and 2nd year medical students.", category:'exchange', unique_identifier:'ISBN 978-0-7020-7705-0, coffee stain on back cover', verification_hint:'Coffee stain on back cover', price:650, image_urls:['https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600'], status:'available', preferred_contact_method:'line', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Medicine Building, Locker B-12', created_at:new Date().toISOString(), profiles:{ full_name:'Chen Yu-Ling', line_id:'yuling_tcm', instagram_handle:'yuling.tzu', phone_number:'+886912345678', department:'Dept. of Medicine' } },
-    { id:'2', owner_id:'user-2',   title:'Nursing Lab Coat — Size M', description:'Standard clinical white lab coat worn only 4 times. No stains, no damage. Has embroidered TCU nursing logo on left chest pocket.', category:'exchange', unique_identifier:'TCU Nursing embroidery, size M/38, slight iron crease on left sleeve', verification_hint:'Embroidered TCU logo on chest', price:200, image_urls:['https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=600'], status:'available', preferred_contact_method:'instagram', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Nursing Dept, 3F Study Room', created_at:new Date().toISOString(), profiles:{ full_name:'Lin Jia-Hao', line_id:'jiahao_lin', instagram_handle:'jiahao_nurse', phone_number:'+886923456789', department:'Dept. of Nursing' } },
-    { id:'3', owner_id:'user-3',   title:'Casio FX-991ES PLUS Calculator', description:'Used for 2 semesters of biostatistics. All functions working perfectly. Original box and manual included.', category:'exchange', unique_identifier:'Serial CY202310-4421, small scratch on battery cover, sticker residue on back', verification_hint:'Scratch on battery cover', price:350, image_urls:['https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600'], status:'available', preferred_contact_method:'line', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Library 4F, Study Pod C', created_at:new Date().toISOString(), profiles:{ full_name:'Wang Mei-Hsuan', line_id:'meihsuan_w', instagram_handle:'meihsuan.tcu', phone_number:'+886934567890', department:'Medical Sociology' } },
+    { id:'1', owner_id:'demo-uid', title:"Gray's Anatomy (42nd Ed.)", description:"Classic anatomical reference in excellent condition. Minimal highlighting in first 3 chapters only. Perfect for 1st and 2nd year medical students.", category:'exchange', condition:'used', product_cat:'books', unique_identifier:'ISBN 978-0-7020-7705-0, coffee stain on back cover', verification_hint:'Coffee stain on back cover', price:650, image_urls:['https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600'], status:'available', preferred_contact_method:'line', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Medicine Building, Locker B-12', created_at:new Date().toISOString(), profiles:{ full_name:'Chen Yu-Ling', line_id:'yuling_tcm', instagram_handle:'yuling.tzu', phone_number:'+886912345678', department:'Dept. of Medicine' } },
+    { id:'2', owner_id:'user-2',   title:'Nursing Lab Coat — Size M', description:'Standard clinical white lab coat worn only 4 times. No stains, no damage. Has embroidered TCU nursing logo on left chest pocket.', category:'exchange', condition:'likenew', product_cat:'clothing', unique_identifier:'TCU Nursing embroidery, size M/38, slight iron crease on left sleeve', verification_hint:'Embroidered TCU logo on chest', price:200, image_urls:['https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=600'], status:'available', preferred_contact_method:'instagram', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Nursing Dept, 3F Study Room', created_at:new Date().toISOString(), profiles:{ full_name:'Lin Jia-Hao', line_id:'jiahao_lin', instagram_handle:'jiahao_nurse', phone_number:'+886923456789', department:'Dept. of Nursing' } },
+    { id:'3', owner_id:'user-3',   title:'Casio FX-991ES PLUS Calculator', description:'Used for 2 semesters of biostatistics. All functions working perfectly. Original box and manual included.', category:'exchange', condition:'used', product_cat:'electronics', unique_identifier:'Serial CY202310-4421, small scratch on battery cover, sticker residue on back', verification_hint:'Scratch on battery cover', price:350, image_urls:['https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600'], status:'available', preferred_contact_method:'line', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Library 4F, Study Pod C', created_at:new Date().toISOString(), profiles:{ full_name:'Wang Mei-Hsuan', line_id:'meihsuan_w', instagram_handle:'meihsuan.tcu', phone_number:'+886934567890', department:'Medical Sociology' } },
     { id:'4', owner_id:'demo-uid', title:'Lost: TCU Student ID Card', description:'Lost my student ID card near the main cafeteria or library entrance on Tuesday afternoon. Very important for dormitory access and meal card.', category:'lost', unique_identifier:'Student ID: B10901001, name printed on card, wear on top-right laminate', verification_hint:'Wear on top-right laminate', price:null, image_urls:[], status:'available', preferred_contact_method:'phone', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+1*24*60*60*1000).toISOString(), location_hint:'Main Cafeteria / Library Entrance', created_at:new Date().toISOString(), profiles:{ full_name:'Chen Yu-Ling', line_id:'yuling_tcm', instagram_handle:'yuling.tzu', phone_number:'+886912345678', department:'Dept. of Medicine' } },
     { id:'5', owner_id:'user-2',   title:'Found: Littmann Stethoscope', description:'Found a 3M Littmann Classic III stethoscope in the 2F nursing simulation lab. Left on one of the training beds.', category:'found', unique_identifier:'3M Littmann Classic III, black tubing, silver chest piece — engraved initials on rim', verification_hint:'Engraved initials on diaphragm', price:null, image_urls:['https://images.unsplash.com/photo-1584982751601-97dcc096659c?w=600'], status:'available', preferred_contact_method:'line', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Nursing Simulation Lab, 2F', created_at:new Date().toISOString(), profiles:{ full_name:'Lin Jia-Hao', line_id:'jiahao_lin', instagram_handle:'jiahao_nurse', phone_number:'+886923456789', department:'Dept. of Nursing' } },
     { id:'6', owner_id:'user-3',   title:'Found: Social Medicine Notebook', description:'Found a spiral notebook with handwritten Social Medicine lecture notes from Prof. Li\'s class. Left in Classroom 301.', category:'found', unique_identifier:'Blue spiral notebook, "Soc Med 301" on cover, Post-it on page 1', verification_hint:'Post-it note on page 1', price:null, image_urls:[], status:'available', preferred_contact_method:'chat', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Classroom Building 301', created_at:new Date().toISOString(), profiles:{ full_name:'Wang Mei-Hsuan', line_id:'meihsuan_w', instagram_handle:'meihsuan.tcu', phone_number:'+886934567890', department:'Medical Sociology' } },
+    { id:'7', owner_id:'user-2',   title:'Donate: Biochemistry Textbooks (Set of 3)', description:'Finished my 2nd year! Donating a set of 3 core biochemistry textbooks — Stryer, Lehninger, and Harper. All in good condition. Free to any student who needs them.', category:'donation', don_condition:'good', unique_identifier:'3-book set with "Lin J.H." written inside front cover, Stryer has sticky tabs', verification_hint:'Name written inside front cover', price:null, image_urls:['https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600'], status:'available', preferred_contact_method:'line', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+2*24*60*60*1000).toISOString(), location_hint:'Nursing Dept, 3F Study Room', created_at:new Date().toISOString(), profiles:{ full_name:'Lin Jia-Hao', line_id:'jiahao_lin', instagram_handle:'jiahao_nurse', phone_number:'+886923456789', department:'Dept. of Nursing' } },
+    { id:'8', owner_id:'user-3',   title:'Donate: Desk Lamp + Study Timer', description:'Upgrading my desk setup — giving away a Xiaomi LED desk lamp (adjustable brightness) and a mechanical Pomodoro timer. Both work perfectly. Great for late-night study sessions!', category:'donation', don_condition:'good', unique_identifier:'Xiaomi lamp model MJTD01YL, timer is white with red knob — small dent on base', verification_hint:'Small dent on lamp base', price:null, image_urls:['https://images.unsplash.com/photo-1489514354504-1653aa90e34e?w=600'], status:'available', preferred_contact_method:'instagram', is_active:true, last_confirmed_at:new Date().toISOString(), expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString(), location_hint:'Dorm Block C, Room 204', created_at:new Date().toISOString(), profiles:{ full_name:'Wang Mei-Hsuan', line_id:'meihsuan_w', instagram_handle:'meihsuan.tcu', phone_number:'+886934567890', department:'Medical Sociology' } },
   ];
   updateStats();
   renderItems();
@@ -1348,7 +3155,7 @@ async function loadItems() {
   showSkeletons();
   const { data, error } = await sb
     .from('items')
-    .select('*, profiles(full_name, line_id, instagram_handle, phone_number, department)')
+    .select('*, profiles(full_name, line_id, instagram_handle, phone_number, department, email)')
     .eq('is_active', true)
     .eq('status', 'available')
     .order('created_at', { ascending: false });
@@ -1376,7 +3183,7 @@ async function loadMyItems() {
   }
   const { data, error } = await sb
     .from('items')
-    .select('*, profiles(full_name, line_id, instagram_handle, phone_number, department)')
+    .select('*, profiles(full_name, line_id, instagram_handle, phone_number, department, email)')
     .eq('owner_id', currentUser.id)
     .order('created_at', { ascending: false });
   if (error) { showToast('Failed to load your items', 'error'); return; }
@@ -1388,19 +3195,44 @@ function updateStats() {
   const active   = allItems.filter(i => i.status === 'available');
   const exchange = active.filter(i => i.category === 'exchange');
   const lf       = active.filter(i => i.category === 'lost' || i.category === 'found');
+  const donation = active.filter(i => i.category === 'donation');
   document.getElementById('stat-total').textContent    = active.length;
   document.getElementById('stat-exchange').textContent = exchange.length;
   document.getElementById('stat-lf').textContent       = lf.length;
+  const donEl = document.getElementById('stat-donation');
+  if (donEl) donEl.textContent = donation.length;
 }
 
 function renderItems() {
   const query  = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const sort   = document.getElementById('sort-select')?.value || 'newest';
+  const pMin   = parseFloat(document.getElementById('filter-price-min')?.value) || null;
+  const pMax   = parseFloat(document.getElementById('filter-price-max')?.value) || null;
+  const days   = advancedFilters.dateMaxDays || 0;
+  const cutoff = days > 0 ? new Date(Date.now() - days * 86400000) : null;
+
   let items = allItems.filter(i => {
     if (activeFilter === 'lostfound' && i.category !== 'lost' && i.category !== 'found') return false;
     if (activeFilter !== 'all' && activeFilter !== 'lostfound' && i.category !== activeFilter) return false;
     if (query && !i.title.toLowerCase().includes(query) && !i.description.toLowerCase().includes(query)) return false;
+    if (pMin !== null && (i.price == null || i.price < pMin)) return false;
+    if (pMax !== null && (i.price == null || i.price > pMax)) return false;
+    if (cutoff && new Date(i.created_at) < cutoff) return false;
+    if (advancedFilters.condition  && i.condition    !== advancedFilters.condition)  return false;
+    if (advancedFilters.productCat && i.product_cat  !== advancedFilters.productCat) return false;
+    if (advancedFilters.donCondition && i.don_condition !== advancedFilters.donCondition) return false;
+    if (advancedFilters.urgency === 'urgent') {
+      if (!i.expires_at || new Date(i.expires_at) > new Date(Date.now() + 3 * 86400000)) return false;
+    }
+    if (advancedFilters.location) {
+      if (!(i.location_hint || '').toLowerCase().includes(advancedFilters.location)) return false;
+    }
     return true;
   });
+  if (sort === 'price-asc')  items.sort((a,b) => (a.price ?? Infinity) - (b.price ?? Infinity));
+  else if (sort === 'price-desc') items.sort((a,b) => (b.price ?? -1) - (a.price ?? -1));
+  else if (sort === 'oldest') items.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+  else items.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
 
   const grid  = document.getElementById('items-grid');
   const empty = document.getElementById('empty-state');
@@ -1423,6 +3255,17 @@ function renderMyItems() {
   const empty = document.getElementById('myitems-empty');
   grid.innerHTML = '';
 
+  // Update mini stats bar
+  const total  = mine.length;
+  const active = mine.filter(i => i.status === 'available').length;
+  const closed = mine.filter(i => i.status === 'sold' || i.status === 'returned').length;
+  const tEl = document.getElementById('my-stat-total');
+  const aEl = document.getElementById('my-stat-active');
+  const cEl = document.getElementById('my-stat-closed');
+  if (tEl) tEl.textContent = total;
+  if (aEl) aEl.textContent = active;
+  if (cEl) cEl.textContent = closed;
+
   if (!mine.length) { empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
 
@@ -1437,24 +3280,30 @@ function renderMyItems() {
 // ── CARD BUILDER ─────────────────────────────────────────────
 function buildItemCard(item, isOwner) {
   const p = item.profiles || {};
-  const catBadge = { exchange:'badge-exchange', lost:'badge-lost', found:'badge-found' }[item.category] || '';
-  const catLabel = { exchange:'For Sale', lost:'Lost', found:'Found' }[item.category] || item.category;
+  const catBadge = { exchange:'badge-exchange', lost:'badge-lost', found:'badge-found', donation:'badge-donation' }[item.category] || '';
+  const catLabel = { exchange:'For Sale', lost:'Lost', found:'Found', donation:'Donation' }[item.category] || item.category;
+  const catIcon  = { exchange:'', lost:'', found:'', donation:'' }[item.category] || '';
   const statusBadge = { available:'badge-available', sold:'badge-sold', returned:'badge-returned' }[item.status] || '';
 
   const hasImg = item.image_urls && item.image_urls.length > 0 && item.image_urls[0];
-  const imgEl  = hasImg
-    ? `<img src="${item.image_urls[0]}" class="item-img" loading="lazy" onerror="this.parentElement.innerHTML='<div class=img-placeholder>📦</div>'" />`
+  const imgContent = hasImg
+    ? `<img src="${item.image_urls[0]}" class="item-img" loading="lazy" onerror="this.parentElement.querySelector('img')?.remove()" />`
     : `<div class="img-placeholder">📦</div>`;
+  const imgEl = `<div class="card-img-wrap">${imgContent}<span class="card-img-badge cat-${item.category}">${catIcon} ${catLabel}</span></div>`;
 
   const priceEl = item.price != null
     ? `<span class="font-sans font-bold text-jade-700 text-lg" style="letter-spacing:-.02em;">NT$${Number(item.price).toLocaleString()}</span>`
     : `<span class="text-xs text-stone-400 font-500">No charge</span>`;
 
-  const socialLinks = [
-    p.line_id           ? `<a href="https://line.me/ti/p/~${p.line_id}" target="_blank" class="social-btn social-line">LINE</a>` : '',
-    p.instagram_handle  ? `<a href="https://instagram.com/${p.instagram_handle}" target="_blank" class="social-btn social-ig">IG</a>` : '',
-    p.phone_number      ? `<a href="tel:${p.phone_number}" class="social-btn social-phone">📞</a>` : '',
-  ].filter(Boolean).join('');
+  const socialLinks = isGuest
+    ? `<button onclick="requireAuth('Sign in to contact this student.')" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:600;background:#252525;border:1px solid rgba(255,255,255,.1);color:#71717a;cursor:pointer;">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Contact
+       </button>`
+    : `<button onclick="openContactMenu(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="contact-seller-btn" style="display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:6px;font-size:.875rem;font-weight:700;background:#28a745;color:#fff;border:1px solid #28a745;cursor:pointer;width:100%;justify-content:center;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        Contact Seller
+       </button>`;
 
   const expiresAt  = item.expires_at ? new Date(item.expires_at) : new Date(Date.now() + 7*24*60*60*1000);
   const daysLeft   = Math.ceil((expiresAt - Date.now()) / (1000*60*60*24));
@@ -1466,11 +3315,11 @@ function buildItemCard(item, isOwner) {
   const ownerActions = isOwner ? `
     ${expiryWarn}
     <div class="flex gap-2 mt-3 pt-3" style="border-top:1px solid var(--border);">
-      <button type="button" onclick="toggleStatus('${item.id}','${item.category === 'exchange' ? 'sold' : 'returned'}')"
+      <button type="button" onclick="toggleStatus('${item.id}','${item.category === 'exchange' || item.category === 'donation' ? 'sold' : 'returned'}')"
         class="flex-1 text-xs font-600 py-2 px-3 rounded-lg transition-colors"
         style="background:#f1f5f9;color:#64748b;"
         ${item.status !== 'available' ? 'disabled' : ''}>
-        ${item.status === 'available' ? (item.category === 'exchange' ? 'Mark as Sold' : 'Mark as Returned') : item.status.charAt(0).toUpperCase()+item.status.slice(1)}
+        ${item.status === 'available' ? (item.category === 'exchange' ? 'Mark as Sold' : item.category === 'donation' ? 'Mark as Given' : 'Mark as Returned') : item.status.charAt(0).toUpperCase()+item.status.slice(1)}
       </button>
       <button type="button" onclick="confirmItem('${item.id}')" title="Reset 7-day expiry timer"
         class="text-xs font-600 py-2 px-3 rounded-lg transition-colors"
@@ -1502,15 +3351,15 @@ function buildItemCard(item, isOwner) {
       ${item.location_hint ? `<p class="text-xs text-stone-400 flex items-center gap-1 mb-3">
         <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
         ${item.location_hint}</p>` : ''}
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-1.5">
           <div style="width:24px;height:24px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:700;flex-shrink:0;">
             ${(p.full_name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}
           </div>
           <span class="text-xs text-stone-500">${p.full_name || 'Anonymous'}</span>
         </div>
-        <div class="flex gap-1">${socialLinks}</div>
       </div>
+      ${socialLinks}
       ${ownerActions}
     </div>`;
   return div;
@@ -1521,8 +3370,8 @@ function openDetail(itemId) {
   const item = allItems.find(i => i.id === itemId);
   if (!item) return;
   const p = item.profiles || {};
-  const catLabel = { exchange:'For Sale', lost:'Lost', found:'Found' }[item.category] || '';
-  const catBadge = { exchange:'badge-exchange', lost:'badge-lost', found:'badge-found' }[item.category] || '';
+  const catLabel = { exchange:'For Sale', lost:'Lost', found:'Found', donation:'Donation' }[item.category] || '';
+  const catBadge = { exchange:'badge-exchange', lost:'badge-lost', found:'badge-found', donation:'badge-donation' }[item.category] || '';
 
   const imgsHtml = (item.image_urls || []).filter(Boolean).map(url =>
     `<img src="${url}" class="item-img rounded-xl mb-2" loading="lazy" onerror="this.remove()" />`
@@ -1588,60 +3437,136 @@ document.getElementById('detail-modal').addEventListener('click', function(e) {
 
 // ── VIEWS ────────────────────────────────────────────────────
 function setView(view) {
-  currentView = view;
-  ['browse','marketplace','lostfound','myitems','ai','profile'].forEach(v => {
-    document.getElementById('nav-'+v)?.classList.toggle('active', v === view);
+  closeSidebar();
+  // myitems now has its own standalone view — only 'profile' still maps to 'settings'
+  const resolvedView = view === 'profile' ? 'settings' : view === 'donations' ? 'browse' : view;
+  currentView = resolvedView;
+  const navActive = view === 'myitems' ? 'mylistings' : view === 'donations' ? 'donations' : resolvedView;
+  ['browse','marketplace','lostfound','donations','mylistings','ai','settings','admin'].forEach(v => {
+    document.getElementById('nav-'+v)?.classList.toggle('active', v === navActive);
   });
 
-  const browseControls = document.getElementById('browse-controls');
-  const statsBar       = document.getElementById('stats-bar');
-  const itemsGrid      = document.getElementById('items-grid');
-  const myitemsView    = document.getElementById('myitems-view');
-  const aiView         = document.getElementById('ai-view');
-  const profileView    = document.getElementById('profile-view');
-  const emptyState     = document.getElementById('empty-state');
+  const browseControls       = document.getElementById('browse-controls');
+  const heroSearch           = document.getElementById('hero-search');
+  const statsBar             = document.getElementById('stats-bar');
+  const itemsGrid            = document.getElementById('items-grid');
+  const myitemsStandaloneView= document.getElementById('myitems-standalone-view');
+  const aiView               = document.getElementById('ai-view');
+  const profileView          = document.getElementById('profile-view');
+  const adminView            = document.getElementById('admin-view');
+  const emptyState           = document.getElementById('empty-state');
 
-  _updateViewHeader(view);
+  // Toggle welcome banner vs view header
+  const welcomeBanner = document.getElementById('welcome-banner-container');
+  const viewHeader    = document.getElementById('view-header');
+  const noHeader      = ['settings', 'admin', 'ai', 'myitems'].includes(resolvedView);
+  if (resolvedView === 'browse' && view !== 'donations') {
+    welcomeBanner?.classList.remove('hidden');
+    viewHeader?.classList.add('hidden');
+  } else if (noHeader) {
+    welcomeBanner?.classList.add('hidden');
+    viewHeader?.classList.add('hidden');
+  } else {
+    welcomeBanner?.classList.add('hidden');
+    viewHeader?.classList.remove('hidden');
+    _updateViewHeader(view === 'donations' ? 'donations' : resolvedView);
+  }
 
-  // Hide all secondary panels first
-  myitemsView.classList.add('hidden');
+  // Hide all panels first
+  document.getElementById('main-content').classList.remove('settings-active', 'ai-active');
+  myitemsStandaloneView?.classList.add('hidden');
   aiView.classList.add('hidden');
   profileView.classList.add('hidden');
+  adminView?.classList.add('hidden');
   emptyState.classList.add('hidden');
+  browseControls.classList.add('hidden');
+  heroSearch?.classList.add('hidden');
+  statsBar.classList.add('hidden');
+  itemsGrid.classList.add('hidden');
+  document.getElementById('donations-promo')?.classList.add('hidden');
 
-  if (view === 'myitems') {
-    browseControls.classList.add('hidden');
-    statsBar.classList.add('hidden');
-    itemsGrid.classList.add('hidden');
-    myitemsView.classList.remove('hidden');
+  // ── My Listings (standalone, full-width) ──────────────────
+  if (resolvedView === 'myitems') {
+    if (!requireAuth('Sign in to manage your listings.')) return;
+    myitemsStandaloneView?.classList.remove('hidden');
     loadMyItems();
     return;
   }
 
-  if (view === 'ai') {
-    browseControls.classList.add('hidden');
-    statsBar.classList.add('hidden');
-    itemsGrid.classList.add('hidden');
-    aiView.classList.remove('hidden');
-    return;
-  }
-
-  if (view === 'profile') {
-    browseControls.classList.add('hidden');
-    statsBar.classList.add('hidden');
-    itemsGrid.classList.add('hidden');
+  if (resolvedView === 'settings') {
+    if (!requireAuth('Sign in to access settings.')) return;
+    history.pushState({ tcu: 'settings' }, '', location.href);
+    document.getElementById('main-content').classList.add('settings-active');
     profileView.classList.remove('hidden');
+    setSettingsSection(view === 'profile' ? 'general' : currentSettingsSection);
     populateProfileForm();
     return;
   }
 
+  if (resolvedView === 'admin') {
+    if (!requireAdminAccess()) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    adminView?.classList.remove('hidden');
+    setAdminTab('verify'); // Initialize with verify tab
+    return;
+  }
+
+  if (resolvedView === 'ai') {
+    document.getElementById('main-content').classList.add('ai-active');
+    aiView.classList.remove('hidden');
+    return;
+  }
+
   browseControls.classList.remove('hidden');
-  statsBar.classList.remove('hidden');
+  browseControls.classList.remove('open');
+  document.getElementById('filter-toggle-btn')?.classList.remove('active');
+  const lbl = document.getElementById('filter-btn-label');
+  if (lbl) lbl.textContent = 'Filters';
+  resetAdvancedFilters();
+  heroSearch?.classList.remove('hidden');
   itemsGrid.classList.remove('hidden');
 
+  // All specialized groups hidden by default — show only what's needed per view
+  ['filter-grp-condition','filter-grp-product-cat','filter-grp-don-condition',
+   'filter-grp-urgency','filter-grp-location'].forEach(id =>
+    document.getElementById(id)?.classList.add('hidden'));
+  document.getElementById('donations-promo')?.classList.add('hidden');
+
+  if (resolvedView === 'marketplace') {
+    statsBar.classList.add('hidden');
+    document.getElementById('filter-grp-category')?.classList.add('hidden');
+    document.getElementById('filter-grp-date')?.classList.add('hidden');
+    document.getElementById('filter-grp-condition')?.classList.remove('hidden');
+    document.getElementById('filter-grp-product-cat')?.classList.remove('hidden');
+    itemsGrid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(240px,1fr))';
+  } else if (view === 'donations') {
+    statsBar.classList.add('hidden');
+    document.getElementById('filter-grp-category')?.classList.add('hidden');
+    document.getElementById('filter-grp-date')?.classList.add('hidden');
+    document.getElementById('filter-grp-don-condition')?.classList.remove('hidden');
+    document.getElementById('filter-grp-urgency')?.classList.remove('hidden');
+    document.getElementById('donations-promo')?.classList.remove('hidden');
+    itemsGrid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(300px,1fr))';
+  } else if (resolvedView === 'lostfound') {
+    statsBar.classList.add('hidden');
+    document.getElementById('filter-grp-category')?.classList.add('hidden');
+    document.getElementById('filter-grp-location')?.classList.remove('hidden');
+    document.getElementById('filter-grp-date')?.classList.remove('hidden');
+    itemsGrid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(300px,1fr))';
+  } else {
+    statsBar.classList.remove('hidden');
+    document.getElementById('filter-grp-category')?.classList.remove('hidden');
+    document.getElementById('filter-grp-date')?.classList.remove('hidden');
+    itemsGrid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(300px,1fr))';
+  }
+
   _updateStatCardHighlight('');
-  if (view === 'marketplace')   setFilter('exchange',  true);
+  if (view === 'marketplace')    setFilter('exchange',  true);
   else if (view === 'lostfound') setFilter('lostfound', true);
+  else if (view === 'donations') setFilter('donation',  true);
   else                           setFilter('all',       true);
 }
 
@@ -1652,12 +3577,18 @@ function setFilter(filter, render = true) {
 }
 
 function _syncFilterTabs(filter) {
+  // Sync legacy filter-tab elements (if any remain)
   document.querySelectorAll('.filter-tab').forEach(btn => {
     const f = btn.dataset.filter;
-    const active = filter === 'lostfound'
-      ? (f === 'lost' || f === 'found')
-      : f === filter;
-    btn.classList.toggle('active', active);
+    btn.classList.toggle('active', filter === 'lostfound' ? (f === 'lost' || f === 'found') : f === filter);
+  });
+  // Sync panel category chips
+  document.querySelectorAll('#browse-controls .filter-chip[data-cat]').forEach(c => {
+    const cat = c.dataset.cat;
+    const match = filter === 'lostfound' ? cat === 'lostfound'
+                : filter === 'all'       ? cat === 'all'
+                : cat === filter;
+    c.classList.toggle('active', match);
   });
 }
 
@@ -1700,6 +3631,11 @@ async function deleteItem(itemId) {
 
 // ── POST MODAL ───────────────────────────────────────────────
 function openPostModal() {
+  if (!requireAuth('Sign in to post an item.')) return;
+  if (currentProfile?.status === 'banned') {
+    showToast('Banned accounts cannot post.', 'error');
+    return;
+  }
   resetPostForm();
   document.getElementById('post-modal').classList.remove('hidden');
 }
@@ -1747,6 +3683,17 @@ function nextStep(from) {
     const title = document.getElementById('post-title').value.trim();
     if (title.length < 3) { document.getElementById('title-err').classList.remove('hidden'); ok=false; }
     else document.getElementById('title-err').classList.add('hidden');
+
+    // Validate contact options - at least one must be provided
+    const instagram = document.getElementById('post-instagram').value.trim();
+    const lineId = document.getElementById('post-line-id').value.trim();
+    const phone = document.getElementById('post-phone').value.trim();
+    const hasContact = instagram || lineId || phone;
+    if (!hasContact) {
+      showToast('Please provide at least one contact method (Instagram, LINE, or Phone).', 'error');
+      ok = false;
+    }
+
     if (!ok) return;
     showStep(2);
   } else if (from === 2) {
@@ -1790,7 +3737,13 @@ async function submitPost() {
         image_urls: demoUrls, status: 'available',
         location_hint: document.getElementById('post-location').value.trim() || null,
         created_at: new Date().toISOString(),
-        profiles: { full_name: currentProfile?.full_name || 'You', ...currentProfile },
+        profiles: {
+          full_name: currentProfile?.full_name || 'You',
+          instagram_handle: document.getElementById('post-instagram').value.trim() || null,
+          line_id: document.getElementById('post-line-id').value.trim() || null,
+          phone_number: document.getElementById('post-phone').value.trim() || null,
+          ...currentProfile
+        },
       };
       allItems.unshift(payload);
       syncMyItemsFromAllItems(); updateStats();
@@ -1829,6 +3782,25 @@ async function submitPost() {
       location_hint:     document.getElementById('post-location').value.trim() || null,
     });
     if (insertError) throw new Error(insertError.message);
+
+    // Step 4 — Update user profile with contact information
+    const contactUpdates = {};
+    const instagram = document.getElementById('post-instagram').value.trim();
+    const lineId = document.getElementById('post-line-id').value.trim();
+    const phone = document.getElementById('post-phone').value.trim();
+
+    if (instagram) contactUpdates.instagram_handle = instagram.startsWith('@') ? instagram.substring(1) : instagram;
+    if (lineId) contactUpdates.line_id = lineId;
+    if (phone) contactUpdates.phone_number = phone;
+
+    if (Object.keys(contactUpdates).length > 0) {
+      const { error: profileError } = await sb.from('profiles').update(contactUpdates).eq('id', currentUser.id);
+      if (profileError) console.warn('Profile update failed:', profileError.message);
+      else {
+        // Update local profile cache
+        if (currentProfile) Object.assign(currentProfile, contactUpdates);
+      }
+    }
 
     closePostModal();
     await loadItems();
@@ -1929,7 +3901,7 @@ function aiSuggest(text) {
 
 async function sendAiMessage() {
   const input   = document.getElementById('ai-input');
-  const sendBtn = document.querySelector('#ai-view .btn-primary');
+  const sendBtn = document.querySelector('#ai-view .btn-ai-send');
   const msg     = input.value.trim();
   if (!msg) return;
 
@@ -1944,12 +3916,12 @@ async function sendAiMessage() {
   typingDiv.id        = 'ai-typing-indicator';
   typingDiv.className = 'flex gap-3 items-start fade-in';
   typingDiv.innerHTML = `
-    <div style="width:32px;height:32px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
-    <div class="flex-1 rounded-xl rounded-tl-sm p-3 text-sm" style="background:#f5f5f4;">
+    <div style="width:32px;height:32px;border-radius:50%;background:#28a745;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
+    <div class="ai-message" style="padding:14px 16px;">
       <span style="display:inline-flex;gap:5px;align-items:center;">
-        <span style="width:7px;height:7px;background:#a8a29e;border-radius:50%;animation:aiDot 1.2s ease-in-out infinite;"></span>
-        <span style="width:7px;height:7px;background:#a8a29e;border-radius:50%;animation:aiDot 1.2s ease-in-out .4s infinite;"></span>
-        <span style="width:7px;height:7px;background:#a8a29e;border-radius:50%;animation:aiDot 1.2s ease-in-out .8s infinite;"></span>
+        <span style="width:7px;height:7px;background:#555;border-radius:50%;animation:aiDot 1.2s ease-in-out infinite;"></span>
+        <span style="width:7px;height:7px;background:#555;border-radius:50%;animation:aiDot 1.2s ease-in-out .4s infinite;"></span>
+        <span style="width:7px;height:7px;background:#555;border-radius:50%;animation:aiDot 1.2s ease-in-out .8s infinite;"></span>
       </span>
     </div>`;
   container.appendChild(typingDiv);
@@ -1962,8 +3934,8 @@ async function sendAiMessage() {
     const msgDiv = document.createElement('div');
     msgDiv.className = 'flex gap-3 items-start fade-in';
     msgDiv.innerHTML = `
-      <div style="width:32px;height:32px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
-      <div class="flex-1 rounded-xl rounded-tl-sm p-3 text-sm text-stone-700 ai-reply-text" style="background:#f5f5f4;white-space:pre-line;"></div>`;
+      <div style="width:32px;height:32px;border-radius:50%;background:#28a745;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
+      <div class="ai-message flex-1 ai-reply-text"></div>`;
     container.appendChild(msgDiv);
 
     const textEl = msgDiv.querySelector('.ai-reply-text');
@@ -1997,13 +3969,13 @@ function appendAiMessage(text, role) {
   div.className = 'flex gap-3 items-start fade-in';
   if (isAi) {
     div.innerHTML = `
-      <div style="width:32px;height:32px;border-radius:50%;background:var(--jade);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
-      <div class="flex-1 rounded-xl rounded-tl-sm p-3 text-sm text-stone-700" style="background:#f5f5f4;white-space:pre-line;">${text}</div>`;
+      <div style="width:32px;height:32px;border-radius:50%;background:#28a745;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">AI</div>
+      <div class="ai-message flex-1">${text}</div>`;
   } else {
     div.innerHTML = `
       <div class="flex-1"></div>
-      <div class="rounded-xl rounded-tr-sm p-3 text-sm text-stone-800" style="max-width:75%;background:#dcfce7;white-space:pre-line;">${text}</div>
-      <div style="width:32px;height:32px;border-radius:50%;background:#e7e5e4;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.75rem;font-weight:700;flex-shrink:0;">${initials}</div>`;
+      <div class="user-message">${text}</div>
+      <div style="width:32px;height:32px;border-radius:50%;background:#2c2c2c;display:flex;align-items:center;justify-content:center;color:#a1a1aa;font-size:.75rem;font-weight:700;flex-shrink:0;">${initials}</div>`;
   }
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
@@ -2012,12 +3984,20 @@ function appendAiMessage(text, role) {
 // ── PROFILE MANAGEMENT ────────────────────────────────────────
 function populateProfileForm() {
   if (!currentProfile) return;
-  document.getElementById('profile-name').value       = currentProfile.full_name        || '';
-  document.getElementById('profile-student-id').value = currentProfile.student_id       || '';
-  document.getElementById('profile-dept').value       = currentProfile.department        || '';
-  document.getElementById('profile-phone').value      = currentProfile.phone_number      || '';
-  document.getElementById('profile-line').value       = currentProfile.line_id           || '';
-  document.getElementById('profile-ig').value         = currentProfile.instagram_handle  || '';
+  document.getElementById('profile-name').value       = currentProfile.full_name  || '';
+  document.getElementById('profile-student-id').value = currentProfile.student_id || '';
+  document.getElementById('profile-dept').value       = currentProfile.department  || '';
+  const emailEl = document.getElementById('profile-email');
+  if (emailEl) emailEl.value = currentUser?.email || currentProfile.email || '';
+  const existingAvatar = currentProfile.avatar_url || '';
+  document.getElementById('profile-avatar-url').value = existingAvatar;
+  const avatarImg = document.getElementById('profile-avatar-img');
+  if (existingAvatar) {
+    avatarImg.src = existingAvatar;
+  } else {
+    avatarImg.src = 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=200&auto=format&fit=crop&q=80';
+  }
+
   const existingIdImg = currentProfile.student_id_image_url || '';
   document.getElementById('profile-id-img').value = existingIdImg;
   if (existingIdImg) {
@@ -2052,11 +4032,9 @@ function populateProfileForm() {
 
 async function saveProfile() {
   const updates = {
-    full_name:        document.getElementById('profile-name').value.trim(),
-    department:       document.getElementById('profile-dept').value.trim(),
-    phone_number:     document.getElementById('profile-phone').value.trim(),
-    line_id:          document.getElementById('profile-line').value.trim(),
-    instagram_handle: document.getElementById('profile-ig').value.trim(),
+    full_name:  document.getElementById('profile-name').value.trim(),
+    department: document.getElementById('profile-dept').value.trim(),
+    avatar_url: document.getElementById('profile-avatar-url').value.trim() || null,
   };
   if (isUsingDemoMode()) {
     Object.assign(currentProfile, updates);
@@ -2064,11 +4042,19 @@ async function saveProfile() {
     showToast('Profile saved! (Demo Mode)', 'success');
     return;
   }
-  const { error } = await sb.from('profiles').upsert({ id: currentUser.id, ...updates });
+  const { error } = await sb.from('profiles').upsert({ id: currentUser.id, ...updates }, { onConflict: 'id' });
   if (error) { showToast(error.message, 'error'); return; }
   Object.assign(currentProfile, updates);
   updateSidebarUser();
   showToast('Profile saved!', 'success');
+}
+
+async function handleBannedUser() {
+  showToast('This account has been banned. Contact an administrator for help.', 'error');
+  if (!isUsingDemoMode()) await sb.auth.signOut();
+  currentUser = null;
+  currentProfile = null;
+  showAuth();
 }
 
 async function submitVerification() {
