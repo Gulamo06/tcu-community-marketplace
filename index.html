@@ -150,7 +150,6 @@
     .light-theme .text-4xl   { color: #0f172a !important; }
     /* Settings panels — undo dark-theme text overrides using real IDs */
     .light-theme #settings-general-panel h2,
-    .light-theme #settings-studentid-panel h2,
     .light-theme #settings-security-panel h2,
     .light-theme .settings-panel h2.text-stone-900,
     .light-theme .settings-panel .font-semibold.text-stone-900 { color: #0f172a !important; }
@@ -1842,7 +1841,6 @@
         <!-- Horizontal tab nav -->
         <div class="settings-htabs" style="margin-bottom:28px;">
           <button type="button" class="settings-htab active" data-section="general" id="settings-tab-general" onclick="setSettingsSection('general')">General Settings</button>
-          <button type="button" class="settings-htab" data-section="studentid" id="settings-tab-studentid" onclick="setSettingsSection('studentid')">Student ID</button>
           <button type="button" class="settings-htab" data-section="security" id="settings-tab-security" onclick="setSettingsSection('security')">Security</button>
         </div>
 
@@ -1895,51 +1893,15 @@
                   <button type="button" class="lang-btn" id="lang-zh-TW" onclick="setLang('zh-TW')">繁中</button>
                 </div>
               </div>
-              <!-- School ID Verification -->
-              <div class="sm:col-span-2">
-                <label class="form-label block mb-1">School ID Verification</label>
-                <p class="helper-text mb-3">Upload a photo of your student card</p>
-                <input id="profile-id-img" type="hidden" />
-                <label for="profile-id-file" class="btn-upload">
-                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                  <span id="profile-id-label">Upload Photo from Device</span>
-                </label>
-                <input id="profile-id-file" type="file" accept="image/*" class="hidden" onchange="handleStudentIdUpload(event)" />
-                <div id="profile-id-preview" class="hidden mt-3">
-                  <img id="profile-id-preview-img" src="" alt="Student ID preview" class="rounded-xl object-cover" style="max-height:180px;max-width:100%;border:1px solid rgba(255,255,255,.1);" />
-                </div>
-                <div class="rounded-xl p-3 mt-4 text-xs" style="background:rgba(40,167,69,.06);border:1px solid rgba(40,167,69,.2);color:#a1a1aa;">
-                  🔒 Your image is only visible to administrators and never shown publicly.
-                </div>
-              </div>
             </div>
 
             <div class="flex gap-3 flex-wrap">
               <button type="button" onclick="saveProfile()" class="btn-primary">Save Profile</button>
-              <button type="button" onclick="submitVerification()" class="btn-ghost">Submit ID for Verification</button>
             </div>
           </div>
         </section>
 
         <section id="settings-listings-panel" class="hidden"></section>
-
-        <!-- Student ID Panel -->
-        <section id="settings-studentid-panel" class="settings-panel hidden">
-          <h2 class="font-sans text-2xl font-bold text-stone-900">Student ID Verification</h2>
-          <p class="text-sm text-stone-500 mt-1">Submit your university ID and stay approved for posting.</p>
-          <div class="settings-sub-card">
-            <div id="verification-banner" class="rounded-xl p-4 mb-5" style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);">
-              <p id="verify-status-text" class="font-semibold text-sm" style="color:#f59e0b;">⏳ Verification Pending</p>
-              <p id="verify-status-sub" class="text-xs mt-1" style="color:#a1a1aa;">Upload your student ID in General Settings to unlock posting privileges.</p>
-            </div>
-            <p class="text-sm text-stone-500 mb-5">Upload a clear photo of your Tzu Chi University student ID card. Administrators will review within 1–2 business days.</p>
-            <p class="text-sm mb-4" style="color:#71717a;">To upload or replace your ID photo, go to <button type="button" onclick="setSettingsSection('general')" style="background:none;border:none;color:#4ade80;cursor:pointer;font-weight:600;font-family:inherit;font-size:inherit;padding:0;">General Settings →</button></p>
-            <div class="rounded-xl p-3 text-xs" style="background:rgba(40,167,69,.06);border:1px solid rgba(40,167,69,.2);color:#a1a1aa;">
-              🔒 Your image is only visible to administrators and never shown publicly.
-            </div>
-            <button type="button" onclick="submitVerification()" class="btn-primary" style="margin-top:20px;">Submit for Verification</button>
-          </div>
-        </section>
 
         <!-- Security Panel -->
         <section id="settings-security-panel" class="settings-panel hidden">
@@ -1995,38 +1957,14 @@
 
       <!-- Admin Tabs -->
       <div class="admin-tabs">
-        <button class="admin-tab active" onclick="setAdminTab('verify')" data-tab="verify">Verify Students</button>
-        <button class="admin-tab" onclick="setAdminTab('listings')" data-tab="listings">Manage Listings</button>
+        <button class="admin-tab active" onclick="setAdminTab('listings')" data-tab="listings">Manage Listings</button>
         <button class="admin-tab" onclick="setAdminTab('flagged')" data-tab="flagged">Flagged Items</button>
       </div>
 
       <!-- Tab Content -->
       <div class="admin-content">
-        <!-- Verify Students Tab -->
-        <div id="admin-tab-verify" class="admin-tab-content active">
-          <div class="admin-card">
-            <div class="overflow-x-auto">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Student ID</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Document</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="verify-students-body">
-                  <!-- Populated by JavaScript -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
         <!-- Manage Listings Tab -->
-        <div id="admin-tab-listings" class="admin-tab-content">
+        <div id="admin-tab-listings" class="admin-tab-content active">
           <div class="admin-card">
             <div class="overflow-x-auto">
               <table class="admin-table">
@@ -2290,23 +2228,6 @@ async function uploadFile(file, prefix = '', bucket = 'item-images') {
   return urlData.publicUrl;
 }
 
-async function handleStudentIdUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const label = document.getElementById('profile-id-label');
-  label.textContent = 'Uploading…';
-  try {
-    const url = await uploadFile(file, 'student-id/');
-    document.getElementById('profile-id-img').value = url;
-    document.getElementById('profile-id-preview-img').src = url;
-    document.getElementById('profile-id-preview').classList.remove('hidden');
-    label.textContent = '✓ Photo uploaded!';
-    showToast('Student ID uploaded!', 'success');
-  } catch (err) {
-    label.textContent = 'Upload Photo from Device';
-    showToast('Upload failed: ' + err.message, 'error');
-  }
-}
 
 async function handleProfilePictureUpload(event) {
   const file = event.target.files[0];
@@ -2808,7 +2729,6 @@ function setSettingsSection(section) {
   });
   document.getElementById('settings-general-panel').classList.toggle('hidden', section !== 'general');
   document.getElementById('settings-listings-panel').classList.toggle('hidden', true);
-  document.getElementById('settings-studentid-panel').classList.toggle('hidden', section !== 'studentid');
   document.getElementById('settings-security-panel').classList.toggle('hidden', section !== 'security');
 }
 
@@ -2839,9 +2759,6 @@ function setAdminTab(tab) {
 
   // Load data for the selected tab
   switch(tab) {
-    case 'verify':
-      loadVerifyStudents();
-      break;
     case 'listings':
       loadManageListings();
       break;
@@ -2849,52 +2766,6 @@ function setAdminTab(tab) {
       loadFlaggedItems();
       break;
   }
-}
-
-async function loadVerifyStudents() {
-  if (isUsingDemoMode()) {
-    renderVerifyStudents([]);
-    return;
-  }
-  const { data, error } = await sb
-    .from('profiles')
-    .select('id,full_name,student_id,email,status,student_id_image_url,verification_status')
-    .in('verification_status', ['pending', 'approved', 'rejected'])
-    .order('created_at', { ascending: false });
-
-  if (error) { showToast(error.message, 'error'); return; }
-  renderVerifyStudents(data || []);
-}
-
-function renderVerifyStudents(profiles) {
-  const tableBody = document.getElementById('verify-students-body');
-  if (!tableBody) return;
-
-  tableBody.innerHTML = profiles.map(profile => {
-    const safeName = String(profile.full_name || '').replace(/'/g, "\\'");
-    const statusClass = profile.verification_status === 'approved' ? 'status-active' :
-                       profile.verification_status === 'pending' ? 'status-pending' : 'status-banned';
-
-    const statusLabel = profile.verification_status === 'approved' ? 'Approved' :
-                        profile.verification_status === 'rejected' ? 'Rejected' : 'Pending';
-    return `
-      <tr>
-        <td>${profile.full_name || '—'}</td>
-        <td>${profile.student_id || '—'}</td>
-        <td>${profile.email || 'No email'}</td>
-        <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
-        <td>
-          ${profile.student_id_image_url ?
-            `<button class="admin-action-btn btn-view" onclick="viewStudentDocument('${profile.student_id_image_url}')">View ID Card</button>` :
-            '<span style="color:#71717a;font-size:13px;">No document</span>'
-          }
-        </td>
-        <td>
-          <button class="admin-action-btn btn-approve" onclick="approveStudent('${profile.id}')">Approve</button>
-          <button class="admin-action-btn btn-reject" onclick="rejectStudent('${profile.id}')">Reject</button>
-        </td>
-      </tr>`;
-  }).join('');
 }
 
 async function loadManageListings() {
@@ -3002,46 +2873,6 @@ function renderFlaggedItems(items) {
       </div>
     `;
   }).join('');
-}
-
-// Admin action functions
-async function approveStudent(profileId) {
-  if (isUsingDemoMode()) {
-    showToast('Student approved (Demo Mode).', 'success');
-    loadVerifyStudents();
-    return;
-  }
-  const { error } = await sb
-    .from('profiles')
-    .update({
-      verification_status: 'approved',
-      is_verified: true,
-      status: 'active'
-    })
-    .eq('id', profileId);
-
-  if (error) { showToast(error.message, 'error'); return; }
-  showToast('Student approved successfully.', 'success');
-  loadVerifyStudents();
-}
-
-async function rejectStudent(profileId) {
-  if (isUsingDemoMode()) {
-    showToast('Student rejected (Demo Mode).', 'success');
-    loadVerifyStudents();
-    return;
-  }
-  const { error } = await sb
-    .from('profiles')
-    .update({
-      verification_status: 'rejected',
-      is_verified: false
-    })
-    .eq('id', profileId);
-
-  if (error) { showToast(error.message, 'error'); return; }
-  showToast('Student verification rejected.', 'success');
-  loadVerifyStudents();
 }
 
 async function deleteListing(itemId) {
@@ -3381,8 +3212,6 @@ async function loadProfile() {
       id: currentUser.id,
       full_name: currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || 'Student',
       department: currentUser.email || '',
-      verification_status: 'pending',
-      is_verified: false,
     };
     updateSidebarUser();
     return;
@@ -3814,7 +3643,7 @@ function setView(view) {
     }
 
     adminView?.classList.remove('hidden');
-    setAdminTab('verify'); // Initialize with verify tab
+    setAdminTab('listings');
     return;
   }
 
@@ -3938,11 +3767,6 @@ function openPostModal() {
   if (!requireAuth('Sign in to post an item.')) return;
   if (currentProfile?.status === 'banned') {
     showToast('Banned accounts cannot post.', 'error');
-    return;
-  }
-  if (!isUsingDemoMode() && currentProfile && !currentProfile.is_verified) {
-    showToast('Verify your Student ID first (Settings → Student ID Verification).', 'error');
-    setView('settings');
     return;
   }
   resetPostForm();
@@ -4204,7 +4028,7 @@ Guidelines:
 
 const AI_CHIPS = {
   en: [
-    { label: 'Verify Student ID',    query: 'How do I verify my student ID on this platform?' },
+    { label: 'How to Post an Item',   query: 'How do I post an item on the TCU marketplace?' },
     { label: 'Find Textbooks',       query: 'How do I find textbooks on the marketplace?' },
     { label: 'Donation Rules',       query: 'What are the campus donation rules?' },
     { label: 'Report Lost Item',     query: 'How do I report a lost item?' },
@@ -4357,36 +4181,6 @@ function populateProfileForm() {
     avatarImg.src = getAvatarUrl(currentProfile);
   }
 
-  const existingIdImg = currentProfile.student_id_image_url || '';
-  document.getElementById('profile-id-img').value = existingIdImg;
-  if (existingIdImg) {
-    document.getElementById('profile-id-preview-img').src = existingIdImg;
-    document.getElementById('profile-id-preview').classList.remove('hidden');
-    document.getElementById('profile-id-label').textContent = '✓ Photo uploaded';
-  } else {
-    document.getElementById('profile-id-preview').classList.add('hidden');
-    document.getElementById('profile-id-label').textContent = 'Upload Photo from Device';
-  }
-
-  // Update verification banner
-  const verified = currentProfile.is_verified;
-  const vstatus  = currentProfile.verification_status || 'pending';
-  const banner   = document.getElementById('verification-banner');
-  const stText   = document.getElementById('verify-status-text');
-  const stSub    = document.getElementById('verify-status-sub');
-  if (verified || vstatus === 'approved') {
-    banner.style.background  = '#f0fdf4'; banner.style.borderColor = '#bbf7d0';
-    stText.textContent = '✅ Verified Student'; stText.style.color = '#15803d';
-    stSub.textContent  = 'You can post items on the platform.'; stSub.style.color = '#16a34a';
-  } else if (vstatus === 'rejected') {
-    banner.style.background  = '#fef2f2'; banner.style.borderColor = '#fecaca';
-    stText.textContent = '❌ Verification Rejected'; stText.style.color = '#dc2626';
-    stSub.textContent  = 'Please re-upload a clear photo of your student ID.'; stSub.style.color = '#ef4444';
-  } else {
-    banner.style.background  = '#fef3c7'; banner.style.borderColor = '#fde68a';
-    stText.textContent = '⏳ Verification Pending'; stText.style.color = '#92400e';
-    stSub.textContent  = 'Upload your student ID below to unlock posting privileges.'; stSub.style.color = '#b45309';
-  }
 }
 
 async function saveProfile() {
@@ -4416,26 +4210,6 @@ async function handleBannedUser() {
   showAuth();
 }
 
-async function submitVerification() {
-  const imgUrl = document.getElementById('profile-id-img').value.trim();
-  if (!imgUrl) { showToast('Please upload your student ID photo first', 'error'); return; }
-  if (isUsingDemoMode()) {
-    currentProfile.student_id_image_url = imgUrl;
-    currentProfile.verification_status  = 'approved';
-    currentProfile.is_verified          = true;
-    populateProfileForm();
-    showToast('Verification submitted & auto-approved! (Demo Mode)', 'success');
-    return;
-  }
-  const { error } = await sb.from('profiles')
-    .update({ student_id_image_url: imgUrl, verification_status: 'pending' })
-    .eq('id', currentUser.id);
-  if (error) { showToast(error.message, 'error'); return; }
-  currentProfile.student_id_image_url = imgUrl;
-  currentProfile.verification_status  = 'pending';
-  populateProfileForm();
-  showToast('Verification submitted! An admin will review within 1–2 business days.', 'success');
-}
 
 // Auth screen shown by DOMContentLoaded init above
 </script>
