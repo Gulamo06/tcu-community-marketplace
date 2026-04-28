@@ -58,6 +58,21 @@ COMMENT ON COLUMN public.profiles.is_verified              IS 'True once an admi
 COMMENT ON COLUMN public.profiles.student_id_image_url     IS 'URL of student ID card image for admin verification.';
 COMMENT ON COLUMN public.profiles.verification_status      IS 'pending → approved (sets is_verified=true) → rejected.';
 
+-- ───────────────────────────────────────────────────────────
+-- STEP 2B: ADD MISSING ENUM VALUES
+-- Run these separately — ADD VALUE cannot be inside a transaction block.
+-- ───────────────────────────────────────────────────────────
+-- ALTER TYPE item_category ADD VALUE IF NOT EXISTS 'donation';
+
+-- ───────────────────────────────────────────────────────────
+-- STEP 3B: MODERATION SUPPORT
+-- ───────────────────────────────────────────────────────────
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_status_check;
+ALTER TABLE public.profiles ADD CONSTRAINT profiles_status_check
+  CHECK (status IN ('active', 'pending_verification', 'id_submitted', 'banned'));
+
 
 -- ────────────────────────────────────────────────────────────
 -- STEP 4: ITEMS TABLE
@@ -67,13 +82,16 @@ CREATE TABLE IF NOT EXISTS public.items (
   owner_id                  UUID            NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   title                     TEXT            NOT NULL CHECK (char_length(title) BETWEEN 3 AND 120),
   description               TEXT            NOT NULL CHECK (char_length(description) >= 20),
-  category                  item_category   NOT NULL,
+  category                  TEXT            NOT NULL CHECK (category IN ('exchange','lost','found','donation')),
+  condition                 TEXT,
+  product_cat               TEXT,
+  don_condition             TEXT,
   unique_identifier         TEXT            NOT NULL CHECK (char_length(unique_identifier) >= 5),
   verification_hint         TEXT,
   price                     NUMERIC(10,2)   CHECK (price IS NULL OR price >= 0),
   image_urls                TEXT[]          NOT NULL DEFAULT '{}',
-  status                    item_status     NOT NULL DEFAULT 'available',
-  preferred_contact_method  contact_method  NOT NULL DEFAULT 'line',
+  status                    TEXT            NOT NULL DEFAULT 'available' CHECK (status IN ('available','sold','returned')),
+  preferred_contact_method  TEXT            NOT NULL DEFAULT 'line',
   location_hint             TEXT,
   last_confirmed_at         TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
   expires_at                TIMESTAMPTZ     NOT NULL DEFAULT (NOW() + INTERVAL '7 days'),
@@ -288,3 +306,25 @@ BEGIN
   -- Seed data removed: profiles.id must reference a real auth.users(id).
   -- Sign up via the app first, then insert items here using the real UUID.
 END $$;
+
+
+-- ────────────────────────────────────────────────────────────
+-- STEP 9: MIGRATIONS (run on existing databases)
+-- Apply these in Supabase SQL Editor if the database already exists.
+-- ────────────────────────────────────────────────────────────
+
+-- 9A: Add donation category + extra item columns (idempotent)
+ALTER TABLE public.items ADD COLUMN IF NOT EXISTS condition TEXT;
+ALTER TABLE public.items ADD COLUMN IF NOT EXISTS product_cat TEXT;
+ALTER TABLE public.items ADD COLUMN IF NOT EXISTS don_condition TEXT;
+
+-- 9B: Widen category to TEXT (allows 'donation') if still using the ENUM type.
+--     Only needed if the table still has category typed as item_category ENUM.
+--     Skip if category is already TEXT.
+-- ALTER TABLE public.items ALTER COLUMN category TYPE TEXT;
+-- ALTER TABLE public.items ADD CONSTRAINT items_category_check
+--   CHECK (category IN ('exchange','lost','found','donation'));
+
+-- 9C: Add profiles columns for moderation (idempotent, already in 3B)
+-- ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
+-- ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;

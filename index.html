@@ -43,9 +43,119 @@
       --border:  #e7e5e4;
     }
 
+    /* ── Light Mode ── */
+    .light-theme {
+      --ink:    #1e293b;
+      --muted:  #64748b;
+      --cream:  #f8fafc;
+      --border: #e2e8f0;
+    }
+    .light-theme body,
+    .light-theme #main-content { background: #f8fafc !important; color: #1e293b !important; }
+    .light-theme .card {
+      background: #ffffff !important;
+      border-color: rgba(0,0,0,0.07) !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04) !important;
+    }
+    .light-theme .card:hover {
+      box-shadow: 0 10px 20px rgba(22,163,74,0.15), 0 4px 16px rgba(0,0,0,.06) !important;
+    }
+    .light-theme .card .text-stone-900 { color: #0f172a !important; }
+    .light-theme .card .text-stone-500,
+    .light-theme .card .text-stone-400 { color: #64748b !important; }
+    .light-theme #sidebar            { background: #ffffff !important; border-color: #e2e8f0 !important; }
+    .light-theme .nav-item           { color: #475569 !important; }
+    .light-theme .nav-item.active    { background: #f0fdf4 !important; color: #16a34a !important; }
+    .light-theme .filter-tab:not(.active) { color: #64748b; border-color: #e2e8f0; }
+    .light-theme .field              { background: #ffffff !important; color: #1e293b !important; border-color: #e2e8f0 !important; }
+    .light-theme .auth-card          { background: #ffffff !important; }
+    /* Text legibility */
+    .light-theme h1, .light-theme h2, .light-theme h3,
+    .light-theme h4, .light-theme h5, .light-theme h6 { color: #0f172a !important; }
+    .light-theme p, .light-theme label                 { color: #334155 !important; }
+    /* Dark panels / sections */
+    .light-theme .settings-panel,
+    .light-theme .settings-sub-card,
+    .light-theme [style*="background:#1a1a1a"],
+    .light-theme [style*="background:#1c1c1c"],
+    .light-theme [style*="background:#121212"],
+    .light-theme [style*="background:#1e1e1e"],
+    .light-theme [style*="background:#2c2c2c"],
+    .light-theme [style*="background:#252525"],
+    .light-theme [style*="background:#18181b"] { background: #ffffff !important; color: #1e293b !important; border-color: #e2e8f0 !important; }
+    /* Inputs / selects */
+    .light-theme input:not([type="file"]):not([type="radio"]):not([type="checkbox"]),
+    .light-theme select,
+    .light-theme textarea {
+      background: #f1f5f9 !important;
+      color: #1e293b !important;
+      border-color: #cbd5e1 !important;
+    }
+    /* Modals */
+    .light-theme .contact-modal-box  { background: #ffffff !important; border-color: #e2e8f0 !important; }
+    .light-theme .contact-modal-box a { background: #f8fafc !important; border-color: #e2e8f0 !important; color: #1e293b !important; }
+    .light-theme .contact-modal-box h3 { color: #0f172a !important; }
+    /* Admin table */
+    .light-theme table, .light-theme th, .light-theme td { background: #ffffff !important; color: #1e293b !important; border-color: #e2e8f0 !important; }
+    .light-theme tr:nth-child(even) td { background: #f8fafc !important; }
+    /* Toast & misc dark elements */
+    .light-theme #toast { background: #1e293b !important; }
+    /* AI Assistant view */
+    .light-theme #ai-view h1              { color: #0f172a !important; }
+    .light-theme .chat-container          { background: #ffffff !important; border-color: #e2e8f0 !important; }
+    .light-theme .chat-container [style*="border-bottom:1px solid #2c2c2c"],
+    .light-theme .chat-container [style*="border-top:1px solid #2c2c2c"] { border-color: #e2e8f0 !important; }
+    .light-theme .ai-message              { background: #f0fdf4 !important; color: #0f172a !important; border-left-color: #16a34a !important; }
+    .light-theme .user-message            { background: rgba(22,163,74,.08) !important; color: #1e293b !important; }
+    .light-theme .suggestion-chip         { background: #f8fafc !important; color: #16a34a !important; border-color: #16a34a !important; }
+    .light-theme .suggestion-chip:hover   { background: #16a34a !important; color: #ffffff !important; }
+    .light-theme #ai-input                { background: #f1f5f9 !important; color: #1e293b !important; border-color: #cbd5e1 !important; }
+    .light-theme #ai-input:focus          { background: #ffffff !important; border-color: #16a34a !important; }
+    /* Banner text is always white — it sits on a jade-green gradient */
+    .welcome-banner h2,
+    .welcome-banner .banner-subtitle { color: #ffffff !important; }
+    /* Brand names in sidebar and auth screen */
+    .light-theme #sidebar-brand,
+    .light-theme #auth-brand    { color: #0f172a !important; }
+    .light-theme #sidebar-sub,
+    .light-theme #auth-sub      { color: #64748b !important; }
+    /* View titles (overrides dark theme's !important on #view-title) */
+    .light-theme #view-title       { color: #0f172a !important; }
+    .light-theme #view-subtitle    { color: #475569 !important; }
+    .light-theme #settings-main-title { color: #0f172a !important; }
+    /* Tailwind text utility overrides */
+    .light-theme .text-white  { color: #0f172a !important; }
+    .light-theme .text-zinc-400,
+    .light-theme .text-stone-400 { color: #475569 !important; }
+    .light-theme .text-zinc-300,
+    .light-theme .text-stone-300 { color: #64748b !important; }
+    .light-theme .text-2xl,
+    .light-theme .text-3xl,
+    .light-theme .text-4xl   { color: #0f172a !important; }
+    /* Settings panels — undo dark-theme text overrides using real IDs */
+    .light-theme #settings-general-panel h2,
+    .light-theme #settings-studentid-panel h2,
+    .light-theme #settings-security-panel h2,
+    .light-theme .settings-panel h2.text-stone-900,
+    .light-theme .settings-panel .font-semibold.text-stone-900 { color: #0f172a !important; }
+    .light-theme .settings-panel .text-stone-500,
+    .light-theme .settings-panel .helper-text  { color: #64748b !important; }
+    .light-theme .settings-panel p             { color: #334155 !important; }
+    .light-theme .settings-panel label,
+    .light-theme .settings-panel .form-label   { color: #374151 !important; }
+    /* Settings tabs */
+    .light-theme .settings-htabs       { border-bottom-color: #e2e8f0 !important; }
+    .light-theme .settings-htab        { color: #64748b !important; border-bottom-color: transparent !important; background: transparent !important; }
+    .light-theme .settings-htab.active { color: #16a34a !important; border-bottom-color: #16a34a !important; }
+    .light-theme .settings-htab:hover:not(.active) { color: #334155 !important; }
+    /* Sidebar nav labels */
+    .light-theme .nav-label   { color: inherit !important; }
+    .light-theme .sidebar-title { color: #0f172a !important; }
+    body { transition: background-color 0.3s, color 0.3s; }
+
     * { box-sizing: border-box; }
     body { background: var(--cream); font-family: 'Inter', 'DM Sans', sans-serif; color: var(--ink); }
-    #nav-admin { display: none !important; }
+    #nav-admin { display: none; }
 
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; }
@@ -449,9 +559,13 @@
     }
     .lang-btn:not(.active):hover { background: #f5f5f4; color: var(--ink); }
 
-    /* ── Chinese font override ── */
-    body.lang-zh {
-      font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'Inter', sans-serif;
+    /* ── Traditional Chinese font override ── */
+    body.lang-zh-TW {
+      font-family: 'Microsoft JhengHei', '微軟正黑體', 'Noto Sans TC', 'Apple LiGothic', 'Heiti TC', 'Inter', sans-serif;
+    }
+    .light-theme.lang-zh-TW body {
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: 0.02em;
     }
 
     /* ── Hamburger Buttons ── */
@@ -621,8 +735,9 @@
       box-shadow: 0 1px 3px rgba(0,0,0,.5), 0 4px 16px rgba(0,0,0,.28) !important;
     }
     .card:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,.6), 0 8px 32px rgba(0,0,0,.4) !important;
-      transform: translateY(-3px);
+      transform: translateY(-8px) !important;
+      box-shadow: 0 10px 20px rgba(40,167,69,0.2), 0 8px 32px rgba(0,0,0,.4) !important;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
 
     /* Card text — specificity beats Tailwind */
@@ -1145,8 +1260,8 @@
       <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--jade);border-radius:14px;margin-bottom:12px;box-shadow:0 4px 20px rgba(22,163,74,.35);">
         <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
-      <div class="font-sans text-xl font-bold" style="color:#f4f4f5;letter-spacing:-.025em;">TCU Community</div>
-      <p class="text-sm" style="color:#52525b;margin-top:3px;">Tzu Chi University · 慈濟大學</p>
+      <div id="auth-brand" class="font-sans text-xl font-bold" style="color:#f4f4f5;letter-spacing:-.025em;">TCU Community</div>
+      <p id="auth-sub" class="text-sm" style="color:#52525b;margin-top:3px;">Tzu Chi University · 慈濟大學</p>
     </div>
 
     <!-- Card -->
@@ -1256,11 +1371,11 @@
     <!-- Brand + Close -->
     <div class="sidebar-header flex items-center justify-between gap-3 px-1 mb-6">
       <button class="sidebar-logo-btn" onclick="closeSidebar()" title="Close sidebar" aria-label="Close sidebar">
-        <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </button>
       <div class="flex-1 min-w-0">
-        <div class="font-sans font-bold text-sm leading-tight truncate" style="color:#f4f4f5;letter-spacing:-.01em;">TCU Community</div>
-        <div class="text-xs" style="color:#52525b;letter-spacing:.04em;">慈濟大學</div>
+        <div id="sidebar-brand" class="font-sans font-bold text-sm leading-tight truncate" style="color:#f4f4f5;letter-spacing:-.01em;">TCU Community</div>
+        <div id="sidebar-sub" class="text-xs" style="color:#52525b;letter-spacing:.04em;">慈濟大學</div>
       </div>
       <button class="sidebar-toggle" onclick="closeSidebar()" title="Close sidebar" aria-label="Close sidebar">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -1329,6 +1444,10 @@
           <div id="user-dept-sidebar" class="text-xs truncate" style="color:#71717a;">Department</div>
         </div>
       </div>
+      <button onclick="toggleTheme()" class="w-full text-left nav-item text-xs" style="color:#71717a;">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <span class="nav-label">Light / Dark</span>
+      </button>
       <button onclick="handleLogout()" class="w-full text-left nav-item text-xs" style="color:#71717a;">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span class="nav-label" data-i18n="nav.signout">Sign Out</span>
@@ -1635,10 +1754,10 @@
       <div class="chat-container">
         <!-- Quick suggestion chips -->
         <div style="padding:16px 20px;border-bottom:1px solid #2c2c2c;display:flex;flex-wrap:wrap;gap:8px;">
-          <button type="button" onclick="aiSuggest('How do I verify my student ID?')" class="suggestion-chip">Verify Student ID</button>
-          <button type="button" onclick="aiSuggest('How do I find textbooks on the marketplace?')" class="suggestion-chip">Find Textbooks</button>
-          <button type="button" onclick="aiSuggest('What are the campus donation rules?')" class="suggestion-chip">Campus Donation Rules</button>
-          <button type="button" onclick="aiSuggest('How do I report a lost item?')" class="suggestion-chip">Report Lost Item</button>
+          <button type="button" id="ai-chip-1" class="suggestion-chip">Verify Student ID</button>
+          <button type="button" id="ai-chip-2" class="suggestion-chip">Find Textbooks</button>
+          <button type="button" id="ai-chip-3" class="suggestion-chip">Campus Donation Rules</button>
+          <button type="button" id="ai-chip-4" class="suggestion-chip">Report Lost Item</button>
         </div>
 
         <!-- Chat messages -->
@@ -1673,7 +1792,7 @@
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           </button>
-          <h1 style="font-size:2rem;font-weight:700;color:#ffffff;line-height:1.1;letter-spacing:-.02em;margin:0;">Account Settings</h1>
+          <h1 id="settings-main-title" style="font-size:2rem;font-weight:700;color:#ffffff;line-height:1.1;letter-spacing:-.02em;margin:0;">Account Settings</h1>
         </div>
 
         <!-- Horizontal tab nav -->
@@ -1692,7 +1811,7 @@
             <!-- Avatar -->
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center" style="padding:20px;background:#1e1e1e;border:1px solid #2c2c2c;border-radius:12px;">
               <div class="profile-avatar" onclick="document.getElementById('profile-picture-file').click()">
-                <img id="profile-avatar-img" src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=200&auto=format&fit=crop&q=80" alt="Profile avatar" style="width:100%;height:100%;object-fit:cover;" />
+                <img id="profile-avatar-img" src="" alt="Profile avatar" style="width:100%;height:100%;object-fit:cover;" />
               </div>
               <div class="flex-1">
                 <p class="font-semibold text-stone-900">Profile picture</p>
@@ -1729,7 +1848,7 @@
                 <label class="form-label block mb-1.5">Language</label>
                 <div class="flex gap-2">
                   <button type="button" class="lang-btn active" id="lang-en" onclick="setLang('en')">EN</button>
-                  <button type="button" class="lang-btn" id="lang-zh" onclick="setLang('zh')">繁中</button>
+                  <button type="button" class="lang-btn" id="lang-zh-TW" onclick="setLang('zh-TW')">繁中</button>
                 </div>
               </div>
               <!-- School ID Verification -->
@@ -1976,6 +2095,13 @@
           </div>
           <div class="flex items-center gap-3">
             <div class="flex items-center gap-2 flex-shrink-0" style="width:80px;">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#3b82f6;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span class="text-xs font-600 text-stone-400">Email</span>
+            </div>
+            <input id="post-email" type="email" class="field flex-1" placeholder="you@gms.tzu.edu.tw" maxlength="100" />
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 flex-shrink-0" style="width:80px;">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#00c300;">
                 <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
               </svg>
@@ -2127,7 +2253,7 @@ async function handleProfilePictureUpload(event) {
 
 function removeProfilePicture() {
   document.getElementById('profile-avatar-url').value = '';
-  document.getElementById('profile-avatar-img').src = 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=200&auto=format&fit=crop&q=80';
+  document.getElementById('profile-avatar-img').src = getAvatarUrl(currentProfile);
   showToast('Profile picture cleared. Save profile to update.', 'success');
 }
 
@@ -2148,7 +2274,17 @@ function handleItemImagesUpload(event) {
   label.textContent = `✓ ${postSelectedFiles.length} photo(s) selected`;
 }
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+let sb = null;
+try {
+  if (typeof supabase !== 'undefined') {
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    console.log('[TCU] Supabase client created. URL:', SUPABASE_URL);
+  } else {
+    console.warn('[TCU] Supabase SDK not loaded — no client.');
+  }
+} catch (e) {
+  console.error('[TCU] Supabase init failed:', e);
+}
 
 // ── TRANSLATIONS ────────────────────────────────────────────
 const TRANSLATIONS = {
@@ -2169,24 +2305,24 @@ const TRANSLATIONS = {
     'view.ai.title':'AI Assistant','view.ai.sub':'Ask questions or search for items',
     'view.profile.title':'My Profile','view.profile.sub':'Edit your details and verify your student status',
   },
-  zh: {
-    'nav.browse':'全部瀏覽','nav.marketplace':'二手交易','nav.lostfound':'失物招領',
-    'nav.donations':'捐贈','nav.myitems':'我的清單','nav.ai':'AI 助理','nav.profile':'個人資料','nav.settings':'設定','nav.admin':'管理',
+  'zh-TW': {
+    'nav.browse':'全部瀏覽','nav.marketplace':'慈濟社區市場','nav.lostfound':'失物招領',
+    'nav.donations':'愛心捐贈','nav.myitems':'我的清單','nav.ai':'AI 智慧助手','nav.profile':'個人資料','nav.settings':'帳號設定','nav.admin':'管理',
     'nav.post':'發布物品','nav.signout':'登出',
-    'stat.active':'活躍清單','stat.sale':'出售','stat.lf':'失物招領','stat.donation':'捐贈物品',
-    'filter.all':'全部','filter.marketplace':'二手交易','filter.donation':'捐贈','filter.lost':'遺失','filter.found':'找到',
-    'search.placeholder':'搜尋物品…',
+    'stat.active':'目前刊登','stat.sale':'出售中','stat.lf':'失物招領','stat.donation':'捐贈物品',
+    'filter.all':'全部','filter.marketplace':'二手交易','filter.donation':'愛心捐贈','filter.lost':'遺失物','filter.found':'拾獲物',
+    'search.placeholder':'搜尋物品、教科書、遺失物…',
     'auth.signin':'登入','auth.signup':'建立帳號',
-    'auth.google':'以 Google 登入',
-    'view.browse.title':'全部瀏覽','view.browse.sub':'慈濟大學社群所有活躍清單',
-    'view.marketplace.title':'二手交易','view.marketplace.sub':'買賣二手物品',
+    'auth.google':'使用 Google 登入',
+    'view.browse.title':'全部瀏覽','view.browse.sub':'慈濟大學社群所有活躍刊登',
+    'view.marketplace.title':'慈濟社區市場','view.marketplace.sub':'找到您需要的，賣掉用不到的。',
     'view.lostfound.title':'失物招領中心','view.lostfound.sub':'協助慈濟大學社群找回遺失物品。請在下方回報或瀏覽拾獲物品。',
-    'view.donations.title':'社群捐贈','view.donations.sub':'您不用的物品，或許正是同學最需要的。回饋慈濟社群，從這裡開始。',
-    'view.myitems.title':'我的物品','view.myitems.sub':'管理您的清單',
-    'view.ai.title':'AI 助理','view.ai.sub':'詢問任何關於平台的問題',
-    'view.settings.title':'設定','view.settings.sub':'管理您的帳號、清單、驗證與安全',
-    'view.admin.title':'管理平台','view.admin.sub':'審核學生並管理存取權限',
-    'view.profile.title':'個人資料','view.profile.sub':'管理您的帳號與驗證',
+    'view.donations.title':'愛心捐贈','view.donations.sub':'您閒置的物品，或許正是同學最需要的。從這裡開始回饋慈濟社群。',
+    'view.myitems.title':'我的物品','view.myitems.sub':'管理您的刊登清單',
+    'view.ai.title':'AI 智慧助手','view.ai.sub':'詢問任何關於平台的問題',
+    'view.settings.title':'帳號設定','view.settings.sub':'管理您的帳號、刊登、驗證與安全性',
+    'view.admin.title':'管理後台','view.admin.sub':'審核學生身分並管理存取權限',
+    'view.profile.title':'個人資料','view.profile.sub':'管理您的帳號資訊與學生驗證',
   }
 };
 
@@ -2209,7 +2345,7 @@ let sidebarCollapsed = false;
 let isDemoMode   = false;
 
 function isUsingDemoMode() {
-  return isDemoMode || SUPABASE_URL.includes('YOUR_PROJECT');
+  return !sb || isDemoMode || SUPABASE_URL.includes('YOUR_PROJECT');
 }
 
 function activateDemoMode(message = 'Supabase is unavailable. The site is running in demo mode.') {
@@ -2220,6 +2356,11 @@ function activateDemoMode(message = 'Supabase is unavailable. The site is runnin
 }
 
 // Demo mode accessible from console or URL parameter
+function toggleTheme() {
+  const isLight = document.documentElement.classList.toggle('light-theme');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
 window.enableDemo = () => {
   simulateDemoLogin('demo@gms.tcu.edu.tw');
   showToast('Demo mode activated!', 'success');
@@ -2246,6 +2387,9 @@ window.addEventListener('popstate', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+  if (localStorage.getItem('theme') === 'light') document.documentElement.classList.add('light-theme');
+  const savedLang = localStorage.getItem('selectedLanguage');
+  if (savedLang && TRANSLATIONS[savedLang]) currentLang = savedLang;
   setLang(currentLang);
   checkDemoParam();
 
@@ -2254,6 +2398,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     searchInput.addEventListener('input', () => {
       if (['browse', 'marketplace', 'lostfound'].includes(currentView)) renderItems();
     });
+  }
+
+  if (!sb) {
+    activateDemoMode('Backend unavailable — running in demo mode.');
+    return;
   }
 
   try {
@@ -2288,7 +2437,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   } catch (error) {
     console.error('Initialization failed:', error);
-    activateDemoMode();
+    showToast(`Connection error: ${error.message}`, 'error');
+    showAuth();
   }
 
   // Category radio visual
@@ -2395,6 +2545,7 @@ function switchAuthTab(tab) {
 // ── i18n ────────────────────────────────────────────────────
 function setLang(lang) {
   currentLang = lang;
+  localStorage.setItem('selectedLanguage', lang);
   const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
 
   // Update all data-i18n elements
@@ -2411,11 +2562,12 @@ function setLang(lang) {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.id === 'lang-' + lang);
   });
-  // Update body font and HTML lang
-  document.body.classList.toggle('lang-zh', lang === 'zh');
-  document.documentElement.lang = lang === 'zh' ? 'zh-TW' : 'en';
+  // Update body font and HTML lang attribute
+  document.body.classList.toggle('lang-zh-TW', lang === 'zh-TW');
+  document.documentElement.lang = lang === 'zh-TW' ? 'zh-TW' : 'en';
   // Re-render view title/subtitle from current view
   _updateViewHeader(currentView);
+  updateAiChips();
 }
 
 function _updateViewHeader(view) {
@@ -2427,6 +2579,7 @@ function _updateViewHeader(view) {
   const subEl   = document.getElementById('view-subtitle');
   if (titleEl && t[titleKey]) titleEl.textContent = t[titleKey];
   if (subEl   && t[subKey])   subEl.textContent   = t[subKey];
+  if (t[titleKey]) document.title = `TCU | ${t[titleKey]}`;
 }
 
 function openContactMenu(sellerData) {
@@ -2541,18 +2694,6 @@ function openContactMenu(sellerData) {
             <span style="font-weight:600;font-size:1rem;">${button.label}</span>
           </a>
         `).join('')}
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(modal);
-}
-                <polyline points="15,3 21,3 21,9"/>
-                <line x1="10" y1="14" x2="21" y2="3"/>
-              </svg>
-            </a>
-          `).join('')}
-        </div>
       </div>
     </div>
   `;
@@ -3121,7 +3262,22 @@ async function loadProfile() {
     }
     currentProfile = data;
     updateSidebarUser();
+    syncUserEmail();
   }
+}
+
+async function syncUserEmail() {
+  if (!currentUser?.email) return;
+  if (currentProfile?.email === currentUser.email) return;
+  const { error } = await sb.from('profiles').update({ email: currentUser.email }).eq('id', currentUser.id);
+  if (error) console.error('syncUserEmail failed:', error.message);
+  else if (currentProfile) currentProfile.email = currentUser.email;
+}
+
+function getAvatarUrl(profile) {
+  if (profile?.avatar_url) return profile.avatar_url;
+  const name = encodeURIComponent((profile?.full_name || 'Student').trim() || 'S');
+  return `https://ui-avatars.com/api/?name=${name}&background=16a34a&color=fff&size=200&bold=true`;
 }
 
 function updateSidebarUser() {
@@ -3130,6 +3286,10 @@ function updateSidebarUser() {
   document.getElementById('user-avatar-sidebar').textContent = initials;
   document.getElementById('user-name-sidebar').textContent   = currentProfile.full_name || 'Student';
   document.getElementById('user-dept-sidebar').textContent   = currentProfile.department || currentUser?.email || '';
+  const avatarImg = document.getElementById('profile-avatar-img');
+  if (avatarImg && !document.getElementById('profile-avatar-url').value) {
+    avatarImg.src = getAvatarUrl(currentProfile);
+  }
 }
 
 // ── CONNECTION ERROR HELPERS ─────────────────────────────────
@@ -3155,13 +3315,13 @@ async function loadItems() {
   showSkeletons();
   const { data, error } = await sb
     .from('items')
-    .select('*, profiles(full_name, line_id, instagram_handle, phone_number, department, email)')
+    .select('*, profiles(full_name, email, line_id, instagram_handle, phone_number, department)')
     .eq('is_active', true)
     .eq('status', 'available')
     .order('created_at', { ascending: false });
   if (error) {
     console.error('Failed to load items:', error);
-    activateDemoMode();
+    showConnectionError(`DB error: ${error.message}`);
     return;
   }
   allItems = data || [];
@@ -3183,7 +3343,7 @@ async function loadMyItems() {
   }
   const { data, error } = await sb
     .from('items')
-    .select('*, profiles(full_name, line_id, instagram_handle, phone_number, department, email)')
+    .select('*, profiles(full_name, email, line_id, instagram_handle, phone_number, department)')
     .eq('owner_id', currentUser.id)
     .order('created_at', { ascending: false });
   if (error) { showToast('Failed to load your items', 'error'); return; }
@@ -3651,6 +3811,8 @@ function resetPostForm() {
   ['post-title','post-price','post-desc','post-unique','post-location'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
+  const emailEl = document.getElementById('post-email');
+  if (emailEl) emailEl.value = currentUser?.email || currentProfile?.email || '';
   postSelectedFiles = [];
   const previewsEl = document.getElementById('post-img-previews');
   if (previewsEl) previewsEl.innerHTML = '';
@@ -3688,9 +3850,10 @@ function nextStep(from) {
     const instagram = document.getElementById('post-instagram').value.trim();
     const lineId = document.getElementById('post-line-id').value.trim();
     const phone = document.getElementById('post-phone').value.trim();
-    const hasContact = instagram || lineId || phone;
+    const emailContact = document.getElementById('post-email').value.trim();
+    const hasContact = instagram || lineId || phone || emailContact;
     if (!hasContact) {
-      showToast('Please provide at least one contact method (Instagram, LINE, or Phone).', 'error');
+      showToast('Please provide at least one contact method (Email, Instagram, LINE, or Phone).', 'error');
       ok = false;
     }
 
@@ -3789,9 +3952,11 @@ async function submitPost() {
     const lineId = document.getElementById('post-line-id').value.trim();
     const phone = document.getElementById('post-phone').value.trim();
 
+    const emailContact = document.getElementById('post-email').value.trim();
     if (instagram) contactUpdates.instagram_handle = instagram.startsWith('@') ? instagram.substring(1) : instagram;
     if (lineId) contactUpdates.line_id = lineId;
     if (phone) contactUpdates.phone_number = phone;
+    if (emailContact) contactUpdates.email = emailContact;
 
     if (Object.keys(contactUpdates).length > 0) {
       const { error: profileError } = await sb.from('profiles').update(contactUpdates).eq('id', currentUser.id);
@@ -3874,19 +4039,64 @@ async function fetchItemsForAI() {
   return data.map(i => ({ name: i.title, description: i.description, price: i.price, category: i.category }));
 }
 
+const AI_SYSTEM_PROMPT = `You are the TCU Student Success Assistant for Tzu Chi University (慈濟大學), Hualien, Taiwan.
+Help students with:
+1. Marketplace navigation — buying, selling, or exchanging textbooks, furniture, and electronics.
+2. Lost & Found — reporting missing items and claiming found items.
+3. Donations — how to donate unused items or request donated goods.
+4. Campus life — dorm policies, cafeteria hours, drop-off points, library procedures.
+5. Academic support — translating terms, explaining university policies, study resources.
+
+Guidelines:
+- Tone: Helpful, professional, and friendly.
+- Use bullet points for any explanation with more than two steps.
+- Keep responses concise and mobile-friendly.
+- Never fabricate specific policies; if unsure, recommend the student contact TCU staff.`;
+
+const AI_CHIPS = {
+  en: [
+    { label: 'Verify Student ID',    query: 'How do I verify my student ID on this platform?' },
+    { label: 'Find Textbooks',       query: 'How do I find textbooks on the marketplace?' },
+    { label: 'Donation Rules',       query: 'What are the campus donation rules?' },
+    { label: 'Report Lost Item',     query: 'How do I report a lost item?' },
+  ],
+  'zh-TW': [
+    { label: '如何驗證學生證？',     query: '如何在平台上驗證我的學生證？' },
+    { label: '尋找教科書',           query: '如何在市場上找到教科書？' },
+    { label: '捐贈規則',             query: '校園捐贈物品的規定是什麼？' },
+    { label: '回報遺失物',           query: '如何回報遺失物品？' },
+  ],
+};
+
+function updateAiChips() {
+  const chips = AI_CHIPS[currentLang] || AI_CHIPS.en;
+  chips.forEach((chip, i) => {
+    const btn = document.getElementById(`ai-chip-${i + 1}`);
+    if (!btn) return;
+    btn.textContent = chip.label;
+    btn.onclick = () => aiSuggest(chip.query);
+  });
+}
+
 async function callGemini(userQuestion) {
   const items = await fetchItemsForAI();
   const itemsContext = items.length
     ? items.map(i => `- ${i.name} (${i.category}${i.price != null ? ', NT$' + i.price : ''}): ${i.description}`).join('\n')
     : 'No items currently listed.';
-  const prompt = `Você é o assistente da TCU Community (Tzu Chi University). Abaixo estão os itens disponíveis no momento:\n${itemsContext}\n\nResponda à pergunta do usuário: ${userQuestion}`;
+  const langInstruction = currentLang === 'zh-TW'
+    ? 'Respond in Traditional Chinese (繁體中文) using Taiwan vocabulary only. Do NOT use Simplified Chinese or Mainland Chinese terms.'
+    : 'Respond in English.';
+  const userContent = `${langInstruction}\n\nCurrent platform listings:\n${itemsContext}\n\nStudent question: ${userQuestion}`;
 
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: AI_SYSTEM_PROMPT }] },
+        contents: [{ parts: [{ text: userContent }] }]
+      })
     }
   );
   if (!res.ok) throw new Error('Gemini API error ' + res.status);
@@ -3995,7 +4205,7 @@ function populateProfileForm() {
   if (existingAvatar) {
     avatarImg.src = existingAvatar;
   } else {
-    avatarImg.src = 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=200&auto=format&fit=crop&q=80';
+    avatarImg.src = getAvatarUrl(currentProfile);
   }
 
   const existingIdImg = currentProfile.student_id_image_url || '';

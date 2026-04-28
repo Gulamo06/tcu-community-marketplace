@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(git checkout *)",
+      "Bash(start \"c:/Users/gchih/OneDrive/Desktop/WEBSITES44/New folder/index.html\")",
+      "Bash(python -m http.server 5500)",
+      "Bash(start \"http://127.0.0.1:5500\")",
+      "Bash(python3 -c ' *)",
+      "Bash(grep -v \"^[+-][[:space:]]*$\")",
+      "Bash(grep -v \"^[+-][[:space:]]*//\")",
+      "Bash(grep -v \"^[0-9]*:\\\\s*//\")"
+    ]
+  }
+}
