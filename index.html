@@ -3888,21 +3888,12 @@ async function submitPost() {
       return;
     }
 
-    // Step 1 — Upload each selected file to Supabase Storage
+    // Step 1 — Upload each selected file using the shared uploadFile helper
+    // (has 15s timeout, upsert:true, and bucket-missing detection built in)
     const imgUrls = [];
     for (const file of postSelectedFiles) {
-      const cleanFileName = file.name.replace(/\s+/g, '_');
-      const fileName = `items/${Date.now()}_${cleanFileName}`;
-
-      const { error: uploadError } = await sb.storage
-        .from('item-images')
-        .upload(fileName, file, { upsert: false });
-      if (uploadError) throw new Error('Image upload failed: ' + uploadError.message);
-
-      const { data: urlData } = sb.storage
-        .from('item-images')
-        .getPublicUrl(fileName);
-      imgUrls.push(urlData.publicUrl);
+      const url = await uploadFile(file, 'items/');
+      imgUrls.push(url);
     }
 
     // Step 3 — Insert item row with the collected URLs
@@ -3917,7 +3908,13 @@ async function submitPost() {
       status:            'available',
       location_hint:     document.getElementById('post-location').value.trim() || null,
     });
-    if (insertError) throw new Error(insertError.message);
+    if (insertError) {
+      const msg = insertError.message || '';
+      if (msg.toLowerCase().includes('rls') || msg.toLowerCase().includes('policy') || insertError.code === '42501') {
+        throw new Error('Permission denied. Run migration_v3.sql in Supabase to allow posting.');
+      }
+      throw new Error('Failed to save item: ' + msg);
+    }
 
     // Step 4 — Update user profile with contact information
     const contactUpdates = {};
