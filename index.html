@@ -1168,6 +1168,23 @@
       background: rgba(255, 255, 255, 0.02);
     }
 
+    /* Admin top nav row (hamburger + back) */
+    .admin-nav-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .admin-back-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 0 14px; height: 38px; border-radius: 9px;
+      background: transparent; border: 1.5px solid var(--border);
+      cursor: pointer; color: var(--muted); font-size: .85rem; font-weight: 600;
+      flex-shrink: 0; transition: all .2s;
+    }
+    .admin-back-btn:hover { border-color: var(--jade); color: var(--jade); background: rgba(22,163,74,.06); }
+
     /* Botões de Ação do Admin */
     .admin-action-btn {
       padding: 6px 12px;
@@ -1761,12 +1778,18 @@
 
     <!-- ── AI Assistant view ── -->
     <div id="ai-view" class="hidden">
-      <!-- Top row: hamburger + title -->
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+      <!-- Top row: hamburger + back + title -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px;">
         <button onclick="openSidebar()" class="hamburger-view" aria-label="Open menu" title="Open menu">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
+        </button>
+        <button onclick="goBack()" class="admin-back-btn" aria-label="Go back">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+          </svg>
+          Back
         </button>
         <h1 style="font-size:2rem;font-weight:700;color:#ffffff;line-height:1.1;letter-spacing:-.02em;margin:0;">TCU Community Assistant</h1>
       </div>
@@ -1953,6 +1976,19 @@
     <div id="admin-view" class="hidden">
       <!-- Admin Header -->
       <div class="admin-header">
+        <div class="admin-nav-row">
+          <button onclick="openSidebar()" class="hamburger-view" aria-label="Open menu" title="Open menu">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <button onclick="goBack()" class="admin-back-btn" aria-label="Go back">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Back
+          </button>
+        </div>
         <h1 class="admin-title">ADMIN PANEL</h1>
         <p class="admin-subtitle">Manage students, listings, and flagged content</p>
       </div>
@@ -2366,6 +2402,7 @@ const TRANSLATIONS = {
 let allItems     = [];
 let myItems      = [];
 let currentView  = 'browse';
+let previousView = 'browse';
 let activeFilter = 'all';
 let advancedFilters = { dateMaxDays: 0, condition: '', productCat: '', donCondition: '', urgency: '', location: '' };
 const ADMIN_EMAIL = '114122104@gms.tcu.edu.tw';
@@ -3687,10 +3724,15 @@ document.getElementById('detail-modal').addEventListener('click', function(e) {
 });
 
 // ── VIEWS ────────────────────────────────────────────────────
+function goBack() {
+  setView(previousView || 'browse');
+}
+
 function setView(view) {
   closeSidebar();
   // myitems now has its own standalone view — only 'profile' still maps to 'settings'
   const resolvedView = view === 'profile' ? 'settings' : view === 'donations' ? 'browse' : view;
+  if (currentView !== resolvedView) previousView = currentView;
   currentView = resolvedView;
   const navActive = view === 'myitems' ? 'mylistings' : view === 'donations' ? 'donations' : resolvedView;
   ['browse','marketplace','lostfound','donations','mylistings','ai','settings','admin'].forEach(v => {
