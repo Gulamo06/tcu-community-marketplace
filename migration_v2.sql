@@ -247,6 +247,17 @@ CREATE POLICY "ai_logs_auth_insert"
 
 
 -- ────────────────────────────────────────────────────────────
+-- 7. ACCOUNT SELF-DELETION RPC
+-- ────────────────────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION public.delete_own_account()
+RETURNS void AS $$
+BEGIN
+  DELETE FROM auth.users WHERE id = auth.uid();
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- ────────────────────────────────────────────────────────────
 -- DONE — verify with:
 --
 --   SELECT table_name, column_name, data_type

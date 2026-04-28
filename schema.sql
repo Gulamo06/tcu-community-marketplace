@@ -197,6 +197,16 @@ CREATE TRIGGER on_auth_user_created
 -- STEP 8: UTILITY FUNCTIONS (RPC)
 -- ────────────────────────────────────────────────────────────
 
+-- Allows a user to permanently delete their own auth account.
+-- CASCADE on profiles.id → auth.users removes all linked data.
+CREATE OR REPLACE FUNCTION public.delete_own_account()
+RETURNS void AS $$
+BEGIN
+  DELETE FROM auth.users WHERE id = auth.uid();
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
 -- Expire listings whose 7-day clock has run out (run via pg_cron daily)
 CREATE OR REPLACE FUNCTION public.expire_old_items()
 RETURNS void AS $$

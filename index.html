@@ -2437,6 +2437,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 2. Listen for future auth events (sign-in / sign-out only)
     sb.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
+        // Enforce TCU school email for ALL sign-in methods (including Google OAuth)
+        if (!isTCUEmail(session.user.email)) {
+          await sb.auth.signOut();
+          showToast('Only TCU school email accounts (@gms.tzu.edu.tw) are allowed.', 'error');
+          showAuth();
+          return;
+        }
         currentUser = session.user;
         await loadProfile();
         configureAdminAccess();
@@ -2501,16 +2508,16 @@ function showApp() {
   document.getElementById('hero-search')?.classList.remove('hidden');
 }
 
+function isTCUEmail(email) {
+  if (!email) return false;
+  return email.endsWith('@gms.tzu.edu.tw') || email.endsWith('@tzu.edu.tw');
+}
+
 function configureAdminAccess() {
   const adminNav = document.getElementById('nav-admin');
   if (!adminNav) return;
-  if (currentUser?.email === ADMIN_EMAIL) {
-    adminNav.style.display = 'flex';
-    return;
-  }
-  if (currentUser) {
-    adminNav.remove();
-  }
+  // Use display:none (not .remove()) so the element survives re-logins
+  adminNav.style.display = currentUser?.email === ADMIN_EMAIL ? 'flex' : 'none';
 }
 
 // ── GUEST MODE ──────────────────────────────────────────────
@@ -3119,14 +3126,22 @@ function togglePasswordVisibility(inputId, btn) {
 
 async function handleGoogleSignIn() {
   if (isUsingDemoMode()) {
-    simulateDemoLogin('demo@gms.tcu.edu.tw');
+    simulateDemoLogin('demo@gms.tzu.edu.tw');
     return;
   }
   const btn = document.querySelector('.btn-google');
   if (btn) { btn.disabled = true; btn.style.opacity = '.6'; }
+  // redirectTo must match an allowed URL in Supabase Auth → URL Configuration
+  const redirectTo = window.location.origin === 'null'
+    ? 'http://127.0.0.1:5500'        // file:// fallback for local dev
+    : window.location.origin;
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.href.split('#')[0] }
+    options: {
+      redirectTo,
+      // Hint the OAuth flow to enforce school domain (best-effort; enforced server-side in onAuthStateChange)
+      queryParams: { hd: 'gms.tzu.edu.tw' },
+    }
   });
   if (error) {
     showToast(error.message, 'error');
@@ -3138,6 +3153,9 @@ async function handleLogin() {
   const email    = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   if (!email || !password) { showToast('Please fill in all fields', 'error'); return; }
+  if (!isTCUEmail(email)) {
+    showToast('Use your TCU school email (@gms.tzu.edu.tw)', 'error'); return;
+  }
 
   if (isUsingDemoMode()) { simulateDemoLogin(email); return; }
 
@@ -3146,7 +3164,16 @@ async function handleLogin() {
   if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
   const { error } = await sb.auth.signInWithPassword({ email, password });
   if (btn) { btn.disabled = false; btn.textContent = orig; }
-  if (error) showToast(error.message, 'error');
+  if (error) {
+    const msg = error.message.toLowerCase();
+    if (msg.includes('email not confirmed')) {
+      showToast('Please verify your email first — check your school inbox.', 'error');
+    } else if (msg.includes('invalid login') || msg.includes('invalid credentials')) {
+      showToast('Incorrect password. If you signed up with Google, use the Google button instead.', 'error');
+    } else {
+      showToast(error.message, 'error');
+    }
+  }
 }
 
 async function handleSignup() {
@@ -3159,6 +3186,12 @@ async function handleSignup() {
   if (!name || !studentId || !email || !password || !dept) {
     showToast('Please fill in all required fields', 'error'); return;
   }
+  if (!isTCUEmail(email)) {
+    showToast('Only TCU school emails are accepted (@gms.tzu.edu.tw)', 'error'); return;
+  }
+  if (password.length < 8) {
+    showToast('Password must be at least 8 characters', 'error'); return;
+  }
 
   if (isUsingDemoMode()) {
     simulateDemoLogin(email, { full_name: name, student_id: studentId, department: dept });
@@ -3168,13 +3201,21 @@ async function handleSignup() {
   const btn = event?.target || document.querySelector('#signup-form .btn-primary');
   const orig = btn?.textContent;
   if (btn) { btn.disabled = true; btn.textContent = 'Creating account…'; }
-  const { error } = await sb.auth.signUp({
+  const { data, error } = await sb.auth.signUp({
     email, password,
     options: { data: { full_name: name, student_id: studentId, department: dept } }
   });
   if (btn) { btn.disabled = false; btn.textContent = orig; }
-  if (error) showToast(error.message, 'error');
-  else showToast('Account created! Check your email to verify.', 'success');
+  if (error) {
+    showToast(error.message, 'error');
+  } else if (data.session) {
+    // Email confirmation is disabled — user is signed in immediately
+    // onAuthStateChange SIGNED_IN will fire and call showApp()
+    showToast(`Welcome, ${name}! 🎉`, 'success');
+  } else {
+    // Email confirmation is enabled
+    showToast('Account created! Check your school email inbox to verify your account.', 'success');
+  }
 }
 
 async function handleLogout() {
@@ -3197,18 +3238,20 @@ async function changePassword() {
 }
 
 async function deleteAccount() {
-  if (!confirm('Delete your account permanently? This cannot be undone.')) return;
+  if (!confirm('Delete your account permanently? All your listings will also be removed. This cannot be undone.')) return;
   if (isUsingDemoMode()) {
     currentUser = null; currentProfile = null; allItems = [];
     showAuth();
     showToast('Demo account cleared.', 'success');
     return;
   }
-  // Supabase client-side account deletion requires an admin API route.
-  showToast('Account deletion must be completed through backend admin tooling.', 'error');
-  // Fallback sign-out so the UI remains consistent.
-  await sb.auth.signOut();
+  const { error } = await sb.rpc('delete_own_account');
+  if (error) {
+    showToast('Could not delete account: ' + error.message, 'error');
+    return;
+  }
   currentUser = null; currentProfile = null; allItems = [];
+  showToast('Account deleted. Goodbye!', 'success');
   showAuth();
 }
 
