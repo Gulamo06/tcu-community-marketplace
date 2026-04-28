@@ -2212,15 +2212,22 @@ const GEMINI_API_KEY = 'AIzaSyBdqkpVB5xwuGAuHzVuYeV-Bf-QtKKtg9w';
 let postSelectedFiles = [];
 
 async function uploadFile(file, prefix = '') {
-  const cleanFileName = file.name.replace(/\s+/g, '_');
+  if (!sb) throw new Error('Not connected to Supabase. Please sign in again.');
+  const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
   const fileName = `${prefix}${Date.now()}_${cleanFileName}`;
-  // Timeout guard: abort if upload takes more than 20 seconds
+  // Timeout guard: abort if upload takes more than 15 seconds
   const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Upload timed out. Check your connection and try again.')), 20000)
+    setTimeout(() => reject(new Error('Upload timed out — check your internet connection.')), 15000)
   );
-  const upload = sb.storage.from('item-images').upload(fileName, file, { upsert: false });
-  const { error } = await Promise.race([upload, timeout]);
-  if (error) throw error;
+  const upload = sb.storage.from('item-images').upload(fileName, file, { upsert: true });
+  const result = await Promise.race([upload, timeout]);
+  if (result.error) {
+    const msg = (result.error.message || '').toLowerCase();
+    if (msg.includes('bucket') || msg.includes('not found')) {
+      throw new Error('Storage bucket missing. Run migration_v2.sql in Supabase, or create an "item-images" public bucket in the dashboard.');
+    }
+    throw result.error;
+  }
   const { data: urlData } = sb.storage.from('item-images').getPublicUrl(fileName);
   return urlData.publicUrl;
 }
