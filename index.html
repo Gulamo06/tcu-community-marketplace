@@ -1861,7 +1861,7 @@
                 <p class="font-semibold text-stone-900">Profile picture</p>
                 <p class="text-sm text-stone-500 mt-1">Appears across your profile and listings.</p>
                 <div class="flex flex-wrap gap-2 mt-3">
-                  <button type="button" class="btn-primary" onclick="document.getElementById('profile-picture-file').click()">Change Picture</button>
+                  <button type="button" id="change-picture-btn" class="btn-primary" onclick="document.getElementById('profile-picture-file').click()">Change Picture</button>
                   <button type="button" class="btn-ghost" onclick="removeProfilePicture()">Remove</button>
                 </div>
               </div>
@@ -2269,15 +2269,15 @@ const GEMINI_API_KEY = 'AIzaSyBdqkpVB5xwuGAuHzVuYeV-Bf-QtKKtg9w';
 // ── FILE UPLOAD ──────────────────────────────────────────────
 let postSelectedFiles = [];
 
-async function uploadFile(file, prefix = '') {
+async function uploadFile(file, prefix = '', bucket = 'item-images') {
   if (!sb) throw new Error('Not connected to Supabase. Please sign in again.');
-  const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const fileName = `${prefix}${Date.now()}_${cleanFileName}`;
-  // Timeout guard: abort if upload takes more than 15 seconds
+  const ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const uid = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+  const fileName = `${prefix}${uid}.${ext}`;
   const timeout = new Promise((_, reject) =>
     setTimeout(() => reject(new Error('Upload timed out — check your internet connection.')), 15000)
   );
-  const upload = sb.storage.from('item-images').upload(fileName, file, { upsert: true });
+  const upload = sb.storage.from(bucket).upload(fileName, file, { upsert: true });
   const result = await Promise.race([upload, timeout]);
   if (result.error) {
     const msg = (result.error.message || '').toLowerCase();
@@ -2286,7 +2286,7 @@ async function uploadFile(file, prefix = '') {
     }
     throw result.error;
   }
-  const { data: urlData } = sb.storage.from('item-images').getPublicUrl(fileName);
+  const { data: urlData } = sb.storage.from(bucket).getPublicUrl(fileName);
   return urlData.publicUrl;
 }
 
@@ -2311,13 +2311,24 @@ async function handleStudentIdUpload(event) {
 async function handleProfilePictureUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
+  const btn = document.getElementById('change-picture-btn');
+  if (btn) { btn.textContent = 'Uploading…'; btn.disabled = true; }
   try {
     const url = await uploadFile(file, 'avatar-');
     document.getElementById('profile-avatar-url').value = url;
     document.getElementById('profile-avatar-img').src = url;
-    showToast('Profile picture updated. Save profile to keep changes.', 'success');
+    // Immediately persist avatar_url to the database
+    if (sb && currentUser) {
+      const { error } = await sb.from('profiles').update({ avatar_url: url }).eq('id', currentUser.id);
+      if (error) throw error;
+      if (currentProfile) currentProfile.avatar_url = url;
+    }
+    showToast('Profile picture updated!', 'success');
   } catch (err) {
     showToast('Upload failed: ' + err.message, 'error');
+  } finally {
+    if (btn) { btn.textContent = 'Change Picture'; btn.disabled = false; }
+    event.target.value = '';
   }
 }
 
