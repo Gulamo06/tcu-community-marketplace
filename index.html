@@ -2214,7 +2214,12 @@ let postSelectedFiles = [];
 async function uploadFile(file, prefix = '') {
   const cleanFileName = file.name.replace(/\s+/g, '_');
   const fileName = `${prefix}${Date.now()}_${cleanFileName}`;
-  const { error } = await sb.storage.from('item-images').upload(fileName, file, { upsert: false });
+  // Timeout guard: abort if upload takes more than 20 seconds
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Upload timed out. Check your connection and try again.')), 20000)
+  );
+  const upload = sb.storage.from('item-images').upload(fileName, file, { upsert: false });
+  const { error } = await Promise.race([upload, timeout]);
   if (error) throw error;
   const { data: urlData } = sb.storage.from('item-images').getPublicUrl(fileName);
   return urlData.publicUrl;
@@ -2389,6 +2394,15 @@ window.addEventListener('popstate', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Clear OAuth error params from URL so they don't corrupt future auth calls
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('error') || urlParams.has('error_code')) {
+    const cleanUrl = window.location.pathname;
+    history.replaceState(null, '', cleanUrl);
+    const desc = urlParams.get('error_description') || 'Authentication failed.';
+    console.warn('[TCU] OAuth error cleared from URL:', desc);
+  }
+
   if (localStorage.getItem('theme') === 'light') document.documentElement.classList.add('light-theme');
   const savedLang = localStorage.getItem('selectedLanguage');
   if (savedLang && TRANSLATIONS[savedLang]) currentLang = savedLang;
@@ -3796,6 +3810,11 @@ function openPostModal() {
   if (!requireAuth('Sign in to post an item.')) return;
   if (currentProfile?.status === 'banned') {
     showToast('Banned accounts cannot post.', 'error');
+    return;
+  }
+  if (!isUsingDemoMode() && currentProfile && !currentProfile.is_verified) {
+    showToast('Verify your Student ID first (Settings → Student ID Verification).', 'error');
+    setView('settings');
     return;
   }
   resetPostForm();
