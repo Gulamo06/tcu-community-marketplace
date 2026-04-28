@@ -95,9 +95,25 @@
     .light-theme .contact-modal-box  { background: #ffffff !important; border-color: #e2e8f0 !important; }
     .light-theme .contact-modal-box a { background: #f8fafc !important; border-color: #e2e8f0 !important; color: #1e293b !important; }
     .light-theme .contact-modal-box h3 { color: #0f172a !important; }
-    /* Admin table */
+    /* Admin panel — full light-mode override */
+    .light-theme #admin-view { background: #f8fafc !important; color: #1e293b !important; }
+    .light-theme .admin-header { background: #ffffff !important; border-color: #e2e8f0 !important; }
+    .light-theme .admin-title { color: #0f172a !important; }
+    .light-theme .admin-subtitle { color: #64748b !important; }
+    .light-theme .admin-tabs { background: #ffffff !important; border-color: #e2e8f0 !important; }
+    .light-theme .admin-tab { color: #64748b !important; }
+    .light-theme .admin-tab:hover { color: #1e293b !important; background: #f1f5f9 !important; }
+    .light-theme .admin-tab.active { color: #16a34a !important; border-bottom-color: #16a34a !important; background: #f0fdf4 !important; }
+    .light-theme .admin-card { background: #ffffff !important; border-color: #e2e8f0 !important; box-shadow: 0 1px 4px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04) !important; }
     .light-theme table, .light-theme th, .light-theme td { background: #ffffff !important; color: #1e293b !important; border-color: #e2e8f0 !important; }
+    .light-theme .admin-table th { background: #f1f5f9 !important; color: #475569 !important; border-color: #e2e8f0 !important; }
+    .light-theme .admin-table td { color: #1e293b !important; border-color: #f1f5f9 !important; }
+    .light-theme .admin-table tbody tr:hover { background: #f8fafc !important; }
     .light-theme tr:nth-child(even) td { background: #f8fafc !important; }
+    /* Flagged item cards */
+    .light-theme .flagged-card-title { color: #0f172a !important; }
+    .light-theme .flagged-card-desc  { color: #64748b !important; }
+    .light-theme .flagged-card-meta  { color: #94a3b8 !important; }
     /* Toast & misc dark elements */
     .light-theme #toast { background: #1e293b !important; }
     /* AI Assistant view */
@@ -1226,6 +1242,11 @@
       color: #dc3545;
     }
 
+    /* Flagged card text — dark mode defaults */
+    .flagged-card-title { color: #ffffff; }
+    .flagged-card-desc  { color: #a1a1aa; }
+    .flagged-card-meta  { color: #71717a; }
+
     /* Admin tab content */
     .admin-tab-content {
       display: none;
@@ -1955,6 +1976,7 @@
                     <th>Name</th>
                     <th>Student ID</th>
                     <th>Email</th>
+                    <th>Status</th>
                     <th>Document</th>
                     <th>Actions</th>
                   </tr>
@@ -2805,15 +2827,18 @@ function renderVerifyStudents(profiles) {
     const statusClass = profile.verification_status === 'approved' ? 'status-active' :
                        profile.verification_status === 'pending' ? 'status-pending' : 'status-banned';
 
+    const statusLabel = profile.verification_status === 'approved' ? 'Approved' :
+                        profile.verification_status === 'rejected' ? 'Rejected' : 'Pending';
     return `
       <tr>
         <td>${profile.full_name || '—'}</td>
         <td>${profile.student_id || '—'}</td>
         <td>${profile.email || 'No email'}</td>
+        <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
         <td>
           ${profile.student_id_image_url ?
             `<button class="admin-action-btn btn-view" onclick="viewStudentDocument('${profile.student_id_image_url}')">View ID Card</button>` :
-            'No document'
+            '<span style="color:#71717a;font-size:13px;">No document</span>'
           }
         </td>
         <td>
@@ -2886,8 +2911,8 @@ function renderFlaggedItems(items) {
     container.innerHTML = `
       <div class="admin-card p-8 text-center">
         <div class="text-4xl mb-4">✅</div>
-        <h3 class="text-xl font-semibold text-white mb-2">No Flagged Items</h3>
-        <p class="text-gray-400">All items are currently clean and compliant.</p>
+        <h3 class="text-xl font-semibold flagged-card-title mb-2">No Flagged Items</h3>
+        <p class="flagged-card-desc">All items are currently clean and compliant.</p>
       </div>
     `;
     return;
@@ -2908,13 +2933,13 @@ function renderFlaggedItems(items) {
         <div class="flex items-start justify-between">
           <div class="flex-1">
             <div class="flex items-center gap-3 mb-2">
-              <h4 class="text-lg font-semibold text-white">${item.title || '—'}</h4>
+              <h4 class="text-lg font-semibold flagged-card-title">${item.title || '—'}</h4>
               <span class="status-pill" style="background: rgba(${reason.color === '#dc3545' ? '220,53,69' : '245,158,11'}, 0.1); color: ${reason.color}; border: 1px solid ${reason.color}20;">
                 ${reason.label}
               </span>
             </div>
-            <p class="text-gray-400 mb-3">${reason.description}</p>
-            <div class="text-sm text-gray-500">
+            <p class="flagged-card-desc mb-3">${reason.description}</p>
+            <div class="text-sm flagged-card-meta">
               <span>Seller: ${item.profiles?.full_name || 'Unknown'}</span>
               <span class="mx-2">•</span>
               <span>Reported by: Anonymous User</span>
