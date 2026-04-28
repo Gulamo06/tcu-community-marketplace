@@ -181,13 +181,13 @@ CREATE POLICY "profiles_admin_update"
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid() AND p.email = '114122104@gms.tzu.edu.tw'
+      WHERE p.id = auth.uid() AND p.email = '114122104@gms.tcu.edu.tw'
     )
   )
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid() AND p.email = '114122104@gms.tzu.edu.tw'
+      WHERE p.id = auth.uid() AND p.email = '114122104@gms.tcu.edu.tw'
     )
   );
 
@@ -228,7 +228,7 @@ CREATE POLICY "items_admin_delete"
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid() AND p.email = '114122104@gms.tzu.edu.tw'
+      WHERE p.id = auth.uid() AND p.email = '114122104@gms.tcu.edu.tw'
     )
   );
 

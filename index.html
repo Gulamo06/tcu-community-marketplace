@@ -1332,8 +1332,8 @@
         </div>
         <div class="mb-4">
           <label class="form-label block mb-1.5">University Email</label>
-          <input id="signup-email" type="email" class="field" placeholder="s123456@gms.tzu.edu.tw" />
-          <small class="helper-text">Academic email only (@gms.tzu.edu.tw)</small>
+          <input id="signup-email" type="email" class="field" placeholder="s123456@gms.tcu.edu.tw" />
+          <small class="helper-text">Academic email only (@gms.tcu.edu.tw)</small>
         </div>
         <div class="mb-4">
           <label class="form-label block mb-1.5">Department</label>
@@ -1842,7 +1842,7 @@
               </div>
               <div>
                 <label class="form-label block mb-1.5">University Email</label>
-                <input id="profile-email" type="email" class="field" placeholder="s123456@gms.tzu.edu.tw" readonly style="background:#121212;color:#555;cursor:not-allowed;" />
+                <input id="profile-email" type="email" class="field" placeholder="s123456@gms.tcu.edu.tw" readonly style="background:#121212;color:#555;cursor:not-allowed;" />
               </div>
               <div>
                 <label class="form-label block mb-1.5">Language</label>
@@ -2098,7 +2098,7 @@
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#3b82f6;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               <span class="text-xs font-600 text-stone-400">Email</span>
             </div>
-            <input id="post-email" type="email" class="field flex-1" placeholder="you@gms.tzu.edu.tw" maxlength="100" />
+            <input id="post-email" type="email" class="field flex-1" placeholder="you@gms.tcu.edu.tw" maxlength="100" />
           </div>
           <div class="flex items-center gap-3">
             <div class="flex items-center gap-2 flex-shrink-0" style="width:80px;">
@@ -2339,7 +2339,7 @@ let myItems      = [];
 let currentView  = 'browse';
 let activeFilter = 'all';
 let advancedFilters = { dateMaxDays: 0, condition: '', productCat: '', donCondition: '', urgency: '', location: '' };
-const ADMIN_EMAIL = '114122104@gms.tzu.edu.tw';
+const ADMIN_EMAIL = '114122104@gms.tcu.edu.tw';
 let currentUser  = null;
 let currentProfile = null;
 let isGuest      = false;
@@ -2440,7 +2440,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Enforce TCU school email for ALL sign-in methods (including Google OAuth)
         if (!isTCUEmail(session.user.email)) {
           await sb.auth.signOut();
-          showToast('Only TCU school email accounts (@gms.tzu.edu.tw) are allowed.', 'error');
+          showToast('Only TCU school email accounts (@gms.tcu.edu.tw) are allowed.', 'error');
           showAuth();
           return;
         }
@@ -2510,7 +2510,7 @@ function showApp() {
 
 function isTCUEmail(email) {
   if (!email) return false;
-  return email.endsWith('@gms.tzu.edu.tw') || email.endsWith('@tzu.edu.tw');
+  return email.endsWith('@gms.tcu.edu.tw') || email.endsWith('@tcu.edu.tw');
 }
 
 function configureAdminAccess() {
@@ -3126,7 +3126,7 @@ function togglePasswordVisibility(inputId, btn) {
 
 async function handleGoogleSignIn() {
   if (isUsingDemoMode()) {
-    simulateDemoLogin('demo@gms.tzu.edu.tw');
+    simulateDemoLogin('demo@gms.tcu.edu.tw');
     return;
   }
   const btn = document.querySelector('.btn-google');
@@ -3140,7 +3140,7 @@ async function handleGoogleSignIn() {
     options: {
       redirectTo,
       // Hint the OAuth flow to enforce school domain (best-effort; enforced server-side in onAuthStateChange)
-      queryParams: { hd: 'gms.tzu.edu.tw' },
+      queryParams: { hd: 'gms.tcu.edu.tw' },
     }
   });
   if (error) {
@@ -3154,7 +3154,7 @@ async function handleLogin() {
   const password = document.getElementById('login-password').value;
   if (!email || !password) { showToast('Please fill in all fields', 'error'); return; }
   if (!isTCUEmail(email)) {
-    showToast('Use your TCU school email (@gms.tzu.edu.tw)', 'error'); return;
+    showToast('Use your TCU school email (@gms.tcu.edu.tw)', 'error'); return;
   }
 
   if (isUsingDemoMode()) { simulateDemoLogin(email); return; }
@@ -3187,7 +3187,7 @@ async function handleSignup() {
     showToast('Please fill in all required fields', 'error'); return;
   }
   if (!isTCUEmail(email)) {
-    showToast('Only TCU school emails are accepted (@gms.tzu.edu.tw)', 'error'); return;
+    showToast('Only TCU school emails are accepted (@gms.tcu.edu.tw)', 'error'); return;
   }
   if (password.length < 8) {
     showToast('Password must be at least 8 characters', 'error'); return;
