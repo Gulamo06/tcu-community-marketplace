@@ -1,7 +1,10 @@
 -- ============================================================
 -- Tzu Chi University Community Platform
--- Supabase SQL Schema — v1.0
+-- Supabase SQL Schema — v2.0
+-- Run this in Supabase SQL Editor (Dashboard → SQL Editor → New query)
+-- For existing databases use migration_v2.sql instead.
 -- ============================================================
+
 
 -- ────────────────────────────────────────────────────────────
 -- STEP 1: EXTENSIONS
@@ -11,78 +14,44 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 
 -- ────────────────────────────────────────────────────────────
--- STEP 2: CUSTOM TYPES (ENUMS)
--- ────────────────────────────────────────────────────────────
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'item_category') THEN
-    CREATE TYPE item_category AS ENUM ('exchange', 'lost', 'found');
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'item_status') THEN
-    CREATE TYPE item_status AS ENUM ('available', 'sold', 'returned');
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'verification_status') THEN
-    CREATE TYPE verification_status AS ENUM ('pending', 'approved', 'rejected');
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'contact_method') THEN
-    CREATE TYPE contact_method AS ENUM ('line', 'instagram', 'phone', 'chat');
-  END IF;
-END
-$$;
-
-
--- ────────────────────────────────────────────────────────────
--- STEP 3: PROFILES TABLE
+-- STEP 2: PROFILES TABLE
 -- ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id                     UUID                 PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  full_name              TEXT                 NOT NULL,
-  student_id             TEXT                 UNIQUE NOT NULL,
+  id                     UUID                NOT NULL PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  full_name              TEXT                NOT NULL DEFAULT 'New Student',
+  student_id             TEXT                UNIQUE NOT NULL,
   department             TEXT,
   avatar_url             TEXT,
+  email                  TEXT,
   phone_number           TEXT,
   line_id                TEXT,
   instagram_handle       TEXT,
-  is_verified            BOOLEAN              NOT NULL DEFAULT false,
+  is_verified            BOOLEAN             NOT NULL DEFAULT false,
   student_id_image_url   TEXT,
-  verification_status    verification_status  NOT NULL DEFAULT 'pending',
-  created_at             TIMESTAMPTZ          NOT NULL DEFAULT NOW(),
-  updated_at             TIMESTAMPTZ          NOT NULL DEFAULT NOW()
+  verification_status    TEXT                NOT NULL DEFAULT 'pending'
+                           CHECK (verification_status IN ('pending', 'approved', 'rejected')),
+  status                 TEXT                NOT NULL DEFAULT 'active'
+                           CHECK (status IN ('active', 'pending_verification', 'id_submitted', 'banned')),
+  created_at             TIMESTAMPTZ         NOT NULL DEFAULT NOW(),
+  updated_at             TIMESTAMPTZ         NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE  public.profiles                           IS 'Student profile data, linked to Supabase Auth.';
-COMMENT ON COLUMN public.profiles.student_id               IS 'Official university student ID number.';
-COMMENT ON COLUMN public.profiles.line_id                  IS 'LINE messenger handle for direct contact.';
-COMMENT ON COLUMN public.profiles.instagram_handle         IS 'Instagram username without the @ symbol.';
-COMMENT ON COLUMN public.profiles.is_verified              IS 'True once an admin approves the student ID upload.';
-COMMENT ON COLUMN public.profiles.student_id_image_url     IS 'URL of student ID card image for admin verification.';
-COMMENT ON COLUMN public.profiles.verification_status      IS 'pending → approved (sets is_verified=true) → rejected.';
-
--- ───────────────────────────────────────────────────────────
--- STEP 2B: ADD MISSING ENUM VALUES
--- Run these separately — ADD VALUE cannot be inside a transaction block.
--- ───────────────────────────────────────────────────────────
--- ALTER TYPE item_category ADD VALUE IF NOT EXISTS 'donation';
-
--- ───────────────────────────────────────────────────────────
--- STEP 3B: MODERATION SUPPORT
--- ───────────────────────────────────────────────────────────
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;
-ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_status_check;
-ALTER TABLE public.profiles ADD CONSTRAINT profiles_status_check
-  CHECK (status IN ('active', 'pending_verification', 'id_submitted', 'banned'));
+COMMENT ON TABLE  public.profiles IS 'Student profile data linked to Supabase Auth.';
+COMMENT ON COLUMN public.profiles.email IS 'Synced from auth.users on every login.';
+COMMENT ON COLUMN public.profiles.is_verified IS 'True once an admin approves the student ID upload.';
+COMMENT ON COLUMN public.profiles.verification_status IS 'pending → approved (sets is_verified=true) → rejected.';
+COMMENT ON COLUMN public.profiles.status IS 'active | pending_verification | id_submitted | banned';
 
 
 -- ────────────────────────────────────────────────────────────
--- STEP 4: ITEMS TABLE
+-- STEP 3: ITEMS TABLE
 -- ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.items (
   id                        UUID            PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_id                  UUID            NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   title                     TEXT            NOT NULL CHECK (char_length(title) BETWEEN 3 AND 120),
   description               TEXT            NOT NULL CHECK (char_length(description) >= 20),
-  category                  TEXT            NOT NULL CHECK (category IN ('exchange','lost','found','donation')),
+  category                  TEXT            NOT NULL CHECK (category IN ('exchange', 'lost', 'found', 'donation')),
   condition                 TEXT,
   product_cat               TEXT,
   don_condition             TEXT,
@@ -90,7 +59,8 @@ CREATE TABLE IF NOT EXISTS public.items (
   verification_hint         TEXT,
   price                     NUMERIC(10,2)   CHECK (price IS NULL OR price >= 0),
   image_urls                TEXT[]          NOT NULL DEFAULT '{}',
-  status                    TEXT            NOT NULL DEFAULT 'available' CHECK (status IN ('available','sold','returned')),
+  status                    TEXT            NOT NULL DEFAULT 'available'
+                              CHECK (status IN ('available', 'sold', 'returned')),
   preferred_contact_method  TEXT            NOT NULL DEFAULT 'line',
   location_hint             TEXT,
   last_confirmed_at         TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
@@ -100,17 +70,13 @@ CREATE TABLE IF NOT EXISTS public.items (
   updated_at                TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE  public.items                           IS 'All marketplace and lost/found item listings.';
-COMMENT ON COLUMN public.items.unique_identifier         IS 'Mandatory distinguishing detail (serial no., color, brand) to prevent fraud.';
-COMMENT ON COLUMN public.items.verification_hint         IS 'Public hint about the unique identifier (e.g., "scratch on battery cover").';
-COMMENT ON COLUMN public.items.image_urls                IS 'Array of public image URLs (upload to Supabase Storage).';
-COMMENT ON COLUMN public.items.price                     IS 'NULL for lost/found items. Required for exchange/marketplace listings.';
-COMMENT ON COLUMN public.items.preferred_contact_method  IS 'How the poster prefers to be contacted.';
-COMMENT ON COLUMN public.items.last_confirmed_at         IS 'Last time the owner confirmed the item is still relevant.';
-COMMENT ON COLUMN public.items.expires_at                IS 'Set on insert and reset by confirm_item(). After this date, is_active is set false.';
-COMMENT ON COLUMN public.items.is_active                 IS 'False when expired or manually deactivated. Public read only sees is_active=true.';
+COMMENT ON TABLE  public.items IS 'All marketplace and lost/found item listings.';
+COMMENT ON COLUMN public.items.category IS 'exchange | lost | found | donation';
+COMMENT ON COLUMN public.items.status IS 'available | sold | returned';
+COMMENT ON COLUMN public.items.unique_identifier IS 'Mandatory detail (serial no., colour, brand) to prevent fraud.';
+COMMENT ON COLUMN public.items.image_urls IS 'Array of public image URLs stored in item-images bucket.';
+COMMENT ON COLUMN public.items.expires_at IS 'Reset by confirm_item(). After this date is_active is set false.';
 
--- Index for fast filtering
 CREATE INDEX IF NOT EXISTS idx_items_owner_id   ON public.items(owner_id);
 CREATE INDEX IF NOT EXISTS idx_items_category   ON public.items(category);
 CREATE INDEX IF NOT EXISTS idx_items_status     ON public.items(status);
@@ -120,7 +86,7 @@ CREATE INDEX IF NOT EXISTS idx_items_created    ON public.items(created_at DESC)
 
 
 -- ────────────────────────────────────────────────────────────
--- STEP 4B: AI_LOGS TABLE
+-- STEP 4: AI_LOGS TABLE
 -- ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.ai_logs (
   id         UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -130,13 +96,46 @@ CREATE TABLE IF NOT EXISTS public.ai_logs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE public.ai_logs IS 'Stores AI assistant conversations for audit and personalisation.';
-
+COMMENT ON TABLE public.ai_logs IS 'AI assistant conversations for audit and personalisation.';
 CREATE INDEX IF NOT EXISTS idx_ai_logs_user_id ON public.ai_logs(user_id);
 
 
 -- ────────────────────────────────────────────────────────────
--- STEP 5: AUTO-UPDATE `updated_at` TRIGGER
+-- STEP 5: STORAGE BUCKET
+-- Creates the item-images bucket (public) for item photos,
+-- student ID uploads, and profile avatars.
+-- ────────────────────────────────────────────────────────────
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'item-images',
+  'item-images',
+  true,
+  5242880,           -- 5 MB per file
+  ARRAY['image/jpeg','image/png','image/webp','image/gif']
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- Storage RLS: anyone can read public files
+DROP POLICY IF EXISTS "storage_public_read"    ON storage.objects;
+CREATE POLICY "storage_public_read"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'item-images');
+
+-- Authenticated users can upload to item-images
+DROP POLICY IF EXISTS "storage_auth_upload"    ON storage.objects;
+CREATE POLICY "storage_auth_upload"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'item-images' AND auth.uid() IS NOT NULL);
+
+-- Users can delete their own uploads
+DROP POLICY IF EXISTS "storage_auth_delete"    ON storage.objects;
+CREATE POLICY "storage_auth_delete"
+  ON storage.objects FOR DELETE
+  USING (bucket_id = 'item-images' AND auth.uid() IS NOT NULL);
+
+
+-- ────────────────────────────────────────────────────────────
+-- STEP 6: AUTO-UPDATE updated_at TRIGGER
 -- ────────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
 RETURNS TRIGGER AS $$
@@ -158,17 +157,32 @@ CREATE TRIGGER set_items_updated_at
 
 
 -- ────────────────────────────────────────────────────────────
--- STEP 6: AUTO-CREATE PROFILE ON SIGN-UP TRIGGER
+-- STEP 7: AUTO-CREATE PROFILE ON SIGN-UP TRIGGER
+-- Copies email, full_name, and avatar_url from auth metadata
+-- so Google/email logins always get a complete profile row.
 -- ────────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, student_id)
+  INSERT INTO public.profiles (id, full_name, student_id, email, avatar_url)
   VALUES (
     NEW.id,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', 'New Student'),
-    COALESCE(NEW.raw_user_meta_data->>'student_id', 'PENDING-' || substr(NEW.id::text, 1, 8))
-  );
+    COALESCE(
+      NEW.raw_user_meta_data->>'full_name',
+      NEW.raw_user_meta_data->>'name',
+      'New Student'
+    ),
+    COALESCE(
+      NEW.raw_user_meta_data->>'student_id',
+      'PENDING-' || substr(NEW.id::text, 1, 8)
+    ),
+    NEW.email,
+    COALESCE(
+      NEW.raw_user_meta_data->>'avatar_url',
+      NEW.raw_user_meta_data->>'picture'
+    )
+  )
+  ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -180,10 +194,10 @@ CREATE TRIGGER on_auth_user_created
 
 
 -- ────────────────────────────────────────────────────────────
--- STEP 7: EXPIRATION & UTILITY FUNCTIONS (RPC)
+-- STEP 8: UTILITY FUNCTIONS (RPC)
 -- ────────────────────────────────────────────────────────────
 
--- Run via Supabase Scheduled Functions (pg_cron) daily to expire old items
+-- Expire listings whose 7-day clock has run out (run via pg_cron daily)
 CREATE OR REPLACE FUNCTION public.expire_old_items()
 RETURNS void AS $$
 BEGIN
@@ -193,7 +207,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Called by the owner to reset the 7-day expiry clock
+-- Owner resets the 7-day expiry clock on their own listing
 CREATE OR REPLACE FUNCTION public.confirm_item(item_id UUID)
 RETURNS void AS $$
 BEGIN
@@ -222,18 +236,20 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 
 -- ────────────────────────────────────────────────────────────
--- STEP 8: ROW LEVEL SECURITY (RLS)
+-- STEP 9: ROW LEVEL SECURITY (RLS)
 -- ────────────────────────────────────────────────────────────
-
--- Enable RLS
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.items    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ai_logs  ENABLE ROW LEVEL SECURITY;
 
 
--- ── Profiles Policies ──────────────────────────────────────
+-- ── Profiles policies ──────────────────────────────────────
+DROP POLICY IF EXISTS "profiles_public_read"    ON public.profiles;
+DROP POLICY IF EXISTS "profiles_self_insert"    ON public.profiles;
+DROP POLICY IF EXISTS "profiles_self_update"    ON public.profiles;
+DROP POLICY IF EXISTS "profiles_admin_update"   ON public.profiles;
 
--- Anyone can read all profiles (needed to display owner info on cards)
+-- Anyone can read all profiles (needed for seller info on cards)
 CREATE POLICY "profiles_public_read"
   ON public.profiles FOR SELECT
   USING (true);
@@ -243,21 +259,44 @@ CREATE POLICY "profiles_self_insert"
   ON public.profiles FOR INSERT
   WITH CHECK (auth.uid() = id);
 
--- A user can only update their own profile
+-- A user can update their own profile
 CREATE POLICY "profiles_self_update"
   ON public.profiles FOR UPDATE
-  USING (auth.uid() = id)
+  USING  (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
 
+-- Admin (by email) can update any profile (approve/reject verification)
+CREATE POLICY "profiles_admin_update"
+  ON public.profiles FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles p
+      WHERE p.id = auth.uid()
+        AND p.email = '114122104@gms.tzu.edu.tw'
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.profiles p
+      WHERE p.id = auth.uid()
+        AND p.email = '114122104@gms.tzu.edu.tw'
+    )
+  );
 
--- ── Items Policies ─────────────────────────────────────────
 
--- Public can read all active items only
+-- ── Items policies ─────────────────────────────────────────
+DROP POLICY IF EXISTS "items_public_read"      ON public.items;
+DROP POLICY IF EXISTS "items_verified_insert"  ON public.items;
+DROP POLICY IF EXISTS "items_owner_update"     ON public.items;
+DROP POLICY IF EXISTS "items_owner_delete"     ON public.items;
+DROP POLICY IF EXISTS "items_admin_delete"     ON public.items;
+
+-- Anyone can read active listings
 CREATE POLICY "items_public_read"
   ON public.items FOR SELECT
   USING (is_active = true);
 
--- Only VERIFIED students can create items
+-- Only verified students can post items
 CREATE POLICY "items_verified_insert"
   ON public.items FOR INSERT
   WITH CHECK (
@@ -269,21 +308,34 @@ CREATE POLICY "items_verified_insert"
     )
   );
 
--- Only the owner can update their item (e.g., mark as Sold/Returned)
+-- Owner can update their own item
 CREATE POLICY "items_owner_update"
   ON public.items FOR UPDATE
-  USING (auth.uid() = owner_id)
+  USING  (auth.uid() = owner_id)
   WITH CHECK (auth.uid() = owner_id);
 
--- Only the owner can delete their item
+-- Owner can delete their own item
 CREATE POLICY "items_owner_delete"
   ON public.items FOR DELETE
   USING (auth.uid() = owner_id);
 
+-- Admin can delete any item (moderation)
+CREATE POLICY "items_admin_delete"
+  ON public.items FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles p
+      WHERE p.id = auth.uid()
+        AND p.email = '114122104@gms.tzu.edu.tw'
+    )
+  );
 
--- ── AI Logs Policies ───────────────────────────────────────
 
--- Users can only read their own AI conversation logs
+-- ── AI Logs policies ───────────────────────────────────────
+DROP POLICY IF EXISTS "ai_logs_owner_read"    ON public.ai_logs;
+DROP POLICY IF EXISTS "ai_logs_auth_insert"   ON public.ai_logs;
+
+-- Users can only read their own logs
 CREATE POLICY "ai_logs_owner_read"
   ON public.ai_logs FOR SELECT
   USING (auth.uid() = user_id);
@@ -295,36 +347,10 @@ CREATE POLICY "ai_logs_auth_insert"
 
 
 -- ────────────────────────────────────────────────────────────
--- STEP 8: SAMPLE DATA
--- NOTE: profiles.id must match a real auth.users(id).
--- Sign up real users first via the app, then seed items here.
--- The block below is intentionally left empty for safety.
+-- DONE — verify with:
+--
+--   SELECT table_name, column_name, data_type
+--   FROM information_schema.columns
+--   WHERE table_schema = 'public'
+--   ORDER BY table_name, ordinal_position;
 -- ────────────────────────────────────────────────────────────
-
-DO $$
-BEGIN
-  -- Seed data removed: profiles.id must reference a real auth.users(id).
-  -- Sign up via the app first, then insert items here using the real UUID.
-END $$;
-
-
--- ────────────────────────────────────────────────────────────
--- STEP 9: MIGRATIONS (run on existing databases)
--- Apply these in Supabase SQL Editor if the database already exists.
--- ────────────────────────────────────────────────────────────
-
--- 9A: Add donation category + extra item columns (idempotent)
-ALTER TABLE public.items ADD COLUMN IF NOT EXISTS condition TEXT;
-ALTER TABLE public.items ADD COLUMN IF NOT EXISTS product_cat TEXT;
-ALTER TABLE public.items ADD COLUMN IF NOT EXISTS don_condition TEXT;
-
--- 9B: Widen category to TEXT (allows 'donation') if still using the ENUM type.
---     Only needed if the table still has category typed as item_category ENUM.
---     Skip if category is already TEXT.
--- ALTER TABLE public.items ALTER COLUMN category TYPE TEXT;
--- ALTER TABLE public.items ADD CONSTRAINT items_category_check
---   CHECK (category IN ('exchange','lost','found','donation'));
-
--- 9C: Add profiles columns for moderation (idempotent, already in 3B)
--- ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
--- ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;
