@@ -35,20 +35,22 @@
 
   <style>
     :root {
-      --jade:    #16a34a;
-      --jade-lt: #dcfce7;
-      --ink:     #1c1917;
-      --muted:   #78716c;
-      --cream:   #fdfcf8;
-      --border:  #e7e5e4;
+      --jade:      #16a34a;
+      --jade-lt:   #dcfce7;
+      --ink:       #1c1917;
+      --muted:     #78716c;
+      --cream:     #fdfcf8;
+      --border:    #e7e5e4;
+      --parchment: #242424;
     }
 
     /* ── Light Mode ── */
     .light-theme {
-      --ink:    #1e293b;
-      --muted:  #64748b;
-      --cream:  #f8fafc;
-      --border: #e2e8f0;
+      --ink:       #1e293b;
+      --muted:     #64748b;
+      --cream:     #f8fafc;
+      --border:    #e2e8f0;
+      --parchment: #f1f5f9;
     }
     .light-theme body,
     .light-theme #main-content { background: #f8fafc !important; color: #1e293b !important; }
@@ -67,8 +69,37 @@
     .light-theme .nav-item           { color: #475569 !important; }
     .light-theme .nav-item.active    { background: #f0fdf4 !important; color: #16a34a !important; }
     .light-theme .filter-tab:not(.active) { color: #64748b; border-color: #e2e8f0; }
+    /* Filter toggle button */
+    .light-theme .filter-toggle-btn       { background: #ffffff !important; color: #1e293b !important; border-color: #cbd5e1 !important; box-shadow: 0 2px 4px rgba(0,0,0,.05) !important; }
+    .light-theme .filter-toggle-btn:hover { background: #f1f5f9 !important; border-color: #94a3b8 !important; color: #0f172a !important; }
+    .light-theme .filter-toggle-btn.active{ background: #f0fdf4 !important; border-color: #16a34a !important; color: #16a34a !important; }
+    /* Filter panel */
+    .light-theme #browse-controls.open    { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,.05) !important; }
+    .light-theme .filter-group-label      { color: #64748b !important; }
+    .light-theme .filter-chip             { background: #ffffff !important; border-color: #cbd5e1 !important; color: #475569 !important; }
+    .light-theme .filter-chip:hover       { border-color: #16a34a !important; color: #16a34a !important; background: #f0fdf4 !important; }
+    .light-theme .filter-chip.active      { background: #16a34a !important; border-color: #16a34a !important; color: #ffffff !important; }
+    .light-theme .filter-num-input        { background: #ffffff !important; border-color: #cbd5e1 !important; color: #1e293b !important; }
     .light-theme .field              { background: #ffffff !important; color: #1e293b !important; border-color: #e2e8f0 !important; }
-    .light-theme .auth-card          { background: #ffffff !important; }
+    /* Auth screen — full light mode */
+    .light-theme #auth-screen         { background: #f0f2f5 !important; }
+    .light-theme .auth-card           { background: #ffffff !important; border-color: #e2e8f0 !important; box-shadow: 0 10px 25px rgba(0,0,0,.07) !important; }
+    .light-theme .auth-card .border-stone-100 { border-color: #e2e8f0 !important; }
+    .light-theme #tab-login           { color: #16a34a !important; border-color: #16a34a !important; }
+    .light-theme #tab-signup          { color: #94a3b8 !important; }
+    .light-theme #tab-signup:hover    { color: #475569 !important; }
+    .light-theme .auth-divider        { color: #94a3b8 !important; }
+    .light-theme .auth-divider::before,
+    .light-theme .auth-divider::after { background: #e2e8f0 !important; }
+    .light-theme .btn-google          { background: #ffffff !important; border-color: #dadce0 !important; color: #3c4043 !important; }
+    .light-theme .btn-google:hover    { background: #f8f9fa !important; }
+    .light-theme #auth-screen .field  { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #1e293b !important; }
+    .light-theme #auth-screen .field:focus { background: #ffffff !important; border-color: #16a34a !important; color: #1e293b !important; }
+    .light-theme #auth-screen .field::placeholder { color: #94a3b8 !important; }
+    .light-theme #auth-screen .form-label,
+    .light-theme #auth-screen label.form-label { color: #64748b !important; }
+    .light-theme .helper-text         { color: #94a3b8 !important; }
+    .light-theme #auth-screen p       { color: #64748b !important; }
     /* Text legibility */
     .light-theme h1, .light-theme h2, .light-theme h3,
     .light-theme h4, .light-theme h5, .light-theme h6 { color: #0f172a !important; }
@@ -95,6 +126,30 @@
     .light-theme .contact-modal-box  { background: #ffffff !important; border-color: #e2e8f0 !important; }
     .light-theme .contact-modal-box a { background: #f8fafc !important; border-color: #e2e8f0 !important; color: #1e293b !important; }
     .light-theme .contact-modal-box h3 { color: #0f172a !important; }
+    /* Post modal & item detail modal — shared .modal-box overrides */
+    .light-theme .modal-box          { background: #ffffff !important; border-color: #e2e8f0 !important; box-shadow: 0 10px 40px rgba(0,0,0,.12) !important; }
+    .light-theme .modal-box h2       { color: #0f172a !important; }
+    /* Category cards (For Sale / Donation / Lost / Found) */
+    .light-theme .modal-box .cat-option              { background: #f8fafc !important; border-color: #e2e8f0 !important; color: #1e293b !important; }
+    .light-theme .modal-box .cat-option:hover        { border-color: #16a34a !important; background: #f0fdf4 !important; }
+    /* Inputs & textareas inside the modal */
+    .light-theme .modal-box .field                   { background: #ffffff !important; border-color: #cbd5e1 !important; color: #1e293b !important; }
+    .light-theme .modal-box .field::placeholder      { color: #94a3b8 !important; }
+    .light-theme .modal-box .field:focus             { background: #ffffff !important; border-color: #16a34a !important; color: #1e293b !important; box-shadow: 0 0 0 3px rgba(22,163,74,.15) !important; }
+    /* Form labels */
+    .light-theme .modal-box .form-label              { color: #475569 !important; }
+    /* Step indicator dots */
+    .light-theme .modal-box .step-dot.todo           { background: #f1f5f9 !important; color: #64748b !important; border-color: #16a34a !important; }
+    /* Step connector lines */
+    .light-theme .modal-box [style*="background:var(--border)"] { background: #e2e8f0 !important; }
+    .light-theme #detail-content .text-stone-900,
+    .light-theme #detail-content .font-600 { color: #0f172a !important; }
+    .light-theme #detail-content .text-stone-600 { color: #334155 !important; }
+    .light-theme #detail-content .text-stone-500 { color: #475569 !important; }
+    .light-theme #detail-content .text-stone-400 { color: #64748b !important; }
+    .light-theme #detail-content [style*="background:var(--parchment)"] { background: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+    .light-theme #detail-content [style*="border-top:1px solid var(--border)"] { border-color: #e2e8f0 !important; }
+    .light-theme #detail-content [style*="color:var(--muted)"] { color: #64748b !important; }
     /* Admin panel — full light-mode override */
     .light-theme #admin-view { background: #f8fafc !important; color: #1e293b !important; }
     .light-theme .admin-header { background: #ffffff !important; border-color: #e2e8f0 !important; }
@@ -130,6 +185,18 @@
     /* Banner text is always white — it sits on a jade-green gradient */
     .welcome-banner h2,
     .welcome-banner .banner-subtitle { color: #ffffff !important; }
+    /* Login shield / logo */
+    .login-shield-logo {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 64px; height: 64px;
+      border-radius: 50%; border: 3px solid var(--jade);
+      margin-bottom: 12px;
+      background: var(--jade) url('./assets/tcu-logo.png') center/80% no-repeat;
+      box-shadow: 0 4px 20px rgba(22,163,74,.35);
+      overflow: hidden;
+    }
+    /* Hide the SVG fallback once the image loads */
+    .login-shield-logo:not([style*="background-image"]) svg { display: block; }
     /* Brand names in sidebar and auth screen */
     .light-theme #sidebar-brand,
     .light-theme #auth-brand    { color: #0f172a !important; }
@@ -183,6 +250,28 @@
     @keyframes scaleIn  { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
     @keyframes shimmer  { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
     @keyframes aiDot    { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-5px);opacity:1} }
+
+    /* ── Post photo grid ── */
+    .post-photo-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    }
+    .post-photo-slot {
+      position: relative; aspect-ratio: 1/1;
+      border: 1px dashed rgba(255,255,255,.15); border-radius: 10px; overflow: hidden;
+    }
+    .post-photo-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .post-photo-remove {
+      position: absolute; top: 5px; right: 5px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(220,53,69,.9); color: #fff;
+      border: none; cursor: pointer; font-size: .85rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1; transition: background .15s;
+    }
+    .post-photo-remove:hover { background: #dc3545; }
+    .light-theme .post-photo-slot { border-color: #cbd5e1; }
+    .light-theme #edit-photos-modal .modal-box { background: #ffffff !important; border-color: #e2e8f0 !important; }
+    .light-theme #edit-photos-modal h2 { color: #0f172a !important; }
 
     /* ── Upload button ── */
     .btn-upload {
@@ -1277,6 +1366,144 @@
       transform: translateY(0);
     }
 
+    /* ══════════════════════════════════════════════
+       BOTTOM NAV (mobile only)
+    ══════════════════════════════════════════════ */
+    #bottom-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 62px;
+      background: #1a1a1a;
+      border-top: 1px solid rgba(255,255,255,.08);
+      z-index: 150;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 4px;
+    }
+    .light-theme #bottom-nav { background: #ffffff; border-top-color: #e2e8f0; }
+
+    .bnav-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 3px; padding: 6px 10px;
+      background: none; border: none; cursor: pointer;
+      color: #52525b; font-size: .62rem; font-weight: 600;
+      letter-spacing: .02em; flex: 1; transition: color .15s;
+    }
+    .bnav-item svg { width: 22px; height: 22px; }
+    .bnav-item.active { color: #16a34a; }
+    .light-theme .bnav-item { color: #94a3b8; }
+    .light-theme .bnav-item.active { color: #16a34a; }
+
+    .bnav-post {
+      display: flex; align-items: center; justify-content: center;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border: none; cursor: pointer; color: #fff;
+      box-shadow: 0 4px 16px rgba(22,163,74,.45);
+      flex-shrink: 0; transition: transform .15s;
+    }
+    .bnav-post:hover, .bnav-post:active { transform: scale(1.08); }
+
+    /* ══════════════════════════════════════════════
+       RESPONSIVE — TABLET  (641px – 1024px)
+    ══════════════════════════════════════════════ */
+    @media (min-width: 641px) and (max-width: 1024px) {
+      #main-content { padding: 24px !important; }
+      #items-grid, #myitems-grid { grid-template-columns: repeat(2,1fr) !important; gap: 18px !important; }
+      #stats-bar { max-width: 100% !important; }
+    }
+
+    /* ══════════════════════════════════════════════
+       RESPONSIVE — MOBILE  (≤ 640px)
+    ══════════════════════════════════════════════ */
+    @media (max-width: 640px) {
+      /* Layout */
+      #main-content { padding: 14px !important; padding-bottom: 74px !important; }
+
+      /* Cards: 1 column on mobile */
+      #items-grid, #myitems-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+
+      /* Card image height cap — full width card, taller image */
+      .card-img-wrap { max-height: 220px; overflow: hidden; }
+      .card-img-wrap img { height: 220px !important; object-fit: cover; }
+
+      /* Stats: 2×2 grid */
+      #stats-bar {
+        grid-template-columns: repeat(2,1fr) !important;
+        gap: 10px !important;
+        max-width: 100% !important;
+        margin-bottom: 18px !important;
+      }
+
+      /* Welcome banner */
+      .welcome-banner { padding: 28px 18px 24px !important; border-radius: 16px !important; }
+      .welcome-banner h2 { font-size: 1.35rem !important; }
+      .welcome-banner .banner-subtitle { font-size: .82rem !important; }
+
+      /* Hero search */
+      .hero-search-row { max-width: 100% !important; }
+      #hero-search { padding: 11px 14px !important; font-size: .9rem !important; }
+
+      /* Filter panel */
+      #browse-controls.open {
+        grid-template-columns: repeat(2,1fr) !important;
+        padding: 14px !important;
+        gap: 12px 14px !important;
+      }
+
+      /* Photo grid: 2 cols */
+      .post-photo-grid { grid-template-columns: repeat(2,1fr) !important; }
+
+      /* Modals: bottom-sheet */
+      .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
+      .modal-box {
+        border-radius: 22px 22px 0 0 !important;
+        max-height: 93vh !important;
+        max-width: 100% !important;
+        padding: 28px 20px !important;
+      }
+
+      /* Contact modal */
+      .contact-modal-box { border-radius: 22px 22px 0 0 !important; max-width: 100% !important; }
+
+      /* Auth card */
+      .auth-card { padding: 32px 20px !important; }
+      #auth-screen > div { padding: 0 4px; }
+
+      /* Hide desktop FAB (bottom nav has a post button) */
+      .fab-post { display: none !important; }
+
+      /* Admin / settings full-width */
+      .admin-card { border-radius: 12px !important; }
+
+      /* My items header wrap */
+      #myitems-standalone-view > div:first-child { flex-wrap: wrap !important; gap: 10px !important; }
+
+      /* Touch targets — minimum 44px (Apple/Google HIG) */
+      .filter-chip, .filter-tab, .nav-item, .bnav-item,
+      .btn-primary, .btn-ghost, .btn-google, .btn-guest,
+      .btn-upload, .contact-seller-btn, .cat-option {
+        min-height: 44px !important;
+      }
+      .filter-chip { padding: 8px 14px !important; }
+
+      /* iOS zoom prevention — inputs must be ≥ 16px to stop auto-zoom */
+      input, select, textarea, .field {
+        font-size: 16px !important;
+      }
+
+      /* Card text trimming on small screens */
+      .card .p-5 { padding: 10px !important; }
+      .card h3 { font-size: .85rem !important; }
+      .card p.text-xs { font-size: .72rem !important; }
+
+      /* Show bottom nav */
+      #bottom-nav { display: flex !important; }
+    }
+
   </style>
 </head>
 <body class="min-h-screen">
@@ -1294,7 +1521,7 @@
   <div style="width:100%;max-width:420px;">
     <!-- Logo -->
     <div class="text-center mb-7 fade-in">
-      <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--jade);border-radius:14px;margin-bottom:12px;box-shadow:0 4px 20px rgba(22,163,74,.35);">
+      <div class="login-shield-logo">
         <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
       <div id="auth-brand" class="font-sans text-xl font-bold" style="color:#f4f4f5;letter-spacing:-.025em;">TCU Community</div>
@@ -1380,6 +1607,7 @@
             <option value="College of Nursing">College of Nursing</option>
             <option value="Humanities and Social Sciences">Humanities and Social Sciences</option>
             <option value="Informatics and Management">Informatics and Management</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div class="mb-6">
@@ -2161,12 +2389,12 @@
 
       <div class="mb-5">
         <label class="form-label block mb-2">Photos (up to 4)</label>
-        <label for="post-img-file" class="btn-upload">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
-          <span id="post-img-label">Upload Photo from Device</span>
+        <div id="post-img-previews" class="post-photo-grid"></div>
+        <label id="post-img-add-btn" for="post-img-file" class="btn-upload" style="margin-top:8px;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Photo
         </label>
         <input id="post-img-file" type="file" accept="image/*" multiple class="hidden" onchange="handleItemImagesUpload(event)" />
-        <div id="post-img-previews" class="flex flex-wrap gap-2 mt-3"></div>
       </div>
 
       <!-- Review Summary -->
@@ -2179,6 +2407,32 @@
         <button onclick="prevStep(3)" class="btn-ghost">← Back</button>
         <button onclick="submitPost()" id="submit-btn" class="btn-primary">Publish Item ✓</button>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     EDIT PHOTOS MODAL
+══════════════════════════════════════════════════ -->
+<div id="edit-photos-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:460px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <h2 style="font-weight:700;font-size:1.05rem;color:var(--ink);">Edit Photos</h2>
+      <button onclick="closeEditImagesModal()" style="color:var(--muted);background:none;border:none;cursor:pointer;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:14px;">Tap × to remove a photo. Up to 4 photos total.</p>
+    <div id="edit-photo-grid" class="post-photo-grid" style="margin-bottom:12px;"></div>
+    <label id="edit-photo-add-btn" for="edit-photo-file" class="btn-upload" style="margin-bottom:20px;cursor:pointer;">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Photo
+    </label>
+    <input id="edit-photo-file" type="file" accept="image/*" multiple class="hidden" onchange="handleEditImagesUpload(event)" />
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeEditImagesModal()" class="btn-ghost" style="flex:1;">Cancel</button>
+      <button onclick="saveEditedImages()" id="edit-photos-save-btn" class="btn-primary" style="flex:1;">Save Changes</button>
     </div>
   </div>
 </div>
@@ -2207,13 +2461,17 @@ const GEMINI_API_KEY = 'AIzaSyBdqkpVB5xwuGAuHzVuYeV-Bf-QtKKtg9w';
 // ── FILE UPLOAD ──────────────────────────────────────────────
 let postSelectedFiles = [];
 
+// ── EDIT PHOTOS STATE ────────────────────────────────────────
+let editImagesItemId = null;
+let editDisplayItems = []; // { type:'url', src } | { type:'file', file, preview }
+
 async function uploadFile(file, prefix = '', bucket = 'item-images') {
   if (!sb) throw new Error('Not connected to Supabase. Please sign in again.');
   const ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
   const uid = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
   const fileName = `${prefix}${uid}.${ext}`;
   const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Upload timed out — check your internet connection.')), 15000)
+    setTimeout(() => reject(new Error('Upload timed out — storage upload policy may be missing. Run the storage_auth_upload SQL in Supabase.')), 15000)
   );
   const upload = sb.storage.from(bucket).upload(fileName, file, { upsert: true });
   const result = await Promise.race([upload, timeout]);
@@ -2260,20 +2518,31 @@ function removeProfilePicture() {
 }
 
 function handleItemImagesUpload(event) {
-  postSelectedFiles = Array.from(event.target.files).slice(0, 4);
-  if (!postSelectedFiles.length) return;
-  const label    = document.getElementById('post-img-label');
-  const previews = document.getElementById('post-img-previews');
-  previews.innerHTML = '';
-  for (const file of postSelectedFiles) {
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    img.alt = 'preview';
-    img.className = 'rounded-lg border border-stone-200 object-cover';
-    img.style.cssText = 'width:80px;height:80px;';
-    previews.appendChild(img);
+  const incoming = Array.from(event.target.files);
+  for (const f of incoming) {
+    if (postSelectedFiles.length < 4) postSelectedFiles.push(f);
   }
-  label.textContent = `✓ ${postSelectedFiles.length} photo(s) selected`;
+  event.target.value = ''; // reset so same file can be picked again
+  renderPostImgPreviews();
+}
+
+function renderPostImgPreviews() {
+  const grid   = document.getElementById('post-img-previews');
+  const addBtn = document.getElementById('post-img-add-btn');
+  if (!grid) return;
+  grid.innerHTML = postSelectedFiles.map((f, i) => {
+    const url = URL.createObjectURL(f);
+    return `<div class="post-photo-slot">
+      <img src="${url}" alt="preview" />
+      <button type="button" class="post-photo-remove" onclick="removePostPhoto(${i})" title="Remove">×</button>
+    </div>`;
+  }).join('');
+  if (addBtn) addBtn.style.display = postSelectedFiles.length >= 4 ? 'none' : '';
+}
+
+function removePostPhoto(index) {
+  postSelectedFiles.splice(index, 1);
+  renderPostImgPreviews();
 }
 
 let sb = null;
@@ -2722,6 +2991,51 @@ function openContactMenu(sellerData) {
   document.body.appendChild(modal);
 }
 
+function reportItem(itemId) {
+  const reasons = [
+    'Spam or misleading information',
+    'Offensive or inappropriate content',
+    'Fake or counterfeit item',
+    'Duplicate listing',
+    'Other',
+  ];
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:#1a1a1a;border:1px solid #333;border-radius:20px;max-width:360px;width:100%;padding:28px;position:relative;">
+      <button onclick="this.closest('[style*=position\\:fixed]').remove()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#71717a;cursor:pointer;padding:4px;" title="Close">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(220,53,69,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="17" height="17" fill="none" stroke="#dc3545" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        </div>
+        <h3 style="color:#fff;font-size:1rem;font-weight:700;margin:0;">Report Listing</h3>
+      </div>
+      <p style="color:#71717a;font-size:.8rem;margin:0 0 18px;">Why are you reporting this item? We'll review it and take appropriate action.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${reasons.map(r => `
+          <button onclick="submitReport('${itemId}','${r.replace(/'/g,"\\'")}')" style="text-align:left;padding:11px 14px;border-radius:10px;background:#252525;border:1px solid #333;color:#d4d4d8;font-size:.85rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='#2d2d2d';this.style.borderColor='#dc3545';this.style.color='#fff';" onmouseout="this.style.background='#252525';this.style.borderColor='#333';this.style.color='#d4d4d8';">
+            ${r}
+          </button>`).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+async function submitReport(itemId, reason) {
+  document.querySelectorAll('[style*="position:fixed"]').forEach(el => {
+    if (el.querySelector('h3')?.textContent.trim() === 'Report Listing') el.remove();
+  });
+  if (!isUsingDemoMode() && sb && currentUser) {
+    try {
+      await sb.from('reports').insert({ item_id: itemId, reporter_id: currentUser.id, reason });
+    } catch (_) {}
+  }
+  showToast('Report submitted — thank you. Our team will review it shortly.', 'success');
+}
+
 function setSettingsSection(section) {
   currentSettingsSection = section;
   document.querySelectorAll('.settings-htab').forEach(btn => {
@@ -2804,70 +3118,86 @@ function renderManageListings(items) {
 }
 
 async function loadFlaggedItems() {
+  const container = document.getElementById('flagged-items-container');
+  if (!container) return;
+  container.innerHTML = `<div class="admin-card p-6 text-center flagged-card-desc">Loading reports…</div>`;
+
   if (isUsingDemoMode()) {
     renderFlaggedItems([]);
     return;
   }
-  // For now, we'll show items that might be flagged (this would need a reports table in a real implementation)
-  const { data, error } = await sb
-    .from('items')
-    .select(`
-      id,title,
-      owner_id,
-      profiles!items_owner_id_fkey(full_name)
-    `)
-    .limit(10); // Just show first 10 for demo
 
-  if (error) { showToast(error.message, 'error'); return; }
+  const { data, error } = await sb
+    .from('reports')
+    .select(`
+      id,
+      reason,
+      created_at,
+      item_id,
+      reporter_id,
+      items!reports_item_id_fkey(id, title, is_active, profiles!items_owner_id_fkey(full_name, email))
+    `)
+    .order('created_at', { ascending: false });
+
+  if (error) { showToast(error.message, 'error'); renderFlaggedItems([]); return; }
   renderFlaggedItems(data || []);
 }
 
-function renderFlaggedItems(items) {
+async function dismissReport(reportId) {
+  if (!sb) return;
+  const { error } = await sb.from('reports').delete().eq('id', reportId);
+  if (error) { showToast(error.message, 'error'); return; }
+  showToast('Report dismissed.', 'success');
+  loadFlaggedItems();
+}
+
+async function deleteReportedItem(itemId, reportId) {
+  if (!sb) return;
+  const { error } = await sb.from('items').update({ is_active: false }).eq('id', itemId);
+  if (error) { showToast(error.message, 'error'); return; }
+  await sb.from('reports').delete().eq('id', reportId);
+  showToast('Item removed from marketplace.', 'success');
+  loadFlaggedItems();
+}
+
+function renderFlaggedItems(reports) {
   const container = document.getElementById('flagged-items-container');
   if (!container) return;
 
-  if (items.length === 0) {
+  if (reports.length === 0) {
     container.innerHTML = `
       <div class="admin-card p-8 text-center">
         <div class="text-4xl mb-4">✅</div>
-        <h3 class="text-xl font-semibold flagged-card-title mb-2">No Flagged Items</h3>
-        <p class="flagged-card-desc">All items are currently clean and compliant.</p>
+        <h3 class="text-xl font-semibold flagged-card-title mb-2">No Reports</h3>
+        <p class="flagged-card-desc">No user reports pending review.</p>
       </div>
     `;
     return;
   }
 
-  // Mock some flagged reasons for demo
-  const reasons = [
-    { type: 'spam', label: 'Spam Content', description: 'Item appears to be promotional spam', color: '#dc3545' },
-    { type: 'fake', label: 'Fake Product', description: 'Item may be counterfeit or misrepresented', color: '#dc3545' },
-    { type: 'inappropriate', label: 'Inappropriate Content', description: 'Contains offensive or inappropriate material', color: '#dc3545' },
-    { type: 'duplicate', label: 'Duplicate Listing', description: 'Same item listed multiple times', color: '#f59e0b' }
-  ];
-
-  container.innerHTML = items.map((item, index) => {
-    const reason = reasons[index % reasons.length];
+  container.innerHTML = reports.map(report => {
+    const item     = report.items || {};
+    const seller   = item.profiles || {};
+    const reported = new Date(report.created_at).toLocaleDateString();
     return `
       <div class="admin-card p-6">
-        <div class="flex items-start justify-between">
+        <div class="flex items-start justify-between gap-4">
           <div class="flex-1">
-            <div class="flex items-center gap-3 mb-2">
-              <h4 class="text-lg font-semibold flagged-card-title">${item.title || '—'}</h4>
-              <span class="status-pill" style="background: rgba(${reason.color === '#dc3545' ? '220,53,69' : '245,158,11'}, 0.1); color: ${reason.color}; border: 1px solid ${reason.color}20;">
-                ${reason.label}
+            <div class="flex items-center gap-3 mb-2 flex-wrap">
+              <h4 class="text-lg font-semibold flagged-card-title">${item.title || '(deleted item)'}</h4>
+              <span class="status-pill" style="background:rgba(220,53,69,.1);color:#dc3545;border:1px solid rgba(220,53,69,.2);">
+                ${report.reason || 'No reason given'}
               </span>
+              ${!item.is_active ? `<span class="status-pill" style="background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;">Inactive</span>` : ''}
             </div>
-            <p class="flagged-card-desc mb-3">${reason.description}</p>
-            <div class="text-sm flagged-card-meta">
-              <span>Seller: ${item.profiles?.full_name || 'Unknown'}</span>
-              <span class="mx-2">•</span>
-              <span>Reported by: Anonymous User</span>
+            <div class="text-sm flagged-card-meta" style="display:flex;gap:12px;flex-wrap:wrap;">
+              <span>Seller: <strong>${seller.full_name || 'Unknown'}</strong></span>
+              <span>Reported: ${reported}</span>
             </div>
           </div>
-          <div class="ml-4">
-            <button class="admin-action-btn btn-ban" onclick="banFlaggedItem('${item.id}')">
-              Ban Item & Notify Seller
-            </button>
+          <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
+            ${item.id ? `<button class="admin-action-btn btn-ban" onclick="deleteReportedItem('${item.id}','${report.id}')">Remove Item</button>` : ''}
+            <button class="admin-action-btn" style="background:rgba(100,116,139,.1);color:#64748b;border:1px solid rgba(100,116,139,.2);" onclick="dismissReport('${report.id}')">Dismiss</button>
           </div>
         </div>
       </div>
@@ -3423,15 +3753,23 @@ function buildItemCard(item, isOwner) {
     ? `<span class="font-sans font-bold text-jade-700 text-lg" style="letter-spacing:-.02em;">NT$${Number(item.price).toLocaleString()}</span>`
     : `<span class="text-xs text-stone-400 font-500">No charge</span>`;
 
+  const reportBtn = !isOwner && !isGuest
+    ? `<button onclick="reportItem('${item.id}')" title="Report this listing" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:6px;background:transparent;border:1.5px solid rgba(220,53,69,.3);color:#dc3545;cursor:pointer;flex-shrink:0;transition:all .2s;" onmouseover="this.style.background='rgba(220,53,69,.08)';this.style.borderColor='#dc3545';" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(220,53,69,.3)';">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+       </button>` : '';
+
   const socialLinks = isGuest
     ? `<button onclick="requireAuth('Sign in to contact this student.')" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:600;background:#252525;border:1px solid rgba(255,255,255,.1);color:#71717a;cursor:pointer;">
         <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
         Contact
        </button>`
-    : `<button onclick="openContactMenu(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="contact-seller-btn" style="display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:6px;font-size:.875rem;font-weight:700;background:#28a745;color:#fff;border:1px solid #28a745;cursor:pointer;width:100%;justify-content:center;">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-        Contact Seller
-       </button>`;
+    : `<div style="display:flex;gap:8px;align-items:center;">
+        <button onclick="openContactMenu(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="contact-seller-btn" style="display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:6px;font-size:.875rem;font-weight:700;background:#28a745;color:#fff;border:1px solid #28a745;cursor:pointer;flex:1;justify-content:center;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          Contact Seller
+        </button>
+        ${reportBtn}
+       </div>`;
 
   const expiresAt  = item.expires_at ? new Date(item.expires_at) : new Date(Date.now() + 7*24*60*60*1000);
   const daysLeft   = Math.ceil((expiresAt - Date.now()) / (1000*60*60*24));
@@ -3459,7 +3797,13 @@ function buildItemCard(item, isOwner) {
         style="background:#fef2f2;color:#dc2626;">
         Delete
       </button>
-    </div>` : '';
+    </div>
+    <button type="button" onclick="openEditImagesModal('${item.id}')"
+      class="text-xs font-600 rounded-lg transition-colors"
+      style="width:100%;margin-top:6px;padding:8px;background:#f0f9ff;color:#0284c7;border:1.5px dashed #bae6fd;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      Edit Photos
+    </button>` : '';
 
   const div = document.createElement('div');
   div.className = 'card cursor-pointer';
@@ -3577,6 +3921,11 @@ function setView(view) {
   const navActive = view === 'myitems' ? 'mylistings' : view === 'donations' ? 'donations' : resolvedView;
   ['browse','marketplace','lostfound','donations','mylistings','ai','settings','admin'].forEach(v => {
     document.getElementById('nav-'+v)?.classList.toggle('active', v === navActive);
+  });
+  // Sync bottom nav
+  const bnavMap = { browse:'browse', marketplace:'browse', lostfound:'lostfound', myitems:'myitems', settings:'settings' };
+  ['browse','lostfound','myitems','settings'].forEach(v => {
+    document.getElementById('bnav-'+v)?.classList.toggle('active', bnavMap[resolvedView] === v || bnavMap[view] === v);
   });
 
   const browseControls       = document.getElementById('browse-controls');
@@ -3762,6 +4111,87 @@ async function deleteItem(itemId) {
   showToast('Item deleted', 'success');
 }
 
+// ── EDIT PHOTOS MODAL ────────────────────────────────────────
+function openEditImagesModal(itemId) {
+  const item = [...(myItems.length ? myItems : []), ...allItems].find(i => i.id === itemId);
+  if (!item) return;
+  editImagesItemId = itemId;
+  editDisplayItems = (item.image_urls || []).filter(Boolean).map(src => ({ type: 'url', src }));
+  renderEditPhotoGrid();
+  document.getElementById('edit-photos-modal').classList.remove('hidden');
+}
+
+function closeEditImagesModal() {
+  document.getElementById('edit-photos-modal').classList.add('hidden');
+  editImagesItemId = null;
+  editDisplayItems = [];
+}
+
+function renderEditPhotoGrid() {
+  const grid = document.getElementById('edit-photo-grid');
+  const addBtn = document.getElementById('edit-photo-add-btn');
+  if (!grid) return;
+  grid.innerHTML = editDisplayItems.map((item, i) => `
+    <div class="post-photo-slot">
+      <img src="${item.type === 'url' ? item.src : item.preview}" alt="photo" style="width:100%;height:100%;object-fit:cover;" />
+      <button type="button" class="post-photo-remove" onclick="removeEditPhoto(${i})" title="Remove">×</button>
+    </div>
+  `).join('');
+  if (addBtn) addBtn.style.display = editDisplayItems.length >= 4 ? 'none' : '';
+}
+
+function removeEditPhoto(index) {
+  editDisplayItems.splice(index, 1);
+  renderEditPhotoGrid();
+}
+
+function handleEditImagesUpload(event) {
+  const incoming = Array.from(event.target.files);
+  for (const f of incoming) {
+    if (editDisplayItems.length < 4)
+      editDisplayItems.push({ type: 'file', file: f, preview: URL.createObjectURL(f) });
+  }
+  event.target.value = '';
+  renderEditPhotoGrid();
+}
+
+async function saveEditedImages() {
+  if (!editImagesItemId) return;
+  const btn = document.getElementById('edit-photos-save-btn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const newFiles = editDisplayItems.filter(i => i.type === 'file');
+    const newUrls = [];
+    for (const item of newFiles) {
+      const url = await uploadFile(item.file, 'items/');
+      newUrls.push(url);
+    }
+    const finalUrls = [
+      ...editDisplayItems.filter(i => i.type === 'url').map(i => i.src),
+      ...newUrls
+    ];
+    if (isUsingDemoMode()) {
+      const it = allItems.find(i => i.id === editImagesItemId);
+      if (it) it.image_urls = finalUrls;
+      syncMyItemsFromAllItems(); renderItems(); renderMyItems();
+      showToast('Photos updated!', 'success'); closeEditImagesModal(); return;
+    }
+    const { error } = await sb.from('items').update({ image_urls: finalUrls })
+      .eq('id', editImagesItemId).eq('owner_id', currentUser.id);
+    if (error) throw error;
+    await Promise.all([loadItems(), loadMyItems()]);
+    showToast('Photos updated!', 'success');
+    closeEditImagesModal();
+  } catch (err) {
+    showToast('Failed: ' + err.message, 'error');
+    btn.disabled = false; btn.textContent = 'Save Changes';
+  }
+}
+
+document.getElementById('edit-photos-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditImagesModal();
+});
+
 // ── POST MODAL ───────────────────────────────────────────────
 function openPostModal() {
   if (!requireAuth('Sign in to post an item.')) return;
@@ -3787,10 +4217,9 @@ function resetPostForm() {
   const emailEl = document.getElementById('post-email');
   if (emailEl) emailEl.value = currentUser?.email || currentProfile?.email || '';
   postSelectedFiles = [];
-  const previewsEl = document.getElementById('post-img-previews');
-  if (previewsEl) previewsEl.innerHTML = '';
-  const postLabelEl = document.getElementById('post-img-label');
-  if (postLabelEl) postLabelEl.textContent = 'Upload Photo from Device';
+  renderPostImgPreviews();
+  const addBtn = document.getElementById('post-img-add-btn');
+  if (addBtn) addBtn.style.display = '';
   const postFileEl = document.getElementById('post-img-file');
   if (postFileEl) postFileEl.value = '';
   document.querySelectorAll('input[name="post-category"]').forEach(r => r.checked = false);
@@ -3888,15 +4317,20 @@ async function submitPost() {
       return;
     }
 
-    // Step 1 — Upload each selected file using the shared uploadFile helper
-    // (has 15s timeout, upsert:true, and bucket-missing detection built in)
+    // Step 1 — Upload images (fail gracefully if bucket missing — post without photo)
     const imgUrls = [];
     for (const file of postSelectedFiles) {
-      const url = await uploadFile(file, 'items/');
-      imgUrls.push(url);
+      try {
+        const url = await uploadFile(file, 'items/');
+        imgUrls.push(url);
+      } catch (uploadErr) {
+        console.error('[TCU] Image upload failed:', uploadErr);
+        showToast('Photo upload failed — posting without image. (' + uploadErr.message + ')', 'error');
+        break;
+      }
     }
 
-    // Step 3 — Insert item row with the collected URLs
+    // Step 2 — Insert item row
     const { error: insertError } = await sb.from('items').insert({
       owner_id:          currentUser.id,
       title:             document.getElementById('post-title').value.trim(),
@@ -3909,11 +4343,14 @@ async function submitPost() {
       location_hint:     document.getElementById('post-location').value.trim() || null,
     });
     if (insertError) {
+      console.error('[TCU] Insert error:', insertError);
       const msg = insertError.message || '';
-      if (msg.toLowerCase().includes('rls') || msg.toLowerCase().includes('policy') || insertError.code === '42501') {
-        throw new Error('Permission denied. Run migration_v3.sql in Supabase to allow posting.');
+      const code = String(insertError.code || '');
+      if (msg.toLowerCase().includes('rls') || msg.toLowerCase().includes('policy') ||
+          msg.toLowerCase().includes('violates') || code === '42501' || code === 'PGRST301') {
+        throw new Error('Permission denied — you need to run migration_v3.sql in your Supabase SQL Editor to enable posting.');
       }
-      throw new Error('Failed to save item: ' + msg);
+      throw new Error('Failed to save item: ' + msg + (code ? ' (code ' + code + ')' : ''));
     }
 
     // Step 4 — Update user profile with contact information
@@ -4210,5 +4647,30 @@ async function handleBannedUser() {
 
 // Auth screen shown by DOMContentLoaded init above
 </script>
+
+<!-- ══════════════════════════════════════════════════
+     MOBILE BOTTOM NAVIGATION
+══════════════════════════════════════════════════ -->
+<nav id="bottom-nav" aria-label="Mobile navigation">
+  <button class="bnav-item active" id="bnav-browse" onclick="setView('browse')" aria-label="Browse">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Browse
+  </button>
+  <button class="bnav-item" id="bnav-lostfound" onclick="setView('lostfound')" aria-label="Lost & Found">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Lost/Found
+  </button>
+  <button class="bnav-post" onclick="openPostModal()" aria-label="Post item">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+  <button class="bnav-item" id="bnav-myitems" onclick="setView('myitems')" aria-label="My Items">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    My Items
+  </button>
+  <button class="bnav-item" id="bnav-settings" onclick="setView('settings')" aria-label="Profile">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profile
+  </button>
+</nav>
 </body>
 </html>
