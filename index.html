@@ -2551,7 +2551,7 @@ async function uploadFile(file, prefix = '', bucket = 'item-images') {
   const uid = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
   const fileName = `${prefix}${uid}.${ext}`;
   const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Upload timed out — storage upload policy may be missing. Run the storage_auth_upload SQL in Supabase.')), 15000)
+    setTimeout(() => reject(new Error('Upload timed out — run migration_v5.sql in Supabase to fix image uploads.')), 5000)
   );
   const upload = sb.storage.from(bucket).upload(fileName, file, { upsert: true });
   const result = await Promise.race([upload, timeout]);
@@ -3963,7 +3963,7 @@ function buildItemCard(item, isOwner) {
 
 // ── DETAIL MODAL ─────────────────────────────────────────────
 function openDetail(itemId) {
-  const item = allItems.find(i => i.id === itemId);
+  const item = allItems.find(i => i.id === itemId) || myItems.find(i => i.id === itemId);
   if (!item) return;
   const p = item.profiles || {};
   const catLabel = { exchange:'For Sale', lost:'Lost', found:'Found', donation:'Donation' }[item.category] || '';
@@ -4287,8 +4287,13 @@ async function saveEditedImages() {
     const newFiles = editDisplayItems.filter(i => i.type === 'file');
     const newUrls = [];
     for (const item of newFiles) {
-      const url = await uploadFile(item.file, 'items/');
-      newUrls.push(url);
+      try {
+        const url = await uploadFile(item.file, 'items/');
+        newUrls.push(url);
+      } catch (uploadErr) {
+        console.warn('[TCU] Photo upload skipped:', uploadErr.message);
+        showToast('One photo could not be uploaded. Run migration_v5.sql to fix.', 'error');
+      }
     }
     const finalUrls = [
       ...editDisplayItems.filter(i => i.type === 'url').map(i => i.src),
@@ -4335,7 +4340,7 @@ document.getElementById('post-modal').addEventListener('click', function(e) {
 
 function resetPostForm() {
   postStep = 1; selectedCategory = '';
-  ['post-title','post-price','post-desc','post-unique','post-location'].forEach(id => {
+  ['post-title','post-price','post-desc','post-unique','post-location','post-instagram','post-line-id','post-phone'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   const emailEl = document.getElementById('post-email');
