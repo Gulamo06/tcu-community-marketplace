@@ -1535,6 +1535,17 @@
 <div id="toast"></div>
 <div id="sidebar-backdrop" onclick="closeSidebar()"></div>
 
+<!-- ── Top Controls — always visible on every screen ── -->
+<div id="top-controls">
+  <button id="top-lang-en" class="top-ctrl-btn active" onclick="setLang('en');syncTopControls()">EN</button>
+  <button id="top-lang-zh" class="top-ctrl-btn" onclick="setLang('zh-TW');syncTopControls()">繁中</button>
+  <button class="top-ctrl-btn" onclick="toggleTheme();syncTopControls()" id="top-theme-btn" title="Toggle light/dark">
+    <svg id="top-theme-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+  </button>
+</div>
+
 <!-- ══════════════════════════════════════════════════
      AUTH SCREEN
 ══════════════════════════════════════════════════ -->
@@ -1545,8 +1556,8 @@
       <div class="login-shield-logo">
         <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
-      <div id="auth-brand" class="font-sans text-xl font-bold" style="color:#f4f4f5;letter-spacing:-.025em;">TCU Community</div>
-      <p id="auth-sub" class="text-sm" style="color:#52525b;margin-top:3px;">Tzu Chi University · 慈濟大學</p>
+      <div id="auth-brand" class="font-sans text-xl font-bold" style="color:#f4f4f5;letter-spacing:-.025em;" data-i18n="auth.brand">TCU Community</div>
+      <p id="auth-sub" class="text-sm" style="color:#52525b;margin-top:3px;" data-i18n="auth.sub">Tzu Chi University · 慈濟大學</p>
     </div>
 
     <!-- Card -->
@@ -1566,25 +1577,23 @@
       <!-- Login form -->
       <div id="login-form">
         <div class="mb-4">
-          <label class="form-label block mb-1.5">University Email</label>
-          <input id="login-email" type="email" class="field" placeholder="s123456@gms.tcu.edu.tw" tabindex="1" />
+          <label class="form-label block mb-1.5" data-i18n="auth.email.label">University Email</label>
+          <input id="login-email" type="email" class="field" placeholder="s123456@gms.tcu.edu.tw" data-i18n-placeholder="auth.email.placeholder" tabindex="1" />
         </div>
         <div class="mb-6">
-          <label class="form-label block mb-1.5">Password</label>
+          <label class="form-label block mb-1.5" data-i18n="auth.password.label">Password</label>
           <div class="password-wrap">
-            <input id="login-password" type="password" class="field" placeholder="••••••••" tabindex="2" />
+            <input id="login-password" type="password" class="field" placeholder="••••••••" data-i18n-placeholder="auth.password.login.placeholder" tabindex="2" />
             <button type="button" class="password-toggle" onclick="togglePasswordVisibility('login-password', this)" aria-label="Show/hide password" tabindex="-1">
-              <!-- eye icon -->
               <svg id="eye-login-password" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
         </div>
-        <button type="button" onclick="handleLogin()" class="btn-primary w-full" tabindex="3">Sign In →</button>
+        <button type="button" onclick="handleLogin()" class="btn-primary w-full" tabindex="3"><span data-i18n="auth.signin.btn">Sign In →</span></button>
 
-        <div class="auth-divider">or</div>
+        <div class="auth-divider"><span data-i18n="auth.or">or</span></div>
 
         <button type="button" onclick="handleGoogleSignIn()" class="btn-google" tabindex="4">
-          <!-- Google "G" SVG logo -->
           <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
             <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
             <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
@@ -1594,52 +1603,52 @@
           <span data-i18n="auth.google">Sign in with Google</span>
         </button>
 
-        <div class="auth-divider">or</div>
+        <div class="auth-divider"><span data-i18n="auth.or">or</span></div>
 
         <button type="button" onclick="enterGuestMode()" class="btn-guest" tabindex="5">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          Explore as Guest →
+          <span data-i18n="auth.guest.btn">Explore as Guest →</span>
         </button>
-        <p class="text-center text-xs mt-3" style="color:#3f3f46;">You can browse freely. Sign in to post or contact sellers.</p>
+        <p class="text-center text-xs mt-3" style="color:#3f3f46;" data-i18n="auth.guest.hint">You can browse freely. Sign in to post or contact sellers.</p>
       </div>
 
       <!-- Signup form -->
       <div id="signup-form" class="hidden">
         <div class="grid grid-cols-2 gap-3 mb-4">
           <div>
-            <label class="form-label block mb-1.5">Full Name</label>
-            <input id="signup-name" type="text" class="field" placeholder="Chen Yu-Ling" />
+            <label class="form-label block mb-1.5" data-i18n="auth.name.label">Full Name</label>
+            <input id="signup-name" type="text" class="field" placeholder="Chen Yu-Ling" data-i18n-placeholder="auth.name.placeholder" />
           </div>
           <div>
-            <label class="form-label block mb-1.5">Student ID</label>
-            <input id="signup-student-id" type="text" class="field" placeholder="B10901001" />
+            <label class="form-label block mb-1.5" data-i18n="auth.studentid.label">Student ID</label>
+            <input id="signup-student-id" type="text" class="field" placeholder="B10901001" data-i18n-placeholder="auth.studentid.placeholder" />
           </div>
         </div>
         <div class="mb-4">
-          <label class="form-label block mb-1.5">University Email</label>
-          <input id="signup-email" type="email" class="field" placeholder="s123456@gms.tcu.edu.tw" />
-          <small class="helper-text">Academic email only (@gms.tcu.edu.tw)</small>
+          <label class="form-label block mb-1.5" data-i18n="auth.email.label">University Email</label>
+          <input id="signup-email" type="email" class="field" placeholder="s123456@gms.tcu.edu.tw" data-i18n-placeholder="auth.email.placeholder" />
+          <small class="helper-text" data-i18n="auth.email.helper">Academic email only (@gms.tcu.edu.tw)</small>
         </div>
         <div class="mb-4">
-          <label class="form-label block mb-1.5">Department</label>
+          <label class="form-label block mb-1.5" data-i18n="auth.dept.label">Department</label>
           <select id="signup-dept" class="field" style="width:100%;">
-            <option value="" disabled selected>Select your department</option>
-            <option value="College of Medicine">College of Medicine</option>
-            <option value="College of Nursing">College of Nursing</option>
-            <option value="Humanities and Social Sciences">Humanities and Social Sciences</option>
-            <option value="Informatics and Management">Informatics and Management</option>
-            <option value="Other">Other</option>
+            <option value="" disabled selected data-i18n="auth.dept.placeholder">Select your department</option>
+            <option value="College of Medicine" data-i18n="auth.dept.medicine">College of Medicine</option>
+            <option value="College of Nursing" data-i18n="auth.dept.nursing">College of Nursing</option>
+            <option value="Humanities and Social Sciences" data-i18n="auth.dept.humanities">Humanities and Social Sciences</option>
+            <option value="Informatics and Management" data-i18n="auth.dept.informatics">Informatics and Management</option>
+            <option value="Other" data-i18n="auth.dept.other">Other</option>
           </select>
         </div>
         <div class="mb-6">
-          <label class="form-label block mb-1.5">Password</label>
-          <input id="signup-password" type="password" class="field" placeholder="Min. 8 characters" />
+          <label class="form-label block mb-1.5" data-i18n="auth.password.label">Password</label>
+          <input id="signup-password" type="password" class="field" placeholder="Min. 8 characters" data-i18n-placeholder="auth.password.placeholder" />
         </div>
-        <button onclick="handleSignup()" class="btn-primary w-full">Create Account →</button>
-        <div class="auth-divider" style="margin-top:18px;">or</div>
+        <button onclick="handleSignup()" class="btn-primary w-full"><span data-i18n="auth.signup.btn">Create Account →</span></button>
+        <div class="auth-divider" style="margin-top:18px;"><span data-i18n="auth.or">or</span></div>
         <button type="button" onclick="enterGuestMode()" class="btn-guest" style="margin-top:4px;">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          Explore as Guest
+          <span data-i18n="auth.guest.btn2">Explore as Guest</span>
         </button>
       </div>
     </div>
@@ -1740,17 +1749,6 @@
       </button>
     </div>
   </aside>
-
-  <!-- ── Top Controls (language + theme, always visible) ── -->
-  <div id="top-controls">
-    <button id="top-lang-en" class="top-ctrl-btn active" onclick="setLang('en');syncTopControls()">EN</button>
-    <button id="top-lang-zh" class="top-ctrl-btn" onclick="setLang('zh-TW');syncTopControls()">繁中</button>
-    <button class="top-ctrl-btn" onclick="toggleTheme();syncTopControls()" id="top-theme-btn" title="Toggle light/dark">
-      <svg id="top-theme-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-      </svg>
-    </button>
-  </div>
 
   <!-- ── Main Content ── -->
   <main id="main-content" style="flex:1;padding:36px;min-height:100vh;background:#121212;">
@@ -2600,6 +2598,20 @@ const TRANSLATIONS = {
     'search.placeholder':'Search items…',
     'auth.signin':'Sign In','auth.signup':'Create Account',
     'auth.google':'Sign in with Google',
+    'auth.brand':'TCU Community','auth.sub':'Tzu Chi University · 慈濟大學',
+    'auth.email.label':'University Email','auth.password.label':'Password',
+    'auth.email.placeholder':'s123456@gms.tcu.edu.tw','auth.password.login.placeholder':'••••••••',
+    'auth.signin.btn':'Sign In →','auth.or':'or',
+    'auth.guest.btn':'Explore as Guest →','auth.guest.btn2':'Explore as Guest',
+    'auth.guest.hint':'You can browse freely. Sign in to post or contact sellers.',
+    'auth.name.label':'Full Name','auth.studentid.label':'Student ID',
+    'auth.dept.label':'Department','auth.dept.placeholder':'Select your department',
+    'auth.dept.medicine':'College of Medicine','auth.dept.nursing':'College of Nursing',
+    'auth.dept.humanities':'Humanities and Social Sciences',
+    'auth.dept.informatics':'Informatics and Management','auth.dept.other':'Other',
+    'auth.password.placeholder':'Min. 8 characters','auth.signup.btn':'Create Account →',
+    'auth.name.placeholder':'Chen Yu-Ling','auth.studentid.placeholder':'B10901001',
+    'auth.email.helper':'Academic email only (@gms.tcu.edu.tw)',
     'view.browse.title':'Browse All','view.browse.sub':'All active listings from the TCU community',
     'view.marketplace.title':'Marketplace','view.marketplace.sub':'Find what you need, sell what you don\'t.',
     'view.lostfound.title':'Lost & Found Center','view.lostfound.sub':'Helping the TCU community find what\'s missing. Report or browse found items below.',
@@ -2619,6 +2631,20 @@ const TRANSLATIONS = {
     'search.placeholder':'搜尋物品、教科書、遺失物…',
     'auth.signin':'登入','auth.signup':'建立帳號',
     'auth.google':'使用 Google 登入',
+    'auth.brand':'TCU 社群平台','auth.sub':'慈濟大學 · Tzu Chi University',
+    'auth.email.label':'大學信箱','auth.password.label':'密碼',
+    'auth.email.placeholder':'s123456@gms.tcu.edu.tw','auth.password.login.placeholder':'••••••••',
+    'auth.signin.btn':'登入 →','auth.or':'或',
+    'auth.guest.btn':'以訪客身份探索 →','auth.guest.btn2':'以訪客身份探索',
+    'auth.guest.hint':'可自由瀏覽。登入後才能發布物品或聯絡賣家。',
+    'auth.name.label':'姓名','auth.studentid.label':'學號',
+    'auth.dept.label':'系所','auth.dept.placeholder':'選擇系所',
+    'auth.dept.medicine':'醫學系','auth.dept.nursing':'護理學系',
+    'auth.dept.humanities':'人文社會學院',
+    'auth.dept.informatics':'資訊管理學系','auth.dept.other':'其他',
+    'auth.password.placeholder':'至少 8 個字元','auth.signup.btn':'建立帳號 →',
+    'auth.name.placeholder':'陳玉玲','auth.studentid.placeholder':'B10901001',
+    'auth.email.helper':'請使用學術信箱（@gms.tcu.edu.tw）',
     'view.browse.title':'全部瀏覽','view.browse.sub':'慈濟大學社群所有活躍刊登',
     'view.marketplace.title':'慈濟社區市場','view.marketplace.sub':'找到您需要的，賣掉用不到的。',
     'view.lostfound.title':'失物招領中心','view.lostfound.sub':'協助慈濟大學社群找回遺失物品。請在下方回報或瀏覽拾獲物品。',
