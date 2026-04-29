@@ -618,13 +618,13 @@
     }
     .sidebar-toggle:hover { background: #f5f5f4; border-color: var(--jade); color: var(--jade); }
 
-    /* Shield logo button */
+    /* UniConnect globe button */
     .sidebar-logo-btn {
-      width: 32px; height: 32px; background: var(--jade); border-radius: 9px;
+      width: 32px; height: 32px; background: transparent; border-radius: 0;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      border: none; cursor: pointer; transition: opacity .2s;
+      border: none; cursor: pointer; transition: opacity .2s; padding: 0;
     }
-    .sidebar-logo-btn:hover { opacity: .85; }
+    .sidebar-logo-btn:hover { opacity: .75; }
 
     /* ── Stats card filter state ── */
     .stat-card {
@@ -1690,7 +1690,33 @@
     <!-- Brand + Close -->
     <div class="sidebar-header flex items-center justify-between gap-3 px-1 mb-6">
       <button class="sidebar-logo-btn" onclick="closeSidebar()" title="Close sidebar" aria-label="Close sidebar">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <linearGradient id="sbGrad" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#0a6464"/>
+              <stop offset="55%" stop-color="#0d8a7a"/>
+              <stop offset="100%" stop-color="#16a385"/>
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="44" stroke="url(#sbGrad)" stroke-width="4"/>
+          <path d="M 50 6 Q 76 24 81 50" stroke="url(#sbGrad)" stroke-width="3.5"/>
+          <path d="M 81 50 Q 76 76 50 94" stroke="url(#sbGrad)" stroke-width="3.5"/>
+          <path d="M 50 94 Q 24 76 19 50" stroke="url(#sbGrad)" stroke-width="3.5"/>
+          <path d="M 19 50 Q 24 24 50 6" stroke="url(#sbGrad)" stroke-width="3.5"/>
+          <line x1="19" y1="19" x2="50" y2="50" stroke="url(#sbGrad)" stroke-width="3"/>
+          <line x1="81" y1="19" x2="50" y2="50" stroke="url(#sbGrad)" stroke-width="3"/>
+          <line x1="81" y1="81" x2="50" y2="50" stroke="url(#sbGrad)" stroke-width="3"/>
+          <line x1="19" y1="81" x2="50" y2="50" stroke="url(#sbGrad)" stroke-width="3"/>
+          <circle cx="50" cy="6"  r="5.5" fill="url(#sbGrad)"/>
+          <circle cx="81" cy="19" r="5.5" fill="url(#sbGrad)"/>
+          <circle cx="94" cy="50" r="5.5" fill="url(#sbGrad)"/>
+          <circle cx="81" cy="81" r="5.5" fill="url(#sbGrad)"/>
+          <circle cx="50" cy="94" r="5.5" fill="url(#sbGrad)"/>
+          <circle cx="19" cy="81" r="5.5" fill="url(#sbGrad)"/>
+          <circle cx="6"  cy="50" r="5.5" fill="url(#sbGrad)"/>
+          <circle cx="19" cy="19" r="5.5" fill="url(#sbGrad)"/>
+          <circle cx="50" cy="50" r="5.5" fill="url(#sbGrad)"/>
+        </svg>
       </button>
       <div class="flex-1 min-w-0">
         <div id="sidebar-brand" class="font-sans font-bold text-sm leading-tight truncate" style="color:#f4f4f5;letter-spacing:-.01em;">UniConnect</div>
