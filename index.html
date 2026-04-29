@@ -185,18 +185,13 @@
     /* Banner text is always white — it sits on a jade-green gradient */
     .welcome-banner h2,
     .welcome-banner .banner-subtitle { color: #ffffff !important; }
-    /* Login shield / logo */
+    /* UniConnect globe logo */
     .login-shield-logo {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 64px; height: 64px;
-      border-radius: 50%; border: 3px solid var(--jade);
-      margin-bottom: 12px;
-      background: var(--jade) url('./assets/tcu-logo.png') center/80% no-repeat;
-      box-shadow: 0 4px 20px rgba(22,163,74,.35);
-      overflow: hidden;
+      display: block;
+      margin: 0 auto 12px;
+      width: 80px; height: 80px;
+      filter: drop-shadow(0 4px 18px rgba(13,110,110,.45));
     }
-    /* Hide the SVG fallback once the image loads */
-    .login-shield-logo:not([style*="background-image"]) svg { display: block; }
     /* Brand names in sidebar and auth screen */
     .light-theme #sidebar-brand,
     .light-theme #auth-brand    { color: #0f172a !important; }
@@ -1553,9 +1548,38 @@
   <div style="width:100%;max-width:420px;">
     <!-- Logo -->
     <div class="text-center mb-7 fade-in">
-      <div class="login-shield-logo">
-        <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </div>
+      <!-- UniConnect globe logo -->
+      <svg class="login-shield-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <defs>
+          <linearGradient id="uniGrad" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0a6464"/>
+            <stop offset="55%" stop-color="#0d8a7a"/>
+            <stop offset="100%" stop-color="#16a385"/>
+          </linearGradient>
+        </defs>
+        <!-- Outer circle -->
+        <circle cx="50" cy="50" r="44" stroke="url(#uniGrad)" stroke-width="3.5"/>
+        <!-- Inner curved arcs (globe surface lines) -->
+        <path d="M 50 6 Q 76 24 81 50" stroke="url(#uniGrad)" stroke-width="3"/>
+        <path d="M 81 50 Q 76 76 50 94" stroke="url(#uniGrad)" stroke-width="3"/>
+        <path d="M 50 94 Q 24 76 19 50" stroke="url(#uniGrad)" stroke-width="3"/>
+        <path d="M 19 50 Q 24 24 50 6" stroke="url(#uniGrad)" stroke-width="3"/>
+        <!-- Diagonal spokes to center -->
+        <line x1="19" y1="19" x2="50" y2="50" stroke="url(#uniGrad)" stroke-width="2.8"/>
+        <line x1="81" y1="19" x2="50" y2="50" stroke="url(#uniGrad)" stroke-width="2.8"/>
+        <line x1="81" y1="81" x2="50" y2="50" stroke="url(#uniGrad)" stroke-width="2.8"/>
+        <line x1="19" y1="81" x2="50" y2="50" stroke="url(#uniGrad)" stroke-width="2.8"/>
+        <!-- Nodes -->
+        <circle cx="50" cy="6"  r="5" fill="url(#uniGrad)"/>
+        <circle cx="81" cy="19" r="5" fill="url(#uniGrad)"/>
+        <circle cx="94" cy="50" r="5" fill="url(#uniGrad)"/>
+        <circle cx="81" cy="81" r="5" fill="url(#uniGrad)"/>
+        <circle cx="50" cy="94" r="5" fill="url(#uniGrad)"/>
+        <circle cx="19" cy="81" r="5" fill="url(#uniGrad)"/>
+        <circle cx="6"  cy="50" r="5" fill="url(#uniGrad)"/>
+        <circle cx="19" cy="19" r="5" fill="url(#uniGrad)"/>
+        <circle cx="50" cy="50" r="5" fill="url(#uniGrad)"/>
+      </svg>
       <div id="auth-brand" class="font-sans text-xl font-bold" style="color:#f4f4f5;letter-spacing:-.025em;" data-i18n="auth.brand">UniConnect</div>
       <p id="auth-sub" class="text-sm" style="color:#52525b;margin-top:3px;" data-i18n="auth.sub">UniConnect.com - University Marketplace</p>
     </div>
