@@ -1144,6 +1144,27 @@
     }
     .btn-guest:hover { border-color: rgba(74,222,128,.3); color: #a1a1aa; background: rgba(255,255,255,.03); }
 
+    /* ── Top Controls Bar (language + theme) ── */
+    #top-controls {
+      position: fixed; top: 12px; right: 16px; z-index: 200;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .top-ctrl-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 11px; border-radius: 8px; border: 1px solid rgba(255,255,255,.15);
+      background: rgba(30,30,30,.75); color: #d4d4d8;
+      font-size: .75rem; font-weight: 600; cursor: pointer;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      transition: background .2s, color .2s, border-color .2s;
+    }
+    .top-ctrl-btn:hover { background: rgba(50,50,50,.9); color: #fff; }
+    .top-ctrl-btn.active { background: #16a34a; border-color: #16a34a; color: #fff; }
+    .light-theme .top-ctrl-btn {
+      background: rgba(255,255,255,.88); border-color: #e2e8f0; color: #475569;
+    }
+    .light-theme .top-ctrl-btn:hover { background: #f1f5f9; color: #0f172a; }
+    .light-theme .top-ctrl-btn.active { background: #16a34a; border-color: #16a34a; color: #fff; }
+
     /* ── Floating Action Button ── */
     .fab-post {
       position: fixed; bottom: 28px; right: 28px;
@@ -1719,6 +1740,17 @@
       </button>
     </div>
   </aside>
+
+  <!-- ── Top Controls (language + theme, always visible) ── -->
+  <div id="top-controls">
+    <button id="top-lang-en" class="top-ctrl-btn active" onclick="setLang('en');syncTopControls()">EN</button>
+    <button id="top-lang-zh" class="top-ctrl-btn" onclick="setLang('zh-TW');syncTopControls()">繁中</button>
+    <button class="top-ctrl-btn" onclick="toggleTheme();syncTopControls()" id="top-theme-btn" title="Toggle light/dark">
+      <svg id="top-theme-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+      </svg>
+    </button>
+  </div>
 
   <!-- ── Main Content ── -->
   <main id="main-content" style="flex:1;padding:36px;min-height:100vh;background:#121212;">
@@ -2633,6 +2665,21 @@ function activateDemoMode(message = 'Supabase is unavailable. The site is runnin
 function toggleTheme() {
   const isLight = document.documentElement.classList.toggle('light-theme');
   localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  syncTopControls();
+}
+
+function syncTopControls() {
+  const isLight = document.documentElement.classList.contains('light-theme');
+  const icon = document.getElementById('top-theme-icon');
+  if (icon) {
+    icon.innerHTML = isLight
+      ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+      : '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+  }
+  const enBtn = document.getElementById('top-lang-en');
+  const zhBtn = document.getElementById('top-lang-zh');
+  if (enBtn) enBtn.classList.toggle('active', currentLang === 'en');
+  if (zhBtn) zhBtn.classList.toggle('active', currentLang === 'zh-TW');
 }
 
 window.enableDemo = () => {
@@ -2674,6 +2721,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const savedLang = localStorage.getItem('selectedLanguage');
   if (savedLang && TRANSLATIONS[savedLang]) currentLang = savedLang;
   setLang(currentLang);
+  syncTopControls();
   checkDemoParam();
 
   const searchInput = document.getElementById('search-input');
